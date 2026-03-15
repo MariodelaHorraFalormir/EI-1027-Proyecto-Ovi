@@ -20,7 +20,7 @@ public class PersonaController {
     @RequestMapping("/listId")
     public String  listaporId(Model model){
 
-        model.addAttribute("PersonasOrderId", personaDao.getPersonasOrderId());
+        model.addAttribute("personasOrderId", personaDao.getPersonasOrderId());
         return "Persona/listId";
     }
 }

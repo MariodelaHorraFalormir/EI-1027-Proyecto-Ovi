@@ -20,17 +20,16 @@ public class PersonaRowMapper implements RowMapper<Persona> {
 
         persona.setIdPersona(rs.getInt("id"));
         persona.setNombre(rs.getString("nombre"));
-        persona.setApellido1(rs.getString("apellido1"));
-        persona.setApellido2(rs.getString("apellido2"));
-        persona.setEmail(rs.getString("email"));
+        persona.setApellido1(rs.getString("apellido_1"));
+        persona.setApellido2(rs.getString("apellido_2"));
+        persona.setEmail(rs.getString("mail"));
         persona.setTelefono(rs.getString("telefono"));
         persona.setSexo(rs.getString("sexo"));
         LocalDate fecha = convFechas(fechaAlta,rs);
         persona.setFechaAlta(fecha);
         fecha = convFechas(fechaBaja,rs);
-        if (fecha != null) {
-            persona.setFechaBaja(fecha);
-        }
+        persona.setFechaBaja(fecha);
+
         fecha = convFechas(fechaNacimiento,rs);
         persona.setFechaNacimiento(fecha);
         Period periodo = Period.between(persona.getFechaNacimiento(), LocalDate.now());
@@ -49,6 +48,7 @@ public class PersonaRowMapper implements RowMapper<Persona> {
     //metodo para transformar fechas fechas
     private LocalDate convFechas (String campo,ResultSet rs) throws SQLException {
         Date fecha = rs.getDate(campo);
+        if (campo.equals("fecha_baja") && fecha == null) {return null;}
         return fecha.toLocalDate();
 
     }

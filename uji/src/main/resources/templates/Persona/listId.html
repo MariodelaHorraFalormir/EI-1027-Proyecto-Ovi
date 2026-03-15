@@ -20,16 +20,14 @@
             <th>Mail</th>
             <th>Edad</th>
             <th>Genero</th>
-            <th>Mail</th>
-
             <th>Telefono</th>
             <td></td>
             <td></td>
         </tr>
         </thead>
         <tbody>
-        <tr th:each="persona: ${PersonasOrderId}">
-            <td th:text="${persona.id}"></td>
+        <tr th:each="persona: ${personasOrderId}">
+            <td th:text="${persona.idPersona}"></td>
             <td th:text="${persona.nombre}"></td>
             <td th:text="${persona.apellido1}"></td>
             <td th:text="${persona.apellido2}"></td>
