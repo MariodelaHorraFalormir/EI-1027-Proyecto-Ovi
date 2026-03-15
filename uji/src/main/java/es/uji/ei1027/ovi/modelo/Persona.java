@@ -12,7 +12,7 @@ public class Persona {
     private String telefono;
    //hay que añadirlo  private String direccion;
     private String sexo;
-    private String edad;
+    private int edad;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate fechaNacimiento;
@@ -55,21 +55,15 @@ public class Persona {
         this.sexo = sexo;
     }
 
-    public String getEdad() {
+    public int getEdad() {
         return edad;
     }
 
-    public void setEdad(String edad) {
+    public void setEdad(int edad) {
         this.edad = edad;
     }
 
-    public String getDireccion() {
-        return direccion;
-    }
 
-    public void setDireccion(String direccion) {
-        this.direccion = direccion;
-    }
 
     public String getTelefono() {
         return telefono;
