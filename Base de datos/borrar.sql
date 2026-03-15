@@ -1,7 +1,7 @@
 -- =========================================
 -- ELIMINAR TABLAS SI EXISTEN
 -- =========================================
-
+DROP TABLE IF EXISTS persona CASCADE;
 DROP TABLE IF EXISTS mensaje CASCADE;
 DROP TABLE IF EXISTS conversacion CASCADE;
 DROP TABLE IF EXISTS contrato CASCADE;
@@ -9,7 +9,7 @@ DROP TABLE IF EXISTS pa_request CASCADE;
 DROP TABLE IF EXISTS admin_ovi CASCADE;
 DROP TABLE IF EXISTS ovi_user CASCADE;
 DROP TABLE IF EXISTS pat_pati CASCADE;
-DROP TABLE IF EXISTS persona CASCADE;
 
 DROP TYPE IF EXISTS disponibilidad_enum CASCADE;
 DROP TYPE IF EXISTS status_enum CASCADE;
+DROP TYPE IF EXISTS sexo_enum CASCADE;
