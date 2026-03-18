@@ -20,11 +20,12 @@ public class PersonaRowMapper implements RowMapper<Persona> {
 
         persona.setIdPersona(rs.getInt("id"));
         persona.setNombre(rs.getString("nombre"));
-        persona.setApellido1(rs.getString("apellido_1"));
-        persona.setApellido2(rs.getString("apellido_2"));
-        persona.setEmail(rs.getString("mail"));
+        persona.setApellidos(rs.getString("apellidos"));
+        persona.setMail(rs.getString("mail"));
+        persona.setDireccion(String.valueOf(rs.getString("direccion")));
+        persona.setPais(rs.getString("pais"));
         persona.setTelefono(rs.getString("telefono"));
-        persona.setSexo(rs.getString("sexo"));
+        persona.setGenero(rs.getString("genero"));
         LocalDate fecha = convFechas(fechaAlta,rs);
         persona.setFechaAlta(fecha);
         fecha = convFechas(fechaBaja,rs);
@@ -32,8 +33,7 @@ public class PersonaRowMapper implements RowMapper<Persona> {
 
         fecha = convFechas(fechaNacimiento,rs);
         persona.setFechaNacimiento(fecha);
-        Period periodo = Period.between(persona.getFechaNacimiento(), LocalDate.now());
-        persona.setEdad(periodo.getYears());
+
 
 
 

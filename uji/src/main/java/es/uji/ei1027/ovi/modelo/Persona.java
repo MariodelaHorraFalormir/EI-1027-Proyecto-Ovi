@@ -6,14 +6,12 @@ import org.springframework.format.annotation.DateTimeFormat;
 public class Persona {
     private int idPersona;
     private String nombre;
-    private String apellido1;
-    private String apellido2;
-    private String email;
+    private String apellidos;
+    private String mail;
     private String telefono;
-   //hay que añadirlo  private String direccion;
-    private String sexo;
-    private int edad;
-
+    private  String direccion;
+    private String genero;
+    private String pais;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate fechaNacimiento;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
@@ -22,6 +20,22 @@ public class Persona {
     private LocalDate fechaBaja;
 
     public Persona() {}
+    public String getDireccion() {
+        return direccion;
+    }
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
+    }
+
+    public String getApellidos() {
+        return apellidos;
+    }
+    public void setApellidos(String apellidos) {this.apellidos = apellidos;}
+
+    public String getPais() {
+        return pais;
+    }
+    public void setPais(String pais) {this.pais = pais;}
 
     public LocalDate getFechaBaja() {
         return fechaBaja;
@@ -47,20 +61,17 @@ public class Persona {
         this.fechaNacimiento = fechaNacimiento;
     }
 
-    public String getSexo() {
-        return sexo;
+    public String getGenero() {
+        return genero;
     }
 
-    public void setSexo(String sexo) {
-        this.sexo = sexo;
+    public void setGenero(String genero) {
+        this.genero = genero;
     }
 
     public int getEdad() {
-        return edad;
-    }
-
-    public void setEdad(int edad) {
-        this.edad = edad;
+        if (fechaNacimiento == null) return 0;
+        return java.time.Period.between(fechaNacimiento, LocalDate.now()).getYears();
     }
 
 
@@ -73,28 +84,12 @@ public class Persona {
         this.telefono = telefono;
     }
 
-    public String getEmail() {
-        return email;
+    public String getMail() {
+        return mail;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getApellido2() {
-        return apellido2;
-    }
-
-    public void setApellido2(String apellido2) {
-        this.apellido2 = apellido2;
-    }
-
-    public String getApellido1() {
-        return apellido1;
-    }
-
-    public void setApellido1(String apellido1) {
-        this.apellido1 = apellido1;
+    public void setMail(String mail) {
+        this.mail = mail;
     }
 
     public String getNombre() {

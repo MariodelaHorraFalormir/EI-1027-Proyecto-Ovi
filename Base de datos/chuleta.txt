@@ -1,0 +1,3 @@
+Para que funcione el acceso a Windows tienes  que poner esto en tu powershell 
+ 5432:db-aules.uji.es:5432 al416129@lynx.uji.es
+el al pon el tuyo

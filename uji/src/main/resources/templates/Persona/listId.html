@@ -14,13 +14,17 @@
         <thead>
         <tr>
             <th>ID</th>
-            <th>Nombre</th>
-            <th>Apellido 1</th>
-            <th>Apellido 2</th>
             <th>Mail</th>
+            <th>Nombre</th>
+            <th>Apellidos</th>
             <th>Edad</th>
             <th>Genero</th>
+            <th>Direcion </th>
+            <th>Pais</th>
             <th>Telefono</th>
+            <th>Fecha Alta</th>
+            <th> Fecha Baja </th>
+
             <td></td>
             <td></td>
         </tr>
@@ -28,14 +32,16 @@
         <tbody>
         <tr th:each="persona: ${personasOrderId}">
             <td th:text="${persona.idPersona}"></td>
+            <td th:text="${persona.mail}"></td>
             <td th:text="${persona.nombre}"></td>
-            <td th:text="${persona.apellido1}"></td>
-            <td th:text="${persona.apellido2}"></td>
-            <td th:text="${persona.email}"></td>
+            <td th:text="${persona.apellidos}"></td>
             <td th:text="${persona.edad}"></td>
-            <td th:text="${persona.sexo}"></td>
+            <td th:text="${persona.genero}"></td>
+            <td th:text="${persona.direccion}"></td>
+            <td th:text="${persona.pais}"></td>
             <td th:text="${persona.telefono}"></td>
-
+            <td th:text="${persona.fechaAlta}"></td>
+            <td th:text="${persona.fechaBaja}"></td>
         </tr>
         </tbody>
     </table>
