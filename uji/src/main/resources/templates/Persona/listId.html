@@ -42,6 +42,8 @@
             <td th:text="${persona.telefono}"></td>
             <td th:text="${persona.fechaAlta}"></td>
             <td th:text="${persona.fechaBaja}"></td>
+            <td><a th:href="@{/Persona/delete/{id}(id=${persona.idPersona})}">Borrar</a></td>
+
         </tr>
         </tbody>
     </table>

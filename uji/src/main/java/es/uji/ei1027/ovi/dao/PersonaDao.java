@@ -31,4 +31,7 @@ public class PersonaDao {
             return new ArrayList<>();
         }
     }
+    public void deletePersona(int id) {
+        jdbcTemplate.update("DELETE FROM persona WHERE id = ? ", id );
+    }
 }

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/Persona")
@@ -22,5 +23,11 @@ public class PersonaController {
 
         model.addAttribute("personasOrderId", personaDao.getPersonasOrderId());
         return "Persona/listId";
+    }
+
+    @RequestMapping(value="/delete/{id}")
+    public String processDelete(@PathVariable int id) {
+        personaDao.deletePersona(id);
+        return "redirect:../listId";
     }
 }
