@@ -41,15 +41,13 @@ public class PersonaDao {
         }catch (EmptyResultDataAccessException e){return null;}
     }
 
-    public void updateNadador(Persona persona) {
+    public void updatePersona(Persona persona) {
         jdbcTemplate.update(
-                "UPDATE persona SET nombre = ?, apellidos = ?, mail = ?," +
-                        " genere = ?,telefono = ? , direccion = ?,fecha_nacimiento,fecha_alta = ? ,fecha_baja = ?  " +
-                        "WHERE id = ?",
+                "UPDATE persona SET nombre = ?, apellidos = ?, mail = ?, genero = ?::genero_enum, telefono = ?, direccion = ?, fecha_nacimiento = ?, fecha_alta = ?, fecha_baja = ? WHERE id = ?",
                 persona.getNombre(),
                 persona.getApellidos(),
                 persona.getMail(),
-                persona.getGenero(),
+                persona.getGenero().getTexto(),
                 persona.getTelefono(),
                 persona.getDireccion(),
                 persona.getFechaNacimiento(),
@@ -57,6 +55,7 @@ public class PersonaDao {
                 persona.getFechaBaja(),
                 persona.getIdPersona()
         );
+
     }
 
 }

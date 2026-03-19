@@ -24,7 +24,9 @@ public class OviUserDao {
 
         }catch (EmptyResultDataAccessException e){return null;}
     }
-
+    public void updateOviUser(OviUser oviUser) {
+        // de momento no hay campos que actualizar
+    }
 
 
 }

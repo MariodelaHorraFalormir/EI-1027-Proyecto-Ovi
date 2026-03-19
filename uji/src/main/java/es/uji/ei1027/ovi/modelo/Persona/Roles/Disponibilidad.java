@@ -17,6 +17,7 @@ public enum Disponibilidad {
             case "Parcial":
                 return Parcial;
             case "No disponible":
+            case "No_disponible":
                 return No_disponible;
             default:
                 throw new IllegalArgumentException("Valor de disponibilidad no válido: " + valor);

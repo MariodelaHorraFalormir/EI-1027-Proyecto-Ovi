@@ -51,7 +51,11 @@
 
                 <div class="mb-3">
                     <label class="form-label">Género</label>
-                    <input type="text" class="form-control" th:field="*{persona.genero}" />
+                    <select class="form-select" th:field="*{persona.genero}">
+                        <option value="Hombre">Hombre</option>
+                        <option value="Mujer">Mujer</option>
+                        <option value="Otro">Otro</option>
+                    </select>
                 </div>
 
                 <div class="mb-3">
@@ -81,9 +85,9 @@
                 <div class="mb-3">
                     <label class="form-label">Disponibilidad</label>
                     <select class="form-select" th:field="*{patPati.disponibilidad}">
-                        <option value="TOTAL">Total</option>
-                        <option value="PARCIAL">Parcial</option>
-                        <option value="NO_DISPONIBLE">No disponible</option>
+                        <option value="Total">Total</option>
+                        <option value="Parcial">Parcial</option>
+                        <option value="No_disponible">No disponible</option>
                     </select>
                 </div>
 

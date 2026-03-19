@@ -3,7 +3,10 @@ package es.uji.ei1027.ovi.Service;
 import es.uji.ei1027.ovi.dao.OviUserDao;
 import es.uji.ei1027.ovi.dao.PapPatiDao;
 import es.uji.ei1027.ovi.dao.PersonaDao;
+import es.uji.ei1027.ovi.modelo.Persona.Persona;
 import es.uji.ei1027.ovi.modelo.Persona.PersonaFormulario;
+import es.uji.ei1027.ovi.modelo.Persona.Roles.OviUser;
+import es.uji.ei1027.ovi.modelo.Persona.Roles.PatPati;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +41,15 @@ public class PersonaService {
     }
 
     public void updatePersonaFormulario(PersonaFormulario formulario) {
+        personaDao.updatePersona(formulario.getPersona());
+
+        if (formulario.getPatPati() != null) {
+            patPatiDao.updatePatPati(formulario.getPatPati());
+        }
+
+        if (formulario.getOviUser() != null) {
+
+        }
 
     }
 }

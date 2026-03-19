@@ -53,6 +53,7 @@ public class PersonaController {
             return "Persona/update";
         }
 
+        personaService.updatePersonaFormulario(formulario);
         return "redirect:/Persona/listId";
     }
 

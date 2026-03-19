@@ -10,7 +10,7 @@ public class Persona {
     private String mail;
     private String telefono;
     private  String direccion;
-    private String genero;
+    private Genero genero;
     private String pais;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate fechaNacimiento;
@@ -61,11 +61,11 @@ public class Persona {
         this.fechaNacimiento = fechaNacimiento;
     }
 
-    public String getGenero() {
+    public Genero getGenero() {
         return genero;
     }
 
-    public void setGenero(String genero) {
+    public void setGenero(Genero genero) {
         this.genero = genero;
     }
 

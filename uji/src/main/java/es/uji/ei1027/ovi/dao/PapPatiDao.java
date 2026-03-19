@@ -14,15 +14,26 @@ import javax.sql.DataSource;
 public class PapPatiDao {
 
     private JdbcTemplate jdbcTemplate;
+
     @Autowired
     public void setDataSource(DataSource dataSource) {
         jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
     public PatPati getPapPati(int id) {
-        try{
-            return  jdbcTemplate.queryForObject("SELECT * FROM pat_pati WHERE id = ? ", new PatPatiRowMapper(), id);
+        try {
+            return jdbcTemplate.queryForObject("SELECT * FROM pat_pati WHERE id = ? ", new PatPatiRowMapper(), id);
 
-        }catch (EmptyResultDataAccessException e){return null;}
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    public void updatePatPati(PatPati patPati) {
+        jdbcTemplate.update(
+                "UPDATE pat_pati SET disponibilidad = ?::disponibilidad_enum WHERE id = ?",
+                patPati.getDisponibilidad().getTexto(),
+                patPati.getIdPatPati()
+        );
     }
 }
