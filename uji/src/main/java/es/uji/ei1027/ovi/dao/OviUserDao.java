@@ -20,7 +20,7 @@ public class OviUserDao {
 
     public OviUser getOviUser(int id) {
         try{
-            return  jdbcTemplate.queryForObject("SELECT * FROM persona WHERE id = ? ", new OviUserRowMapper(), id);
+            return  jdbcTemplate.queryForObject("SELECT * FROM ovi_user WHERE id = ? ", new OviUserRowMapper(), id);
 
         }catch (EmptyResultDataAccessException e){return null;}
     }

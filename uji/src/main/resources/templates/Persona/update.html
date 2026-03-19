@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar persona</title>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container mt-4">
+    <h1 class="mb-4">Editar persona</h1>
+
+    <form th:object="${personaFormulario}" method="post" th:action="@{/Persona/update}">
+
+        <input type="hidden" th:field="*{persona.idPersona}" />
+
+        <div class="card mb-4">
+            <div class="card-header">Datos personales</div>
+            <div class="card-body">
+
+                <div class="mb-3">
+                    <label class="form-label">Nombre</label>
+                    <input type="text" class="form-control" th:field="*{persona.nombre}" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Apellidos</label>
+                    <input type="text" class="form-control" th:field="*{persona.apellidos}" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Mail</label>
+                    <input type="email" class="form-control" th:field="*{persona.mail}" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Teléfono</label>
+                    <input type="text" class="form-control" th:field="*{persona.telefono}" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Dirección</label>
+                    <input type="text" class="form-control" th:field="*{persona.direccion}" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">País</label>
+                    <input type="text" class="form-control" th:field="*{persona.pais}" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Género</label>
+                    <input type="text" class="form-control" th:field="*{persona.genero}" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Fecha nacimiento</label>
+                    <input type="date" class="form-control" th:field="*{persona.fechaNacimiento}" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Fecha alta</label>
+                    <input type="date" class="form-control" th:field="*{persona.fechaAlta}" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Fecha baja</label>
+                    <input type="date" class="form-control" th:field="*{persona.fechaBaja}" />
+                </div>
+
+            </div>
+        </div>
+
+        <div class="card mb-4" th:if="${personaFormulario.patPati != null}">
+            <div class="card-header">Rol PatPati</div>
+            <div class="card-body">
+
+                <input type="hidden" th:field="*{patPati.idPatPati}" />
+
+                <div class="mb-3">
+                    <label class="form-label">Disponibilidad</label>
+                    <select class="form-select" th:field="*{patPati.disponibilidad}">
+                        <option value="TOTAL">Total</option>
+                        <option value="PARCIAL">Parcial</option>
+                        <option value="NO_DISPONIBLE">No disponible</option>
+                    </select>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="card mb-4" th:if="${personaFormulario.oviUser != null}">
+            <div class="card-header">Rol OviUser</div>
+            <div class="card-body">
+                <p>Este usuario tiene rol OviUser.</p>
+            </div>
+        </div>
+
+
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <a th:href="@{/Persona/listId}" class="btn btn-secondary">Volver</a>
+
+    </form>
+</div>
+</body>
+</html>

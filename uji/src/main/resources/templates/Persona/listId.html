@@ -43,6 +43,7 @@
             <td th:text="${persona.fechaAlta}"></td>
             <td th:text="${persona.fechaBaja}"></td>
             <td><a th:href="@{/Persona/delete/{id}(id=${persona.idPersona})}">Borrar</a></td>
+            <td><a th:href="@{/Persona/update/{id}(id=${persona.idPersona})}">Editar</a></td>
 
         </tr>
         </tbody>
