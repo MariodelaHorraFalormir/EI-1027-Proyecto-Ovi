@@ -1,7 +1,7 @@
 package es.uji.ei1027.ovi.dao;
 
 import es.uji.ei1027.ovi.RowMapper.PersonaRowMapper;
-import es.uji.ei1027.ovi.modelo.Persona;
+import es.uji.ei1027.ovi.modelo.Persona.Persona;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -34,4 +34,29 @@ public class PersonaDao {
     public void deletePersona(int id) {
         jdbcTemplate.update("DELETE FROM persona WHERE id = ? ", id );
     }
+    public Persona getPersona(int id) {
+        try{
+            return  jdbcTemplate.queryForObject("SELECT * FROM persona WHERE id = ? ", new PersonaRowMapper(), id);
+
+        }catch (EmptyResultDataAccessException e){return null;}
+    }
+
+    public void updateNadador(Persona persona) {
+        jdbcTemplate.update(
+                "UPDATE persona SET nombre = ?, apellidos = ?, mail = ?," +
+                        " genere = ?,telefono = ? , direccion = ?,fecha_nacimiento,fecha_alta = ? ,fecha_baja = ?  " +
+                        "WHERE id = ?",
+                persona.getNombre(),
+                persona.getApellidos(),
+                persona.getMail(),
+                persona.getGenero(),
+                persona.getTelefono(),
+                persona.getDireccion(),
+                persona.getFechaNacimiento(),
+                persona.getFechaAlta(),
+                persona.getFechaBaja(),
+                persona.getIdPersona()
+        );
+    }
+
 }

@@ -1,4 +1,4 @@
-package es.uji.ei1027.ovi.modelo;
+package es.uji.ei1027.ovi.modelo.Persona;
 
 import java.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;

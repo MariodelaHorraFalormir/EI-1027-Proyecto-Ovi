@@ -1,14 +1,12 @@
 package es.uji.ei1027.ovi.RowMapper;
 
-import es.uji.ei1027.ovi.modelo.Persona;
+import es.uji.ei1027.ovi.modelo.Persona.Persona;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Time;
 import java.time.LocalDate;
-import java.time.Period;
 
 public class PersonaRowMapper implements RowMapper<Persona> {
     @Override
