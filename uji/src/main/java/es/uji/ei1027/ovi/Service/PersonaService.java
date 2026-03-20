@@ -9,6 +9,9 @@ import es.uji.ei1027.ovi.modelo.Persona.Roles.OviUser;
 import es.uji.ei1027.ovi.modelo.Persona.Roles.PatPati;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
 
 @Service
 public class PersonaService {
@@ -51,5 +54,35 @@ public class PersonaService {
 
         }
 
+    }
+    @Transactional
+    public void registrarOviUser(PersonaFormulario formulario) {
+        Persona persona = formulario.getPersona();
+        OviUser oviUser = formulario.getOviUser();
+
+        if (personaDao.existeMail(persona.getMail())) {
+            throw new IllegalArgumentException("Ya existe una persona registrada con ese correo.");
+        }
+
+        persona.setFechaAlta(LocalDate.now());
+        persona.setFechaBaja(null);
+
+        int idPersona = personaDao.addPersonaYDevolverId(persona);
+        oviUserDao.addOviUser(idPersona);
+    }
+    @Transactional
+    public String asignarRolOviUserPorMail(String mail) {
+        Integer idPersona = personaDao.getIdPersonaByMail(mail);
+
+        if (idPersona == null) {
+            throw new IllegalArgumentException("No existe ninguna persona con ese correo.");
+        }
+
+        if (oviUserDao.existeOviUser(idPersona)) {
+            return "La persona ya tiene el rol OVI user.";
+        }
+
+        oviUserDao.addOviUser(idPersona);
+        return "Rol OVI user asignado correctamente.";
     }
 }

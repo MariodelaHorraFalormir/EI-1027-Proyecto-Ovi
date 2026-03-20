@@ -27,6 +27,20 @@ public class OviUserDao {
     public void updateOviUser(OviUser oviUser) {
         // de momento no hay campos que actualizar
     }
+    public void addOviUser(int idPersona) {
+        jdbcTemplate.update(
+                "INSERT INTO ovi_user (id) VALUES (?)",
+                idPersona
+        );
+    }
+    public boolean existeOviUser(int idPersona) {
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM ovi_user WHERE id = ?",
+                Integer.class,
+                idPersona
+        );
+        return count != null && count > 0;
+    }
 
 
 }

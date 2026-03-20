@@ -36,4 +36,10 @@ public class PapPatiDao {
                 patPati.getIdPatPati()
         );
     }
+    public void addOviUser(int id) {
+        jdbcTemplate.update(
+                "INSERT INTO ovi_user (id_persona) VALUES (?)",
+                id
+        );
+    }
 }

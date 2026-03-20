@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Solicitar rol OVI user</title>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    Solicitud de rol OVI user
+                </div>
+
+                <div class="card-body">
+                    <p class="text-muted">
+                        Introduce tu correo electrónico para solicitar el rol OVI user.
+                    </p>
+
+                    <div th:if="${mensajeExito}" class="alert alert-success" th:text="${mensajeExito}"></div>
+                    <div th:if="${mensajeError}" class="alert alert-danger" th:text="${mensajeError}"></div>
+
+                    <form th:action="@{/Persona/solicitar-rol-oviuser}"
+                          th:object="${persona}"
+                          method="post">
+
+                        <div class="mb-3">
+                            <label class="form-label">Correo electrónico</label>
+                            <input type="email"
+                                   class="form-control"
+                                   th:field="*{mail}"
+                                   required>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                Solicitar rol OVI user
+                            </button>
+
+                            <a th:href="@{/}" class="btn btn-outline-secondary">
+                                Volver al inicio
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

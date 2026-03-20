@@ -57,5 +57,43 @@ public class PersonaDao {
         );
 
     }
+    public int addPersonaYDevolverId(Persona persona) {
+        return jdbcTemplate.queryForObject(
+                "INSERT INTO persona (nombre, apellidos, mail, telefono, direccion, genero, pais, fecha_nacimiento, fecha_alta, fecha_baja) " +
+                        "VALUES (?, ?, ?, ?, ?, CAST(? AS genero_enum), ?, ?, ?, ?) RETURNING id",
+                Integer.class,
+                persona.getNombre(),
+                persona.getApellidos(),
+                persona.getMail(),
+                persona.getTelefono(),
+                persona.getDireccion(),
+                persona.getGenero().toString(),
+                persona.getPais(),
+                persona.getFechaNacimiento(),
+                persona.getFechaAlta(),
+                persona.getFechaBaja()
+        );
+    }
+
+    public boolean existeMail(String mail) {
+
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM persona WHERE mail = ?",
+                Integer.class,
+                mail
+        );
+        return count != null && count > 0;
+    }
+    public Integer getIdPersonaByMail(String mail) {
+        try {
+            return jdbcTemplate.queryForObject(
+                    "SELECT id FROM persona WHERE mail = ?",
+                    Integer.class,
+                    mail
+            );
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
 
 }
