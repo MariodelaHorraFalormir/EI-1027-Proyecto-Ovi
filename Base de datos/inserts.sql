@@ -181,8 +181,8 @@ VALUES
 (13, 19, 'Psicosocial'),
 
 (14, 20, 'Visual'),
-(15, 21, 'Otra'),
-(16, 22, 'Cognitiva');
+(15, 21, 'Otra');
+
 
 
 -- =========================================================
@@ -253,7 +253,7 @@ VALUES
 (11, 11, 15, 20),
 (12, 12, 11, 17),
 (13, 13, 14, 19),
-(14, 14, 12, 22);
+(14, 14, 12, 21);
 
 
 -- =========================================================
@@ -310,7 +310,7 @@ VALUES
 (32, 13, 14, 'Perfecto, eso nos sirve para comparar varios candidatos.', '2026-03-11 18:12:00'),
 
 (33, 14, 12, 'Hola Teo, veo que tu experiencia es cero pero queria valorar igualmente tu perfil.', '2026-03-12 14:00:00'),
-(34, 14, 22, 'Gracias, ahora mismo no estoy disponible, pero sirve como caso de prueba.', '2026-03-12 14:10:00');
+(34, 14, 21, 'Gracias, ahora mismo no estoy disponible, pero sirve como caso de prueba.', '2026-03-12 14:10:00');
 
 
 -- =========================================================
@@ -331,22 +331,20 @@ VALUES
 (6, 5, 9, 75),
 (7, 6, 9, 93),
 
--- Caso especial: puntuacion maxima
+
 (8, 7, 18, 100),
 (9, 7, 16, 65),
 
--- Caso especial: puntuacion minima practica
-(10, 8, 16, 0),
 (11, 8, 17, 34),
 
 (12, 9, 21, 40),
 (13, 10, 18, 97),
 (14, 10, 19, 89),
 (15, 11, 20, 55),
-(16, 11, 22, 30),
+(16, 11, 8, 30),
 (17, 12, 17, 91),
 (18, 13, 19, 99),
-(19, 14, 22, 60),
+(19, 14, 8, 60),
 (20, 14, 16, 59);
 
 
