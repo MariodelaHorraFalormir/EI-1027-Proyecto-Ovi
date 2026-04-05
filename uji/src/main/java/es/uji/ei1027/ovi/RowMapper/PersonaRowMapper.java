@@ -25,11 +25,12 @@ public class PersonaRowMapper implements RowMapper<Persona> {
         persona.setPais(rs.getString("pais"));
         persona.setTelefono(rs.getString("telefono"));
         persona.setGenero(Genero.fromString(rs.getString("genero")));
+        persona.setDni(rs.getString("dni"));
+        persona.setContrasena(rs.getString("contrasena"));
         LocalDate fecha = convFechas(fechaAlta,rs);
         persona.setFechaAlta(fecha);
         fecha = convFechas(fechaBaja,rs);
         persona.setFechaBaja(fecha);
-
         fecha = convFechas(fechaNacimiento,rs);
         persona.setFechaNacimiento(fecha);
 

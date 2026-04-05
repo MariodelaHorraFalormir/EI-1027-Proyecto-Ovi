@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalle de solicitud</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"/>
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #f4f7fb, #e9f0f8);
+            min-height: 100vh;
+        }
+
+        .detail-card {
+            max-width: 950px;
+            margin: 40px auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            padding: 2rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1f3b5b;
+        }
+
+        .section-subtitle {
+            color: #6c757d;
+            margin-bottom: 2rem;
+        }
+
+        .data-label {
+            font-weight: 600;
+            color: #1f3b5b;
+            margin-bottom: 0.4rem;
+        }
+
+        .form-control, .form-select, .form-control:focus, .form-select:focus {
+            border-radius: 12px;
+        }
+
+        .badge-estado {
+            font-size: 0.95rem;
+            padding: 0.5rem 0.8rem;
+            border-radius: 999px;
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="detail-card">
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <div>
+                <h1 class="section-title">Detalle de solicitud</h1>
+                <p class="section-subtitle mb-0">
+                    Revisión y edición de la solicitud seleccionada
+                </p>
+            </div>
+        </div>
+
+        <form th:object="${solicitud}"
+              th:action="@{/Solicitudes/update/{id}(id=${solicitud.idSolicitud})}"
+              method="post">
+
+            <div class="row g-4">
+
+                <div class="col-md-6">
+                    <label class="data-label" for="idSolicitud">ID de la solicitud</label>
+                    <input type="number" id="idSolicitud" class="form-control"
+                           th:field="*{idSolicitud}">
+                </div>
+
+                <div class="col-md-6">
+                    <label class="data-label" for="personaSolicitante">Persona solicitante</label>
+                    <input type="number" id="personaSolicitante" class="form-control"
+                           th:field="*{personaSolicitante}">
+                </div>
+
+                <div class="col-md-6">
+                    <label class="data-label" for="categoriaSolicitud">Categoria Solicitud</label>
+                    <select id="categoriaSolicitud" class="form-select" th:field="*{categoriaSolicitud}">
+                        <option value="">Selecciona una opción</option>
+                        <option th:each="op : ${categoriaList}"
+                                th:value="${op}"
+                                th:text="${op}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="data-label" for="tipoSolicitud">Tipo de solicitud</label>
+                    <select id="tipoSolicitud" class="form-select" th:field="*{tipoSolicitud}">
+                        <option th:each="op : ${tipoList}"
+                                th:value="${op}"
+                                th:text="${op}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="data-label" for="estadoSolicitud">Estado</label>
+                    <select id="estadoSolicitud" class="form-select" th:field="*{estadoSolicitud}">
+                        <option th:each="op : ${estadoList}"
+                                th:value="${op}"
+                                th:text="${op}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="data-label" for="fechaCreacion">Fecha de creación</label>
+                    <input type="date"
+                           id="fechaCreacion"
+                           name="fechaCreacion"
+                           class="form-control"
+                           th:value="${solicitud.fechaCreacion != null ? #temporals.format(solicitud.fechaCreacion, 'yyyy-MM-dd') : ''}">
+                </div>
+
+                <div class="col-md-6">
+                    <label class="data-label" for="fechaResolucion">Fecha de resolución</label>
+                    <input type="date"
+                           id="fechaResolucion"
+                           name="fechaResolucion"
+                           class="form-control"
+                           th:value="${solicitud.fechaResolucion != null ? #temporals.format(solicitud.fechaResolucion, 'yyyy-MM-dd') : ''}">
+                </div>
+
+                <div class="col-12">
+                    <label class="data-label" for="mensajeSolicitud">Mensaje de la solicitud</label>
+                    <textarea id="mensajeSolicitud" class="form-control"
+                              th:field="*{mensajeSolicitud}"></textarea>
+                </div>
+
+                <div class="col-12">
+                    <label class="data-label" for="motivoResolucion">Motivo de resolución</label>
+                    <textarea id="motivoResolucion" class="form-control"
+                              th:field="*{motivoResolucion}"></textarea>
+                </div>
+            </div>
+
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                <a th:href="@{/Solicitudes/listId}" class="btn btn-secondary">Volver al listado</a>
+                <a th:href="@{/}" class="btn btn-outline-dark">Ir al inicio</a>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+</body>
+</html>

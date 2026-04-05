@@ -12,14 +12,24 @@ public class Persona {
     private  String direccion;
     private Genero genero;
     private String pais;
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private String dni;
+    private String contrasena;
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
     private LocalDate fechaNacimiento;
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
     private LocalDate fechaAlta;
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
     private LocalDate fechaBaja;
 
     public Persona() {}
+    public String getDni() {
+        return dni;
+    }
+    public String getContrasena() {
+        return contrasena;
+    }
+    public void setContrasena(String contrasena) {this.contrasena = contrasena;}
+    public void setDni(String dni) {this.dni = dni;}
     public String getDireccion() {
         return direccion;
     }
