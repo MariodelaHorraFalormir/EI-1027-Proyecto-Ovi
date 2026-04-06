@@ -1,14 +1,13 @@
 package es.uji.ei1027.ovi.RowMapper;
 
-import es.uji.ei1027.ovi.modelo.Persona;
+import es.uji.ei1027.ovi.modelo.Persona.Genero;
+import es.uji.ei1027.ovi.modelo.Persona.Persona;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Time;
 import java.time.LocalDate;
-import java.time.Period;
 
 public class PersonaRowMapper implements RowMapper<Persona> {
     @Override
@@ -25,12 +24,13 @@ public class PersonaRowMapper implements RowMapper<Persona> {
         persona.setDireccion(String.valueOf(rs.getString("direccion")));
         persona.setPais(rs.getString("pais"));
         persona.setTelefono(rs.getString("telefono"));
-        persona.setGenero(rs.getString("genero"));
+        persona.setGenero(Genero.fromString(rs.getString("genero")));
+        persona.setDni(rs.getString("dni"));
+        persona.setContrasena(rs.getString("contrasena"));
         LocalDate fecha = convFechas(fechaAlta,rs);
         persona.setFechaAlta(fecha);
         fecha = convFechas(fechaBaja,rs);
         persona.setFechaBaja(fecha);
-
         fecha = convFechas(fechaNacimiento,rs);
         persona.setFechaNacimiento(fecha);
 

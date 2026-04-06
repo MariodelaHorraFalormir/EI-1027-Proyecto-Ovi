@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Acceder para solicitar rol</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"/>
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #f4f7fb, #e9f0f8);
+            min-height: 100vh;
+        }
+
+        .login-card {
+            max-width: 850px;
+            margin: 60px auto;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.08);
+            padding: 2.2rem;
+        }
+
+        .title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1f3b5b;
+            margin-bottom: 0.4rem;
+        }
+
+        .subtitle {
+            color: #6c757d;
+            margin-bottom: 1.8rem;
+        }
+
+        .block-card {
+            background: #f8fafc;
+            border: 1px solid #e9eef5;
+            border-radius: 18px;
+            padding: 1.6rem;
+        }
+
+        .role-badge {
+            display: inline-block;
+            background: #6c7a89;
+            color: white;
+            font-weight: 600;
+            border-radius: 999px;
+            padding: 0.45rem 0.9rem;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .data-label {
+            font-weight: 600;
+            color: #1f3b5b;
+            margin-bottom: 0.45rem;
+        }
+
+        .form-control {
+            border-radius: 12px;
+            padding: 0.75rem 0.95rem;
+            border: 1px solid #d8e0ea;
+            background-color: #fff;
+        }
+
+        .form-control:focus {
+            border-color: #7aa7d9;
+            box-shadow: 0 0 0 0.2rem rgba(58, 123, 213, 0.12);
+        }
+
+        .actions {
+            margin-top: 1.8rem;
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            border-radius: 12px;
+            padding: 0.8rem 1.2rem;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background-color: #1f4e79;
+            border-color: #1f4e79;
+        }
+
+        .btn-primary:hover {
+            background-color: #193f63;
+            border-color: #193f63;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="login-card">
+        <span class="role-badge" th:text="${textoRol}">Pap_pati</span>
+
+        <h1 class="title">Accede para continuar</h1>
+        <p class="subtitle">
+            Introduce tu correo y contraseña para solicitar el rol
+            <strong th:text="${textoRol}">Pap_pati</strong>.
+        </p>
+
+        <div class="block-card">
+            <form th:action="@{/Rol/mail/{tipo}(tipo=${tipoSolicitud})}"
+                  th:object="${persona}"
+                  method="post">
+
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <label class="data-label" for="mail">Correo electrónico</label>
+                        <input type="email"
+                               id="mail"
+                               class="form-control"
+                               th:field="*{mail}"
+                               placeholder="correo@ejemplo.com"
+                               required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="data-label" for="contrasena">Contraseña</label>
+                        <input type="password"
+                               id="contrasena"
+                               class="form-control"
+                               th:field="*{contrasena}"
+                               placeholder="Introduce tu contraseña"
+                               required>
+                    </div>
+                </div>
+
+                <div class="alert alert-danger mt-4"
+                     th:if="${mensajeError != null}"
+                     th:text="${mensajeError}">
+                    Error
+                </div>
+
+                <div class="actions">
+                    <button type="submit" class="btn btn-primary">Continuar</button>
+
+                    <a class="btn btn-secondary"
+                       th:href="@{/Rol/solicitar/{tipo}(tipo=${tipoSolicitud})}">
+                        Volver
+                    </a>
+
+                    <a class="btn btn-outline-secondary"
+                       th:href="@{/}">
+                        Ir al inicio
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

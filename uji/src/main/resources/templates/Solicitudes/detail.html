@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalle de solicitud</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"/>
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #f4f7fb, #e9f0f8);
+            min-height: 100vh;
+        }
+
+        .detail-card {
+            max-width: 950px;
+            margin: 40px auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            padding: 2rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1f3b5b;
+        }
+
+        .section-subtitle {
+            color: #6c757d;
+            margin-bottom: 2rem;
+        }
+
+        .data-label {
+            font-weight: 600;
+            color: #1f3b5b;
+            margin-bottom: 0.25rem;
+        }
+
+        .data-value {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 0.8rem 1rem;
+            min-height: 48px;
+        }
+
+        .badge-estado {
+            font-size: 0.95rem;
+            padding: 0.5rem 0.8rem;
+            border-radius: 999px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="detail-card">
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <div>
+                <h1 class="section-title">Detalle de solicitud</h1>
+                <p class="section-subtitle mb-0">
+                    Información completa de la solicitud seleccionada
+                </p>
+            </div>
+
+            <div>
+                <span class="badge badge-estado text-bg-secondary"
+                      th:text="'ID ' + ${solicitud.idSolicitud}">
+                </span>
+            </div>
+        </div>
+
+        <div class="row g-4">
+
+            <div class="col-md-6">
+                <div class="data-label">ID de la solicitud</div>
+                <div class="data-value" th:text="${solicitud.idSolicitud}"></div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="data-label">Persona solicitante</div>
+                <div class="data-value"
+                     th:text="${solicitud.personaSolicitante != null ? solicitud.personaSolicitante : '-'}">
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="data-label">Categoría</div>
+                <div class="data-value" th:text="${solicitud.categoriaSolicitud}"></div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="data-label">Tipo de solicitud</div>
+                <div class="data-value" th:text="${solicitud.tipoSolicitud}"></div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="data-label">Estado</div>
+                <div class="data-value">
+                    <span th:if="${solicitud.estadoSolicitud != null}"
+                          th:text="${solicitud.estadoSolicitud}"
+                          th:classappend="${
+                              solicitud.estadoSolicitud.toString() == 'Pendiente' ? 'text-bg-warning' :
+                              (solicitud.estadoSolicitud.toString() == 'Aprobada' ? 'text-bg-success' :
+                              'text-bg-danger')
+                          }"
+                          class="badge badge-estado">
+                    </span>
+                    <span th:if="${solicitud.estadoSolicitud == null}">-</span>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="data-label">Técnico revisor</div>
+                <div class="data-value"
+                     th:text="${solicitud.tecnicoRevisor != null ? solicitud.tecnicoRevisor : '-'}">
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="data-label">Fecha de creación</div>
+                <div class="data-value"
+                     th:text="${solicitud.fechaCreacion != null ? #temporals.format(solicitud.fechaCreacion, 'dd/MM/yyyy') : '-'}">
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="data-label">Fecha de resolución</div>
+                <div class="data-value"
+                     th:text="${solicitud.fechaResolucion != null ? #temporals.format(solicitud.fechaResolucion, 'dd/MM/yyyy') : '-'}">
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="data-label">Mensaje de la solicitud</div>
+                <div class="data-value"
+                     th:text="${solicitud.mensajeSolicitud != null and !#strings.isEmpty(solicitud.mensajeSolicitud) ? solicitud.mensajeSolicitud : '-'}">
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="data-label">Motivo de resolución</div>
+                <div class="data-value"
+                     th:text="${solicitud.motivoResolucion != null and !#strings.isEmpty(solicitud.motivoResolucion) ? solicitud.motivoResolucion : '-'}">
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4 d-flex gap-2">
+            <a th:href="@{/Solicitudes/listId}" class="btn btn-secondary">Volver al listado</a>
+            <a th:href="@{/}" class="btn btn-outline-dark">Ir al inicio</a>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

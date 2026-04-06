@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Solicitud rol PapPati</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"/>
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #f4f7fb, #e9f0f8);
+            min-height: 100vh;
+        }
+
+        .edit-card {
+            max-width: 1100px;
+            margin: 40px auto;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.08);
+            padding: 2rem;
+        }
+
+        .section-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #1f3b5b;
+        }
+
+        .section-subtitle {
+            color: #6c757d;
+            margin-bottom: 2rem;
+        }
+
+        .block-card {
+            background: #f8fafc;
+            border: 1px solid #e9eef5;
+            border-radius: 18px;
+            padding: 1.4rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .block-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1f3b5b;
+            margin-bottom: 1.2rem;
+        }
+
+        .form-control, .form-select {
+            border-radius: 12px;
+        }
+
+        .role-badge {
+            background: #6c7a89;
+            color: white;
+            border-radius: 999px;
+            padding: 0.4rem 0.8rem;
+        }
+
+        .actions {
+            margin-top: 2rem;
+            display: flex;
+            gap: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <div class="edit-card">
+
+        <!-- HEADER -->
+        <div class="top-bar">
+            <h1 class="section-title">Solicitud rol PapPati</h1>
+            <span class="role-badge"
+                  th:text="'Persona ID ' + ${papPati.idPatPati}">
+            </span>
+        </div>
+
+        <p class="section-subtitle">
+            Completa la información para solicitar el rol PAP/PATI
+        </p>
+
+        <form th:object="${papPati}"
+              method="post"
+              th:action="@{/PapPati/create/{id}(id=${papPati.idPatPati})}">
+
+            <!-- OCULTOS -->
+            <input type="hidden" th:field="*{idPatPati}">
+            <input type="hidden" name="personaSolicitante" th:value="${solicitud.personaSolicitante}">
+            <input type="hidden" name="categoriaSolicitud" th:value="${solicitud.categoriaSolicitud}">
+            <input type="hidden" name="tipoSolicitud" th:value="${solicitud.tipoSolicitud}">
+            <input type="hidden" name="estadoSolicitud" th:value="${solicitud.estadoSolicitud}">
+
+            <!-- DATOS PAP PATI -->
+            <div class="block-card">
+                <div class="block-title">Datos del rol</div>
+
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+                        <label>Disponibilidad</label>
+                        <select class="form-select" th:field="*{disponibilidad}">
+                            <option th:each="d : ${T(es.uji.ei1027.ovi.modelo.PapPati.Disponibilidad).values()}"
+                                    th:value="${d}"
+                                    th:text="${d}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label>Experiencia</label>
+                        <input type="number" class="form-control"
+                               th:field="*{experiencia}" min="0">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label>Vehículo propio</label>
+                        <select class="form-select" th:field="*{vehiculoPropio}">
+                            <option th:value="true">Sí</option>
+                            <option th:value="false">No</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label>Carnet de conducir</label>
+                        <select class="form-select" th:field="*{carnetConducir}">
+                            <option th:value="true">Sí</option>
+                            <option th:value="false">No</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label>Fecha inicio</label>
+                        <input type="date" class="form-control"
+                               th:field="*{fechaInicioDisponibilidad}">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label>Fecha fin</label>
+                        <input type="date" class="form-control"
+                               th:field="*{fechaFinDisponibilidad}">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label>Centro social</label>
+                        <input type="text" class="form-control"
+                               th:field="*{centroSocial}">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label>URL CV</label>
+                        <input type="text" class="form-control"
+                               th:field="*{urlCV}">
+                    </div>
+
+                    <div class="col-12">
+                        <label>Descripción</label>
+                        <textarea class="form-control"
+                                  th:field="*{descripcionPerfil}"></textarea>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ESPECIALIDADES -->
+            <div class="block-card">
+                <div class="block-title">Especialidades</div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-2"
+                         th:each="esp : ${Especialidades}">
+
+                        <div class="form-check">
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   name="especialidadesSeleccionadas"
+                                   th:value="${esp}">
+
+                            <label class="form-check-label"
+                                   th:text="${esp}">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SOLICITUD -->
+            <div class="block-card">
+                <div class="block-title">Motivación</div>
+
+                <textarea class="form-control"
+                          name="mensajeSolicitud"
+                          placeholder="Motivo de la solicitud..."
+                          th:text="${solicitud.mensajeSolicitud}">
+                </textarea>
+            </div>
+
+            <!-- BOTONES -->
+            <div class="actions">
+                <button type="submit" class="btn btn-primary">
+                    Enviar solicitud
+                </button>
+
+                <a th:href="@{/}" class="btn btn-secondary">
+                    Cancelar
+                </a>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+</body>
+</html>
