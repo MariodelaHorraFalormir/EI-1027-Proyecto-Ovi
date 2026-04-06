@@ -1,10 +1,10 @@
 package es.uji.ei1027.ovi.modelo.Persona;
 
 import es.uji.ei1027.ovi.modelo.OviUser.OviUser;
-import es.uji.ei1027.ovi.modelo.Persona.Roles.PatPati;
+import es.uji.ei1027.ovi.modelo.PapPati.PapPati;
 
 public class PersonaFormulario {
-    private PatPati patPati;
+    private PapPati patPati;
     private OviUser oviUser;
     private Persona persona;
     private int numeroRoles ;
@@ -12,11 +12,11 @@ public class PersonaFormulario {
         this.numeroRoles = 0;
     }
 
-    public PatPati getPatPati() {
+    public PapPati getPatPati() {
         return patPati;
     }
 
-    public void setPatPati(PatPati patPati) {
+    public void setPatPati(PapPati patPati) {
         if (this.patPati != null) {
             numeroRoles +=1;
         }

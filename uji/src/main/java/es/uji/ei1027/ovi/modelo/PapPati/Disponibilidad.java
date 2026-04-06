@@ -1,4 +1,4 @@
-package es.uji.ei1027.ovi.modelo.Persona.Roles;
+package es.uji.ei1027.ovi.modelo.PapPati;
 
 public enum Disponibilidad {
     Total,

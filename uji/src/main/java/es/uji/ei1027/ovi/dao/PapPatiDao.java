@@ -1,6 +1,7 @@
 package es.uji.ei1027.ovi.dao;
 
-import es.uji.ei1027.ovi.modelo.Persona.Roles.PatPati;
+import es.uji.ei1027.ovi.RowMapper.PapPatiRowMapper;
+import es.uji.ei1027.ovi.modelo.PapPati.PapPati;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -17,22 +18,70 @@ public class PapPatiDao {
         jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    public PatPati getPapPati(int id) {
+    public PapPati getPapPati(int id) {
         try {
-           // return jdbcTemplate.queryForObject("SELECT * FROM pat_pati WHERE id = ? ", new PatPatiRowMapper(), id);
-            return null;
+           return jdbcTemplate.queryForObject("SELECT * FROM pap_pati WHERE id = ? ", new PapPatiRowMapper(), id);
+
 
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
     }
+    public void delete(int id) {
+        String sql = "DELETE FROM pap_pati WHERE id = ?";
+        jdbcTemplate.update(sql, id);
+    }
+    public void update(PapPati papPati) {
 
-    public void updatePatPati(PatPati patPati) {
-        jdbcTemplate.update(
-                "UPDATE pat_pati SET disponibilidad = ?::disponibilidad_enum WHERE id = ?",
-                patPati.getDisponibilidad().getTexto(),
-                patPati.getIdPatPati()
+        String sql = "UPDATE pap_pati SET " +
+                "disponibilidad = ?::disponibilidad_enum, " +
+                "fecha_inicio_disponible = ?, " +
+                "fecha_fin_disponible = ?, " +
+                "experiencia = ?, " +
+                "vehiculo_propio = ?, " +
+                "carnet_conducir = ?, " +
+                "url_cv = ?, " +
+                "descripcion_perfil = ?, " +
+                "centro_social_referencia = ?, " +
+                "estado = ?::estado_rol_enum " +
+                "WHERE id = ?";
+
+        jdbcTemplate.update(sql,
+                papPati.getDisponibilidad().getTexto(),
+                papPati.getFechaInicioDisponibilidad(),
+                papPati.getFechaFinDisponibilidad(),
+                papPati.getExperiencia(),
+                papPati.getVehiculoPropio(),
+                papPati.getCarnetConducir(),
+                papPati.getUrlCV(),
+                papPati.getDescripcionPerfil(),
+                papPati.getCentroSocial(),
+                papPati.getEstadoRol().getTexto(),
+                papPati.getIdPatPati()
         );
+    }
+
+
+    public void crear(PapPati papPati) {
+
+        String sql = "INSERT INTO pap_pati " +
+                "(id, disponibilidad, fecha_inicio_disponible, fecha_fin_disponible, experiencia, " +
+                "vehiculo_propio, carnet_conducir, url_cv, descripcion_perfil, centro_social_referencia ) " +
+                "VALUES (?, ?::disponibilidad_enum, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        jdbcTemplate.update(sql,
+                papPati.getIdPatPati(),
+                papPati.getDisponibilidad().getTexto(),
+                papPati.getFechaInicioDisponibilidad(),
+                papPati.getFechaFinDisponibilidad() ,
+                papPati.getExperiencia(),
+                papPati.getVehiculoPropio(),
+                papPati.getCarnetConducir(),
+                papPati.getUrlCV(),
+                papPati.getDescripcionPerfil(),
+                papPati.getCentroSocial()
+        );
+
     }
 
 }

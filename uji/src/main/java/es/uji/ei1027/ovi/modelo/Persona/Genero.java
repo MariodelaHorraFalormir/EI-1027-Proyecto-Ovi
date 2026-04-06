@@ -1,7 +1,5 @@
 package es.uji.ei1027.ovi.modelo.Persona;
 
-import es.uji.ei1027.ovi.modelo.Persona.Roles.Disponibilidad;
-
 public enum Genero {
     Hombre,
     Mujer,
