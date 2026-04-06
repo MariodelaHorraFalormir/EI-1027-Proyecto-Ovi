@@ -1,8 +1,5 @@
 package es.uji.ei1027.ovi.dao;
 
-import es.uji.ei1027.ovi.RowMapper.OviUserRowMapper;
-import es.uji.ei1027.ovi.RowMapper.PatPatiRowMapper;
-import es.uji.ei1027.ovi.modelo.Persona.Roles.OviUser;
 import es.uji.ei1027.ovi.modelo.Persona.Roles.PatPati;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -22,7 +19,8 @@ public class PapPatiDao {
 
     public PatPati getPapPati(int id) {
         try {
-            return jdbcTemplate.queryForObject("SELECT * FROM pat_pati WHERE id = ? ", new PatPatiRowMapper(), id);
+           // return jdbcTemplate.queryForObject("SELECT * FROM pat_pati WHERE id = ? ", new PatPatiRowMapper(), id);
+            return null;
 
         } catch (EmptyResultDataAccessException e) {
             return null;
@@ -36,10 +34,5 @@ public class PapPatiDao {
                 patPati.getIdPatPati()
         );
     }
-    public void addOviUser(int id) {
-        jdbcTemplate.update(
-                "INSERT INTO ovi_user (id_persona) VALUES (?)",
-                id
-        );
-    }
+
 }

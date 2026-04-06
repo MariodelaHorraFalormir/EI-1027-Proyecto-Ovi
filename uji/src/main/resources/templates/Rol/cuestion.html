@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Continuar registro</title>
+    <title>Solicitud de rol</title>
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">
 </head>
@@ -13,17 +13,26 @@
         <div class="col-md-8 col-lg-6">
             <div class="card shadow-sm">
                 <div class="card-body p-4 text-center">
-                    <h1 class="mb-3">Continuar como usuario</h1>
+                    <h1 class="mb-3">Solicitud de rol</h1>
+
+                    <p class="text-muted mb-2">
+                        Estás solicitando el rol:
+                    </p>
+
+                    <h4 class="mb-4" th:text="${textoRol}"></h4>
+
                     <p class="text-muted mb-4">
-                        Has seleccionado un rol. Indica si ya formas parte de la OVI o si necesitas registrarte.
+                        Indica si ya formas parte de la OVI o si necesitas registrarte antes.
                     </p>
 
                     <div class="d-grid gap-3">
-                        <a th:href="@{/Persona/solicitar-rol-oviuser}" class="btn btn-primary btn-lg">
+                        <a th:href="@{/Rol/mail/{tipo}(tipo=${textoRol})}"
+                           class="btn btn-primary btn-lg">
                             Ya estoy registrado en la OVI
                         </a>
 
-                        <a th:href="@{/Persona/registro}" class="btn btn-outline-secondary btn-lg">
+                        <a th:href="@{/Persona/registro}"
+                           class="btn btn-outline-secondary btn-lg">
                             No estoy registrado en la OVI
                         </a>
                     </div>

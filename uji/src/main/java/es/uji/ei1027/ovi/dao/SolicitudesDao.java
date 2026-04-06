@@ -11,7 +11,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +40,21 @@ public class SolicitudesDao {
             return jdbcTemplate.queryForObject("SELECT * FROM solicitud WHERE id = ? ", new SolicitudRowMapper(), id);
         }catch (EmptyResultDataAccessException e){return null;}
     }
+    public void createSolicitud(Solicitud solicitud) {
+        String sql = "INSERT INTO solicitud " +
+                "(persona_solicitante, categoria, detalle, estado,mensaje_solicitante) " +
+                "VALUES (?, ?::categoria_solicitud_enum, ?::detalle_solicitud_enum, ?::estado_solicitud_enum, ?)";
 
+        jdbcTemplate.update(
+                sql,
+                solicitud.getPersonaSolicitante(),
+                solicitud.getCategoriaSolicitud().getTexto(),
+                solicitud.getTipoSolicitud().getTexto(),
+                solicitud.getEstadoSolicitud().getTexto(),
+                solicitud.getMensajeSolicitud()
+        );
+
+    }
     public void updateSolicitud(int idOriginal, Solicitud solicitud) {
 
         String sql = """
@@ -75,7 +91,7 @@ public class SolicitudesDao {
                 "UPDATE solicitud " +
                 "SET estado = ?::estado_solicitud_enum,tecnico_revisor = ?, fecha_resolucion = ?" +
                 " WHERE id = ?";
-        jdbcTemplate.update(sql, EstadoSolicitud.Aprobada.toString(),1, LocalDate.now(), idOriginal);
+        jdbcTemplate.update(sql, EstadoSolicitud.Aprobada.toString(),1, LocalDateTime.now(), idOriginal);
 
 
     }
@@ -85,7 +101,7 @@ public class SolicitudesDao {
                 "UPDATE solicitud " +
                 "SET estado = ?::estado_solicitud_enum,tecnico_revisor = ?, fecha_resolucion = ? ,motivo_resolucion =? " +
                 " WHERE id = ?";
-        jdbcTemplate.update(sql, EstadoSolicitud.Rechazada.toString(),1, LocalDate.now(),"Rechazo Rapido", idOriginal);
+        jdbcTemplate.update(sql, EstadoSolicitud.Rechazada.toString(),1, LocalDateTime.now(),"Rechazo Rapido", idOriginal);
 
 
     }

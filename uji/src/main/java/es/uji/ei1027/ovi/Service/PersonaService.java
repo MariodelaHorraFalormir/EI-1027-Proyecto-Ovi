@@ -3,10 +3,9 @@ package es.uji.ei1027.ovi.Service;
 import es.uji.ei1027.ovi.dao.OviUserDao;
 import es.uji.ei1027.ovi.dao.PapPatiDao;
 import es.uji.ei1027.ovi.dao.PersonaDao;
+import es.uji.ei1027.ovi.modelo.OviUser.OviUser;
 import es.uji.ei1027.ovi.modelo.Persona.Persona;
 import es.uji.ei1027.ovi.modelo.Persona.PersonaFormulario;
-import es.uji.ei1027.ovi.modelo.Persona.Roles.OviUser;
-import es.uji.ei1027.ovi.modelo.Persona.Roles.PatPati;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,7 +46,7 @@ public class PersonaService {
         personaDao.updatePersona(formulario.getPersona());
 
         if (formulario.getPatPati() != null) {
-            patPatiDao.updatePatPati(formulario.getPatPati());
+
         }
 
         if (formulario.getOviUser() != null) {
@@ -58,7 +57,6 @@ public class PersonaService {
     @Transactional
     public void registrarOviUser(PersonaFormulario formulario) {
         Persona persona = formulario.getPersona();
-        OviUser oviUser = formulario.getOviUser();
 
         if (personaDao.existeMail(persona.getMail())) {
             throw new IllegalArgumentException("Ya existe una persona registrada con ese correo.");
@@ -68,7 +66,6 @@ public class PersonaService {
         persona.setFechaBaja(null);
 
         int idPersona = personaDao.addPersonaYDevolverId(persona);
-        oviUserDao.addOviUser(idPersona);
     }
     @Transactional
     public String asignarRolOviUserPorMail(String mail) {
@@ -82,7 +79,11 @@ public class PersonaService {
             return "La persona ya tiene el rol OVI user.";
         }
 
-        oviUserDao.addOviUser(idPersona);
         return "Rol OVI user asignado correctamente.";
+    }
+
+    public Integer getIdPersonaByMail(String mail) {
+        return  personaDao.getIdPersonaByMail(mail);
+
     }
 }

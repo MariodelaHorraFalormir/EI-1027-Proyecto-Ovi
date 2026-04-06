@@ -43,7 +43,7 @@ public class PersonaDao {
 
     public void updatePersona(Persona persona) {
         jdbcTemplate.update(
-                "UPDATE persona SET nombre = ?, apellidos = ?, mail = ?, genero = ?::genero_enum, telefono = ?, direccion = ?, fecha_nacimiento = ?, fecha_alta = ?, fecha_baja = ? WHERE id = ?",
+                "UPDATE persona SET nombre = ?, apellidos = ?, mail = ?, genero = ?::genero_enum, telefono = ?, direccion = ?, fecha_nacimiento = ?, fecha_alta = ?, fecha_baja = ? ,contrasena = ? , dni = ?  WHERE id = ?",
                 persona.getNombre(),
                 persona.getApellidos(),
                 persona.getMail(),
@@ -53,25 +53,30 @@ public class PersonaDao {
                 persona.getFechaNacimiento(),
                 persona.getFechaAlta(),
                 persona.getFechaBaja(),
+                persona.getContrasena(),
+                persona.getDni(),
                 persona.getIdPersona()
+
         );
 
     }
     public int addPersonaYDevolverId(Persona persona) {
         return jdbcTemplate.queryForObject(
-                "INSERT INTO persona (nombre, apellidos, mail, telefono, direccion, genero, pais, fecha_nacimiento, fecha_alta, fecha_baja) " +
-                        "VALUES (?, ?, ?, ?, ?, CAST(? AS genero_enum), ?, ?, ?, ?) RETURNING id",
+                "INSERT INTO persona (nombre, apellidos, mail, telefono, direccion, genero, pais, fecha_nacimiento, fecha_alta, fecha_baja,contrasena,dni) " +
+                        "VALUES (?, ?, ?, ?, ?, CAST(? AS genero_enum), ?, ?, ?, ?,?,?) RETURNING id",
                 Integer.class,
                 persona.getNombre(),
                 persona.getApellidos(),
                 persona.getMail(),
                 persona.getTelefono(),
                 persona.getDireccion(),
-                persona.getGenero().toString(),
+                persona.getGenero().getTexto(),
                 persona.getPais(),
                 persona.getFechaNacimiento(),
                 persona.getFechaAlta(),
-                persona.getFechaBaja()
+                persona.getFechaBaja(),
+                persona.getContrasena(),
+                persona.getDni()
         );
     }
 

@@ -1,6 +1,6 @@
 package es.uji.ei1027.ovi.modelo.Persona;
 
-import es.uji.ei1027.ovi.modelo.Persona.Roles.OviUser;
+import es.uji.ei1027.ovi.modelo.OviUser.OviUser;
 import es.uji.ei1027.ovi.modelo.Persona.Roles.PatPati;
 
 public class PersonaFormulario {

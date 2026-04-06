@@ -111,17 +111,6 @@
                 </div>
             </div>
 
-            <div class="col-md-4">
-                <div class="card card-option">
-                    <div class="card-body d-flex flex-column">
-                        <h2 class="section-title">Cuestión</h2>
-                        <p class="section-text">
-                            Acceso a la vista o apartado de cuestión para pruebas o funcionalidades futuras.
-                        </p>
-                        <a href="Persona/cuestion" class="btn btn-warning mt-auto">Abrir cuestión</a>
-                    </div>
-                </div>
-            </div>
 
 
 
@@ -133,6 +122,33 @@
                           acceso la parte de gestion de solicitudes
                         </p>
                         <a href="Solicitudes/listId" class="btn btn-warning mt-auto">Ver solicitudes</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-option">
+                    <div class="card-body d-flex flex-column">
+                        <h2 class="section-title">Solicitar rol OVI User</h2>
+                        <p class="section-text">
+                            Iniciar el proceso para solicitar el rol de OVI User dentro de la plataforma.
+                        </p>
+                        <a th:href="@{/Rol/solicitar/Ovi_user}" class="btn btn-info mt-auto">
+                            Solicitar OVI User
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card card-option">
+                    <div class="card-body d-flex flex-column">
+                        <h2 class="section-title">Solicitar rol Pap Pati</h2>
+                        <p class="section-text">
+                            Iniciar el proceso para solicitar el rol de Pap Pati dentro de la plataforma.
+                        </p>
+                        <a th:href="@{/Rol/solicitar/Pap_pati}" class="btn btn-dark mt-auto">
+                            Solicitar Pap Pati
+                        </a>
                     </div>
                 </div>
             </div>
