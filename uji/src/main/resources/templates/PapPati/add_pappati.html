@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <title>Añadir PAP/PATI</title>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" />
+</head>
+<body>
+<main class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h2 class="h4 mb-0">Registro de Asistente Personal (PAP/PATI)</h2>
+        </div>
+        <div class="card-body">
+            <form action="#" th:action="@{/pappati/add}" th:object="${pappati}" method="post">
+                <div class="row">
+                    <h5 class="mb-3">Datos Personales</h5>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Nombre *</label>
+                        <input type="text" class="form-control" th:field="*{nombre}"
+                               required pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+"
+                               title="El nombre solo debe contener letras" maxlength="100"/>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Apellidos *</label>
+                        <input type="text" class="form-control" th:field="*{apellidos}"
+                               required pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" maxlength="100"/>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Correo Electrónico *</label>
+                        <input type="email" class="form-control" th:field="*{mail}" required maxlength="255"/>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Teléfono *</label>
+                        <input type="tel" class="form-control" th:field="*{telefono}"
+                               required pattern="[0-9]{9}" title="Debe ser un número de 9 dígitos"/>
+                    </div>
+
+                    <h5 class="mt-4 mb-3">Datos Profesionales</h5>
+
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Disponibilidad *</label>
+                        <select class="form-select" th:field="*{disponibilidad}" required>
+                            <option value="" disabled selected>Seleccione una opción...</option>
+                            <option value="Total">Total</option>
+                            <option value="Parcial">Parcial</option>
+                            <option value="No disponible">No disponible</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Experiencia (en meses) *</label>
+                        <input type="number" class="form-control" th:field="*{experiencia_meses}"
+                               required min="0" max="600"/>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Formación Principal *</label>
+                        <input type="text" class="form-control" th:field="*{formacion_principal}"
+                               required minlength="5" maxlength="255"
+                               title="Indique su formación principal (mínimo 5 caracteres)"/>
+                    </div>
+
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label">Enlace al Currículum Vitae (URL) *</label>
+                        <input type="url" class="form-control" th:field="*{url_cv}"
+                               required placeholder="https://..." />
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">Registrar PAP/PATI</button>
+                    <a th:href="@{/}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+</body>
+</html>
