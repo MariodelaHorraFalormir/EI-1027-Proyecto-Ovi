@@ -1,0 +1,32 @@
+Index: uji/src/main/java/es/uji/ei1027/ovi/modelo/Persona/Roles/OviUser.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package es.uji.ei1027.ovi.modelo.Persona.Roles;\r\n\r\npublic class OviUser {\r\n    private int id;\r\n\r\n    public int getId() {\r\n        return id;\r\n    }\r\n\r\n    public void setId(int id) {\r\n        this.id = id;\r\n    }\r\n}\r\n
+===================================================================
+diff --git a/uji/src/main/java/es/uji/ei1027/ovi/modelo/Persona/Roles/OviUser.java b/uji/src/main/java/es/uji/ei1027/ovi/modelo/Persona/Roles/OviUser.java
+--- a/uji/src/main/java/es/uji/ei1027/ovi/modelo/Persona/Roles/OviUser.java	(revision 571c38455336d37fe23b9d9b760cfd0ee5c57798)
++++ b/uji/src/main/java/es/uji/ei1027/ovi/modelo/Persona/Roles/OviUser.java	(date 1777024251760)
+@@ -1,8 +1,15 @@
+ package es.uji.ei1027.ovi.modelo.Persona.Roles;
+ 
+-public class OviUser {
++import es.uji.ei1027.ovi.modelo.Persona.Persona;
++
++public class OviUser extends Persona {
++
+     private int id;
+ 
++    public OviUser() {
++        super();
++    }
++
+     public int getId() {
+         return id;
+     }
+@@ -10,4 +17,4 @@
+     public void setId(int id) {
+         this.id = id;
+     }
+-}
++}
+\ No newline at end of file
