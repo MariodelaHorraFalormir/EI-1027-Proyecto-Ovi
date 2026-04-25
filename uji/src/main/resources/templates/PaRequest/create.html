@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>SgOVI - Solicitud de Asistencia Personal</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"/>
+    <style>
+        body { background: linear-gradient(135deg, #f4f7fb, #e9f0f8); min-height: 100vh; }
+        .edit-card { max-width: 900px; margin: 40px auto; background: white; border-radius: 24px; box-shadow: 0 12px 35px rgba(0,0,0,0.08); padding: 2.5rem; }
+        .section-title { font-size: 2rem; font-weight: 700; color: #1f3b5b; }
+        .block-card { background: #f8fafc; border: 1px solid #e9eef5; border-radius: 18px; padding: 1.5rem; margin-bottom: 1.5rem; }
+        .block-title { font-size: 1.1rem; font-weight: 600; color: #4a5568; margin-bottom: 1rem; border-bottom: 2px solid #edf2f7; padding-bottom: 0.5rem; }
+        .data-label { font-weight: 600; color: #718096; font-size: 0.9rem; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="edit-card">
+        <div class="text-center mb-4">
+            <h2 class="section-title">Nueva Solicitud de Asistente Personal</h2>
+            <p class="text-muted">Por favor, rellena los motivos de tu solicitud para que el equipo técnico pueda valorarla.</p>
+        </div>
+
+        <form th:action="@{/PaRequest/create/{id}(id=${paRequest.oviUser})}"
+              th:object="${paRequest}"
+              method="post">
+
+            <input type="hidden" name="tipoSolicitud" value="Pa_request" />
+            <input type="hidden" name="categoriaSolicitud" value="Rol" />
+            <input type="hidden" name="estadoSolicitud" value="Pendiente" />
+
+            <div class="block-card">
+                <div class="block-title">Información de la Solicitud</div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="data-label">ID Usuario OVI:</label>
+                        <p class="fw-bold" th:text="*{oviUser}"></p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="data-label">Fecha de creación:</label>
+                        <p class="fw-bold" th:text="${#temporals.format(paRequest.fechaCreacion, 'dd/MM/yyyy')}"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="block-card">
+                <div class="block-title">Detalles de la necesidad</div>
+                <div class="mb-3">
+                    <label for="mensajeSolicitud" class="form-label fw-bold">Describe brevemente por qué necesitas un Asistente Personal:</label>
+                    <textarea id="mensajeSolicitud"
+                              name="mensajeSolicitud"
+                              class="form-control"
+                              rows="5"
+                              placeholder="Ejemplo: Necesito apoyo para movilidad en el entorno universitario y acompañamiento en gestiones diarias..."
+                              required></textarea>
+                </div>
+            </div>
+
+            <div class="d-flex gap-3 justify-content-end mt-4">
+                <a th:href="@{/}" class="btn btn-outline-secondary px-4">Cancelar</a>
+                <button type="submit" class="btn btn-primary px-5">Enviar Solicitud</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

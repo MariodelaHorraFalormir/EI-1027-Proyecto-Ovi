@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.Date;
-import java.time.LocalDate;
+import java.util.List;
 
 @Repository
 public class PaRequestDao {
@@ -22,22 +22,29 @@ public class PaRequestDao {
     }
 
     public void addPaRequest(PaRequest paRequest) {
-        LocalDate fechaResolucion;
-        if (paRequest.getFechaResolucion() != null) {
-             fechaResolucion = paRequest.getFechaResolucion();
-        }else{fechaResolucion = null;}
+        // 1. Calculamos el ID manualmente para evitar el conflicto de duplicados
+        Integer maxId = jdbcTemplate.queryForObject("SELECT MAX(id) FROM pa_request", Integer.class);
+        int nextId = (maxId == null) ? 1 : maxId + 1;
+
+        // 2. Usamos OVERRIDING SYSTEM VALUE para que Postgres nos deje meter el ID manual
+        // a pesar de ser una columna GENERATED ALWAYS
+        String sql = "INSERT INTO pa_request (id, status, fecha_creacion, fecha_resolucion, ovi_user) " +
+                "OVERRIDING SYSTEM VALUE " +
+                "VALUES (?, ?::status_pa_request_enum, ?, ?, ?)";
+
         jdbcTemplate.update(
-                "INSERT INTO pa_request (status, fecha_creacion, fecha_resolucion, ovi_user) VALUES (?, ?, ?, ?)",
+                sql,
+                nextId,
                 paRequest.getStatus().getTexto(),
                 Date.valueOf(paRequest.getFechaCreacion()),
-                fechaResolucion,
+                paRequest.getFechaResolucion() != null ? Date.valueOf(paRequest.getFechaResolucion()) : null,
                 paRequest.getOviUser()
         );
     }
 
     public void updatePaRequest(PaRequest paRequest) {
         jdbcTemplate.update(
-                "UPDATE pa_request SET status = ?, fecha_creacion = ?, fecha_resolucion = ?, ovi_user = ? WHERE id = ?",
+                "UPDATE pa_request SET status = ?::status_pa_request_enum, fecha_creacion = ?, fecha_resolucion = ?, ovi_user = ? WHERE id = ?",
                 paRequest.getStatus().getTexto(),
                 Date.valueOf(paRequest.getFechaCreacion()),
                 paRequest.getFechaResolucion() != null ? Date.valueOf(paRequest.getFechaResolucion()) : null,
@@ -62,5 +69,7 @@ public class PaRequestDao {
         }
     }
 
-
+    public List<PaRequest> getPaRequests() {
+        return jdbcTemplate.query("SELECT * FROM pa_request", new PaRequestRowMapper());
+    }
 }

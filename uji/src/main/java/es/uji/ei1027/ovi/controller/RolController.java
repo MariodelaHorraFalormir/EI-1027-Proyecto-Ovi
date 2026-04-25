@@ -73,6 +73,8 @@ public class RolController {
                 return "redirect:/OviUser/create/" + idPersona;
             case Pap_pati:
                 return "redirect:/PapPati/create/" + idPersona;
+            case Pa_request:
+                return "redirect:/PaRequest/create/" + idPersona; // <--- AÑADIR ESTO
             default:
                 return "redirect:/";
         }
@@ -80,6 +82,7 @@ public class RolController {
 
     private boolean esRolValido(TipoSolicitud tipoSolicitud) {
         return tipoSolicitud == TipoSolicitud.Ovi_user ||
-                tipoSolicitud == TipoSolicitud.Pap_pati;
+                tipoSolicitud == TipoSolicitud.Pap_pati ||
+                tipoSolicitud == TipoSolicitud.Pa_request;
     }
 }
