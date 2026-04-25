@@ -1,6 +1,7 @@
 package es.uji.ei1027.ovi.controller;
 
 import es.uji.ei1027.ovi.Service.PersonaService;
+import es.uji.ei1027.ovi.Validadores.PersonaValidator;
 import es.uji.ei1027.ovi.dao.PersonaDao;
 import es.uji.ei1027.ovi.modelo.OviUser.OviUser;
 import es.uji.ei1027.ovi.modelo.Persona.Persona;
@@ -75,7 +76,8 @@ public class PersonaController {
             @ModelAttribute("persona") Persona persona,
             BindingResult bindingResult,
             Model model) {
-
+        PersonaValidator validator = new PersonaValidator();
+        validator.validate(persona, bindingResult);
         if (bindingResult.hasErrors()) {
             return "Persona/registro";
         }
