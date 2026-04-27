@@ -37,8 +37,12 @@ public class PersonaService {
     public PersonaFormulario getPersonaFormulario(int id) {
         PersonaFormulario formulario = new PersonaFormulario();
         formulario.setPersona(personaDao.getPersona(id));
-        formulario.setPatPati(patPatiDao.getPapPati(id));
-        formulario.setOviUser(oviUserDao.getOviUser(id));
+        if (patPatiDao.existePapPati(id)){
+            formulario.setPatPati(patPatiDao.getPapPati(id));
+        }
+        if (oviUserDao.existeOviUser(id)){
+            formulario.setOviUser(oviUserDao.getOviUser(id));
+        }
         return formulario;
     }
 

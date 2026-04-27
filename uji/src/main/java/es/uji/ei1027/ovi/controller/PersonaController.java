@@ -49,7 +49,6 @@ public class PersonaController {
         PersonaFormulario formulario = personaService.getPersonaFormulario(id);
         model.addAttribute("personaFormulario", formulario);
         return "Persona/update";
-        //
 
     }
 

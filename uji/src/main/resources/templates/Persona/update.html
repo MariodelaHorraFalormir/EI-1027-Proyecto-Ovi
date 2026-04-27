@@ -267,7 +267,50 @@
                 </div>
             </div>
 
+            <!-- ROLES ASOCIADOS -->
+            <div class="block-card"
+                 th:if="${personaFormulario.oviUser != null or personaFormulario.patPati != null}">
 
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                    <div>
+                        <div class="block-title mb-1">Roles asociados</div>
+                        <div class="text-muted-small">
+                            Esta persona tiene roles específicos. Puedes editar la información propia de cada rol.
+                        </div>
+                    </div>
+
+                    <span class="role-badge">Roles</span>
+                </div>
+
+                <div class="d-flex gap-3 flex-wrap">
+
+                    <!-- Botón editar OVI User -->
+                    <a th:if="${personaFormulario.oviUser != null}"
+                       th:href="@{/OviUser/update/{id}(id=${personaFormulario.persona.idPersona})}"
+                       class="btn btn-primary">
+                        Editar OVI User
+                    </a>
+
+                    <!-- Botón editar PAP/PATI -->
+                    <a th:if="${personaFormulario.patPati != null}"
+                       th:href="@{/PapPati/update/{id}(id=${personaFormulario.persona.idPersona})}"
+                       class="btn btn-success">
+                        Editar PAP/PATI
+                    </a>
+
+                </div>
+            </div>
+
+            <!-- SIN ROLES ASOCIADOS -->
+            <div class="block-card"
+                 th:if="${personaFormulario.oviUser == null and personaFormulario.patPati == null}">
+
+                <div class="block-title mb-1">Roles asociados</div>
+
+                <div class="text-muted-small">
+                    Esta persona no tiene actualmente roles OVI User ni PAP/PATI asociados.
+                </div>
+            </div>
 
             <div class="actions">
                 <button type="submit" class="btn btn-primary">Guardar cambios</button>

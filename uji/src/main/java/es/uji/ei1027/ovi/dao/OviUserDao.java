@@ -52,7 +52,7 @@ public class OviUserDao {
                 Integer.class,
                 idPersona
         );
-        return count != null && count > 0;
+        return count != null ;
     }
 
 

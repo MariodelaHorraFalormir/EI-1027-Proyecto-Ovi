@@ -83,5 +83,13 @@ public class PapPatiDao {
         );
 
     }
+    public boolean existePapPati(int idPersona) {
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM pap_pati WHERE id = ?",
+                Integer.class,
+                idPersona
+        );
+        return count != null;
+    }
 
 }
