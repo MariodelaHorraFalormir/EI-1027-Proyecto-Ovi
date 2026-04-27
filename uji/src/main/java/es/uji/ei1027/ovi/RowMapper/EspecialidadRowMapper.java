@@ -13,11 +13,9 @@ public class EspecialidadRowMapper implements RowMapper<Especialidad> {
     @Override
     public Especialidad mapRow(ResultSet rs, int rowNum) throws SQLException {
         Especialidad especialidad = new Especialidad();
-
         especialidad.setIdEspecialidad(rs.getInt("id"));
         especialidad.setIdPapPati(rs.getInt("pap_pati"));
         especialidad.setDiversidadFuncional(TipoDiversidadFuncional.fromString(rs.getString("especialidad")));
-
         return especialidad;
     }
 }

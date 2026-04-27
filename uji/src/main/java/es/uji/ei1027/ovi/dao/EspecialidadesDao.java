@@ -1,5 +1,7 @@
 package es.uji.ei1027.ovi.dao;
 
+import es.uji.ei1027.ovi.RowMapper.EspecialidadRowMapper;
+import es.uji.ei1027.ovi.modelo.PapPati.Especialidad;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -28,11 +30,16 @@ public class EspecialidadesDao {
 
         jdbcTemplate.update(sql, idPapPati, especialidad);
     }
-    public List<String> getEspecialidades(int idPapPati) {
+    public List<Especialidad> getEspecialidades(int idPapPati) {
 
-        String sql = "SELECT especialidad FROM especialidad WHERE pap_pati = ?";
+        String sql = "SELECT * FROM especialidad WHERE pap_pati = ?";
 
-        return jdbcTemplate.queryForList(sql, String.class, idPapPati);
+        return jdbcTemplate.query(sql, new EspecialidadRowMapper(), idPapPati);
+    }
+    public void  deleteAllbyId(int idPapPati) {
+        String sql = "DELETE FROM especialidad " +
+                "WHERE pap_pati = ? ";
+        jdbcTemplate.update(sql, idPapPati);
     }
 
 }

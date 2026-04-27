@@ -6,7 +6,9 @@ import es.uji.ei1027.ovi.dao.PapPatiDao;
 import es.uji.ei1027.ovi.dao.SolicitudesDao;
 import es.uji.ei1027.ovi.modelo.OviUser.OviUser;
 import es.uji.ei1027.ovi.modelo.OviUser.TipoDiversidadFuncional;
+import es.uji.ei1027.ovi.modelo.PapPati.Especialidad;
 import es.uji.ei1027.ovi.modelo.PapPati.PapPati;
+import es.uji.ei1027.ovi.modelo.Persona.PersonaFormulario;
 import es.uji.ei1027.ovi.modelo.Solicitud.CategoriaSolicitud;
 import es.uji.ei1027.ovi.modelo.Solicitud.EstadoSolicitud;
 import es.uji.ei1027.ovi.modelo.Solicitud.Solicitud;
@@ -17,6 +19,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -44,6 +47,7 @@ public class PapPatiController {
         model.addAttribute("papPati", papPati);
         model.addAttribute("solicitud", solicitud);
         model.addAttribute("Especialidades", TipoDiversidadFuncional.getLista());
+        model.addAttribute("especialidadesSeleccionadas", List.of());
         return "PapPati/create";
     }
     @PostMapping("/create/{id}")
@@ -56,9 +60,11 @@ public class PapPatiController {
             return "PapPati/create";
         }
        // try {
-            papPatiDao.crear(papPati);
             solicitudesDao.createSolicitud(solicitud);
-            if (papPati.getEspecialidades() != null) {
+            papPatiDao.crear(papPati);
+
+            //esto se puede extraer al dao mejor
+            if (especialidades != null) {
                 for (String esp : especialidades) {
                     especialidadesDao.addEspecialidad(id, esp);
                 }
@@ -72,4 +78,41 @@ public class PapPatiController {
 
         return "redirect:/";
     }
+    @RequestMapping(value = "/update/{id}",method = RequestMethod.GET)
+    public String editPersona(Model model, @PathVariable int id) {
+        PapPati papPati = papPatiDao.getPapPati(id);
+        //esto lo podria extraer tambien
+        List<String> especialidadesSeleccionadas = new ArrayList<>();
+
+        if (papPati.getEspecialidades() != null) {
+            for (Especialidad especialidad : papPati.getEspecialidades()) {
+                especialidadesSeleccionadas.add(especialidad.getDiversidadFuncional().getTexto());
+            }
+        }
+
+        model.addAttribute("papPati", papPati);
+        model.addAttribute("Especialidades", TipoDiversidadFuncional.getLista());
+        model.addAttribute("especialidadesSeleccionadas",especialidadesSeleccionadas);
+        return "PapPati/update";
+
+    }
+    @PostMapping(value = "/update/{id}")
+    public String procesarActualizarPapPati(
+            @PathVariable int id,
+            @ModelAttribute("papPati") PapPati papPati,
+            @RequestParam(value = "especialidadesSeleccionadas", required = false)
+            List<String> especialidadesSeleccionadas) {
+        especialidadesDao.deleteAllbyId(papPati.getIdPatPati());
+        //esto se puede extraer al dao mejor
+        if (especialidadesSeleccionadas != null) {
+            for (String esp : especialidadesSeleccionadas) {
+                especialidadesDao.addEspecialidad(id, esp);
+            }
+        }
+
+        papPatiDao.update(papPati);
+
+        return "redirect:/Persona/update/" + id;
+    }
+
 }

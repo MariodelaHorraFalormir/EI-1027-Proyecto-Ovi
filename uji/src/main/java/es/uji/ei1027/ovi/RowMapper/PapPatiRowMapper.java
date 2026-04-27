@@ -1,5 +1,6 @@
 package es.uji.ei1027.ovi.RowMapper;
 
+import es.uji.ei1027.ovi.dao.EspecialidadesDao;
 import es.uji.ei1027.ovi.modelo.PapPati.Disponibilidad;
 import es.uji.ei1027.ovi.modelo.PapPati.PapPati;
 import es.uji.ei1027.ovi.modelo.Roles.EstadoRol;
@@ -28,8 +29,12 @@ public class PapPatiRowMapper implements RowMapper<PapPati> {
         if (fechaFin != null) {
             papPati.setFechaFinDisponibilidad(fechaFin.toLocalDate());
         }
+        if (fechaInicio != null) {
+            papPati.setFechaInicioDisponibilidad(fechaInicio.toLocalDate());
+        }
         //aqui hay añadir una forma de consultar las especialidades por id
-        //
+
         return papPati;
     }
+
 }

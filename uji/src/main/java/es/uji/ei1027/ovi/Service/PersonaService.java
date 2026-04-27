@@ -50,7 +50,7 @@ public class PersonaService {
         personaDao.updatePersona(formulario.getPersona());
 
         if (formulario.getPatPati() != null) {
-
+            patPatiDao.update(formulario.getPatPati());
         }
 
         if (formulario.getOviUser() != null) {
