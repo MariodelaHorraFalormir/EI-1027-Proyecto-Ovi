@@ -183,16 +183,19 @@
                         <label for="fechaInicioDisponibilidad">Fecha inicio disponibilidad</label>
                         <input type="date"
                                id="fechaInicioDisponibilidad"
+                               name="fechaInicioDisponibilidad"
                                class="form-control"
-                               th:field="*{fechaInicioDisponibilidad}">
+                               th:value="${papPati.fechaInicioDisponibilidad != null ? #temporals.format(papPati.fechaInicioDisponibilidad, 'yyyy-MM-dd') : ''}"
+                               required>
                     </div>
 
                     <div class="col-md-6">
                         <label for="fechaFinDisponibilidad">Fecha fin disponibilidad</label>
                         <input type="date"
                                id="fechaFinDisponibilidad"
+                               name="fechaFinDisponibilidad"
                                class="form-control"
-                               th:field="*{fechaFinDisponibilidad}">
+                               th:value="${papPati.fechaFinDisponibilidad != null ? #temporals.format(papPati.fechaFinDisponibilidad, 'yyyy-MM-dd') : ''}">
                     </div>
 
                     <div class="col-md-6">
