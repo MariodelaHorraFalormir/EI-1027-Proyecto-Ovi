@@ -4,7 +4,11 @@ import es.uji.ei1027.ovi.Service.PersonaService;
 import es.uji.ei1027.ovi.dao.OviUserDao;
 import es.uji.ei1027.ovi.dao.PersonaDao;
 import es.uji.ei1027.ovi.dao.SolicitudesDao;
+import es.uji.ei1027.ovi.modelo.OviUser.DiversidadFuncional;
 import es.uji.ei1027.ovi.modelo.OviUser.OviUser;
+import es.uji.ei1027.ovi.modelo.OviUser.TipoDiversidadFuncional;
+import es.uji.ei1027.ovi.modelo.PapPati.Especialidad;
+import es.uji.ei1027.ovi.modelo.PapPati.PapPati;
 import es.uji.ei1027.ovi.modelo.Persona.Persona;
 import es.uji.ei1027.ovi.modelo.Solicitud.CategoriaSolicitud;
 import es.uji.ei1027.ovi.modelo.Solicitud.EstadoSolicitud;
@@ -18,6 +22,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @RequestMapping("/OviUser")
@@ -65,6 +71,30 @@ public class OviUserController {
 
 
         return "redirect:/DiversidadFuncional/listaID/" + id;
+    }
+    @RequestMapping(value = "/update/{id}",method = RequestMethod.GET)
+    public String editPersona(Model model, @PathVariable int id) {
+        OviUser oviUser = oviUserDao.getOviUser(id);
+        //esto lo podria extraer tambien
+        List<String> diversidades = new ArrayList<>();
+
+        if (oviUser.getDiversidadesFuncionales() != null) {
+            for (DiversidadFuncional diversidadFuncional : oviUser.getDiversidadesFuncionales()) {
+                diversidades.add(diversidadFuncional.getTipo().getTexto());
+            }
+        }
+
+        model.addAttribute("oviUser", oviUser);
+        model.addAttribute("diversidades", diversidades);
+        return "OviUser/update";
+
+    }
+    @PostMapping(value = "/update/{id}")
+    public String procesarActualizarPapPati(@PathVariable int id,
+            @ModelAttribute("oviUser") OviUser oviUser){
+        oviUserDao.updateOviUser(oviUser);
+        
+        return "redirect:/Persona/update/" + id;
     }
 
 

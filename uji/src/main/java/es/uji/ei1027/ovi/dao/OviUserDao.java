@@ -25,8 +25,9 @@ public class OviUserDao {
     }
     public OviUser getOviUser(int id) {
         try{
-            return  jdbcTemplate.queryForObject("SELECT * FROM ovi_user WHERE id = ? ", new OviUserRowMapper(diversidadFuncionalDao), id);
-
+            OviUser oviUser = jdbcTemplate.queryForObject("SELECT * FROM ovi_user WHERE id = ? ", new OviUserRowMapper(), id);
+            oviUser.setDiversidadesFuncionales(diversidadFuncionalDao.obtenerDiverdadesPorId(id));
+            return oviUser;
         }catch (EmptyResultDataAccessException e){return null;}
     }
     public void updateOviUser(OviUser oviUser) {
