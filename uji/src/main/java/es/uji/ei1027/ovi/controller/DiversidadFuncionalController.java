@@ -37,6 +37,15 @@ public class DiversidadFuncionalController {
 
         return "DiversidadFuncional/create";
     }
+    @GetMapping("/details/{idDiversidad}")
+    public String details(@PathVariable int idDiversidad, Model model) {
+        DiversidadFuncional diversidadFuncional =
+                diversidadFuncionalDao.obtenerDiversidadFuncionalPorId(idDiversidad);
+
+        model.addAttribute("diversidadFuncional", diversidadFuncional);
+
+        return "DiversidadFuncional/details";
+    }
 
     @PostMapping("/create/{id}")
     public String create(@PathVariable int id, @ModelAttribute("diversidadFuncional") DiversidadFuncional diversidadFuncional) {

@@ -51,6 +51,14 @@ public class PersonaController {
         return "Persona/update";
 
     }
+    @GetMapping("/details/{id}")
+    public String details(@PathVariable int id, Model model) {
+        PersonaFormulario personaFormulario = personaService.getPersonaFormulario(id);
+
+        model.addAttribute("personaFormulario", personaFormulario);
+
+        return "Persona/details";
+    }
 
     @RequestMapping(value = "/update", method = RequestMethod.POST)
     public String processUpdateSubmit(

@@ -11,7 +11,7 @@ public enum TipoDiversidadFuncional {
     Cognitiva,
     Psicosocial ,
     Organica,
-    Otro;
+    Otra;
     public static TipoDiversidadFuncional fromString(String valor) {
         if (valor == null) {
             throw new IllegalArgumentException("No ha llegado el tipo de solicitud o tipo de solicitud vacia");
@@ -30,8 +30,8 @@ public enum TipoDiversidadFuncional {
                 return Psicosocial;
             case "Organica":
                 return Organica;
-            case "Otro":
-                return Otro;
+            case "Otra":
+                return Otra;
             default:
                 throw new IllegalArgumentException("Valor de CategoriaDeSolicitud no válido: " + valor);
         }
@@ -52,8 +52,8 @@ public enum TipoDiversidadFuncional {
                 return "Psicosocial";
             case Organica:
                 return "Organica";
-            case Otro:
-                return "Otro";
+            case Otra:
+                return "Otra";
             default:
                 throw new IllegalArgumentException("Valor de CategoriaDeSolicitud no válido: " + this);
         }

@@ -114,5 +114,14 @@ public class PapPatiController {
 
         return "redirect:/Persona/update/" + id;
     }
+    @GetMapping("/details/{id}")
+    public String details(@PathVariable int id, Model model) {
+        PapPati papPati = papPatiDao.getPapPati(id);
+
+        model.addAttribute("papPati", papPati);
+        model.addAttribute("especialidadesSeleccionadas",
+                papPati.getEspecialidadesNombre());
+        return "PapPati/details";
+    }
 
 }

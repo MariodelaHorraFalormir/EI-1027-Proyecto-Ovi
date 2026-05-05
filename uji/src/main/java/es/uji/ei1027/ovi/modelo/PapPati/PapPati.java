@@ -4,6 +4,7 @@ import es.uji.ei1027.ovi.modelo.Roles.EstadoRol;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PapPati {
@@ -118,5 +119,11 @@ public class PapPati {
         this.especialidades = especialidades;
     }
 
-
+    public  List<String> getEspecialidadesNombre(){
+        List<String> especialidadesNombre = new ArrayList<>();
+        for (Especialidad especialidad : especialidades) {
+            especialidadesNombre.add( especialidad.getDiversidadFuncional().getTexto());
+        }
+        return especialidadesNombre;
+    }
 }
