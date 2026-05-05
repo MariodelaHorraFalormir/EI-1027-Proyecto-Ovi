@@ -30,8 +30,19 @@ public class OviUserDao {
             return oviUser;
         }catch (EmptyResultDataAccessException e){return null;}
     }
-    public void updateOviUser(OviUser oviUser) {
-        // de momento no hay campos que actualizar
+    public void updateOviUser(OviUser ovi_user) {
+        String sql = "UPDATE ovi_user SET " +
+                "grado_diversidad_funcional = ? ," +
+                "grado_dependencia = ? , "+
+                "url_proyecto_de_vida = ? ,"+
+                "centro_social_referencia = ? "+
+                "WHERE id = ?";
+        jdbcTemplate.update(sql,ovi_user.getGradoDiversidadFuncional(),
+                ovi_user.getGradoDependencia(),
+                ovi_user.getUrlProyectoDeVida(),
+                ovi_user.getCentroSocialReferencia(),
+                ovi_user.getIdOviUser());
+
     }
     public void addOviUser(OviUser oviUser) {
         String sql = "INSERT INTO ovi_user " +

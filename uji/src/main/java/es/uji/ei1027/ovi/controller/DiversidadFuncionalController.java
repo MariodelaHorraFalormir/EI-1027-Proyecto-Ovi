@@ -39,9 +39,7 @@ public class DiversidadFuncionalController {
     }
 
     @PostMapping("/create/{id}")
-    public String create(
-                         @ModelAttribute("diversidadFuncional") DiversidadFuncional diversidadFuncional) {
-        int id = diversidadFuncional.getOviUserId();
+    public String create(@PathVariable int id, @ModelAttribute("diversidadFuncional") DiversidadFuncional diversidadFuncional) {
         diversidadFuncional.setOviUserId(id);
         diversidadFuncionalDao.addDiversidadFuncional(diversidadFuncional);
 

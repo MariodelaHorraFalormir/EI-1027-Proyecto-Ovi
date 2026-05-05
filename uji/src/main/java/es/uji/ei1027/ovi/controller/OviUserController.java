@@ -93,7 +93,7 @@ public class OviUserController {
     public String procesarActualizarPapPati(@PathVariable int id,
             @ModelAttribute("oviUser") OviUser oviUser){
         oviUserDao.updateOviUser(oviUser);
-        
+
         return "redirect:/Persona/update/" + id;
     }
 

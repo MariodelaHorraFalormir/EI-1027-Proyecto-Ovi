@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Añadir diversidad funcional</title>
+    <title>Editar diversidad funcional</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link rel="stylesheet"
@@ -146,19 +146,20 @@
 
         <div class="top-bar">
             <div>
-                <h1 class="section-title">Añadir diversidad funcional</h1>
+                <h1 class="section-title">Editar diversidad funcional</h1>
                 <p class="section-subtitle mb-0">
-                    Indica el tipo de diversidad funcional y añade observaciones si lo consideras necesario
+                    Modifica el tipo de diversidad funcional y sus observaciones asociadas
                 </p>
             </div>
+
 
         </div>
 
         <form th:object="${diversidadFuncional}"
               method="post"
-              th:action="@{/DiversidadFuncional/create/{id}(id=*{oviUserId})}">
+              th:action="@{/DiversidadFuncional/update}">
 
-            <!-- ocultos -->
+            <!-- Campos ocultos importantes -->
             <input type="hidden" th:field="*{idDiversidadFuncional}">
             <input type="hidden" th:field="*{oviUserId}">
 
@@ -169,6 +170,7 @@
                 </div>
 
                 <div class="row g-4">
+
                     <div class="col-md-6">
                         <label class="data-label" for="tipo">
                             Tipo de diversidad funcional
@@ -178,14 +180,16 @@
                                 class="form-select"
                                 th:field="*{tipo}">
                             <option value="">Selecciona una opción</option>
+
                             <option th:each="opcion : ${listaTipos}"
                                     th:value="${opcion}"
                                     th:text="${opcion}">
+                                Tipo
                             </option>
                         </select>
 
                         <div class="text-muted-small mt-2">
-                            Selecciona el tipo que mejor describa la situación.
+                            Cambia el tipo si la información registrada no es correcta.
                         </div>
                     </div>
 
@@ -193,17 +197,23 @@
                         <label class="data-label" for="observaciones">
                             Observaciones
                         </label>
+
                         <textarea id="observaciones"
                                   class="form-control"
                                   th:field="*{observaciones}"
-                                  placeholder="Añade información complementaria si hace falta..."></textarea>
+                                  placeholder="Añade o modifica información complementaria..."></textarea>
+
+                        <div class="text-muted-small mt-2">
+                            Puedes dejar este campo vacío si no hay observaciones.
+                        </div>
                     </div>
+
                 </div>
             </div>
 
             <div class="actions">
                 <button type="submit" class="btn btn-primary">
-                    Guardar diversidad funcional
+                    Guardar cambios
                 </button>
 
                 <a th:href="@{/DiversidadFuncional/listaID/{id}(id=*{oviUserId})}"
@@ -211,6 +221,7 @@
                     Volver
                 </a>
             </div>
+
         </form>
     </div>
 </div>
