@@ -38,7 +38,7 @@ public class PaRequestController {
         // Objeto para la tabla 'solicitud' (Gestión técnica)
         Solicitud solicitud = new Solicitud();
         solicitud.setPersonaSolicitante(id);
-        solicitud.setCategoriaSolicitud(CategoriaSolicitud.Rol); // O 'Servicio' según prefieras
+        solicitud.setCategoriaSolicitud(CategoriaSolicitud.Proceso); // O 'Servicio' según prefieras
         solicitud.setTipoSolicitud(TipoSolicitud.Pa_request);
         solicitud.setEstadoSolicitud(EstadoSolicitud.Pendiente);
         solicitud.setFechaCreacion(LocalDate.now());
@@ -75,16 +75,12 @@ public class PaRequestController {
             paRequest.setFechaCreacion(hoy);
             paRequest.setStatus(StatusPaRequest.En_espera); // <--- ESTO ARREGLA EL ERROR
 
-            // Datos para la Solicitud general
-            solicitud.setPersonaSolicitante(id);
-            solicitud.setFechaCreacion(hoy);
-            solicitud.setEstadoSolicitud(EstadoSolicitud.Pendiente);
-            solicitud.setCategoriaSolicitud(CategoriaSolicitud.Rol);
-            solicitud.setTipoSolicitud(TipoSolicitud.Pa_request);
 
             // 2. GUARDAR EN BD (Ahora ya no fallará el DAO)
-            paRequestDao.addPaRequest(paRequest);
+ 
             solicitudesDao.createSolicitud(solicitud);
+            paRequestDao.addPaRequest(paRequest);
+
 
             // 3. REDIRECCIÓN (Ahora sí llegará aquí porque no hay excepción)
             return "redirect:/";
