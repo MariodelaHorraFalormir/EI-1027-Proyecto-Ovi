@@ -408,3 +408,13 @@ VALUES
 (12, 13, 'Proceso', 'Asistencia_tecnica', 'Pendiente',
  'Quiero dejar constancia de una incidencia aunque mi persona ya tenga fecha de baja.', NULL, NULL,
  '2026-03-30 16:10:00', NULL);
+-- Resetear el id de las tablas para que continue correctamente después de los inserts
+SELECT setval(pg_get_serial_sequence('persona', 'id'), COALESCE((SELECT MAX(id) FROM persona), 1), true);
+SELECT setval(pg_get_serial_sequence('diversidad_funcional', 'id'), COALESCE((SELECT MAX(id) FROM diversidad_funcional), 1), true);
+SELECT setval(pg_get_serial_sequence('especialidad', 'id'), COALESCE((SELECT MAX(id) FROM especialidad), 1), true);
+SELECT setval(pg_get_serial_sequence('pa_request', 'id'), COALESCE((SELECT MAX(id) FROM pa_request), 1), true);
+SELECT setval(pg_get_serial_sequence('contrato', 'id'), COALESCE((SELECT MAX(id) FROM contrato), 1), true);
+SELECT setval(pg_get_serial_sequence('conversacion', 'id'), COALESCE((SELECT MAX(id) FROM conversacion), 1), true);
+SELECT setval(pg_get_serial_sequence('mensaje', 'id'), COALESCE((SELECT MAX(id) FROM mensaje), 1), true);
+SELECT setval(pg_get_serial_sequence('candidaturas', 'id'), COALESCE((SELECT MAX(id) FROM candidaturas), 1), true);
+SELECT setval(pg_get_serial_sequence('solicitud', 'id'), COALESCE((SELECT MAX(id) FROM solicitud), 1), true);

@@ -2,6 +2,7 @@ package es.uji.ei1027.ovi.dao;
 
 import es.uji.ei1027.ovi.RowMapper.OviUserRowMapper;
 import es.uji.ei1027.ovi.modelo.OviUser.OviUser;
+import es.uji.ei1027.ovi.modelo.Roles.EstadoRol;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -25,12 +26,24 @@ public class OviUserDao {
     }
     public OviUser getOviUser(int id) {
         try{
-            return  jdbcTemplate.queryForObject("SELECT * FROM ovi_user WHERE id = ? ", new OviUserRowMapper(diversidadFuncionalDao), id);
-
+            OviUser oviUser = jdbcTemplate.queryForObject("SELECT * FROM ovi_user WHERE id = ? ", new OviUserRowMapper(), id);
+            oviUser.setDiversidadesFuncionales(diversidadFuncionalDao.obtenerDiverdadesPorId(id));
+            return oviUser;
         }catch (EmptyResultDataAccessException e){return null;}
     }
-    public void updateOviUser(OviUser oviUser) {
-        // de momento no hay campos que actualizar
+    public void updateOviUser(OviUser ovi_user) {
+        String sql = "UPDATE ovi_user SET " +
+                "grado_diversidad_funcional = ? ," +
+                "grado_dependencia = ? , "+
+                "url_proyecto_de_vida = ? ,"+
+                "centro_social_referencia = ? "+
+                "WHERE id = ?";
+        jdbcTemplate.update(sql,ovi_user.getGradoDiversidadFuncional(),
+                ovi_user.getGradoDependencia(),
+                ovi_user.getUrlProyectoDeVida(),
+                ovi_user.getCentroSocialReferencia(),
+                ovi_user.getIdOviUser());
+
     }
     public void addOviUser(OviUser oviUser) {
         String sql = "INSERT INTO ovi_user " +
@@ -48,7 +61,7 @@ public class OviUserDao {
     }
     public boolean existeOviUser(int idPersona) {
         Integer count = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM ovi_user WHERE id = ?",
+                "SELECT COUNT(*) FROM ovi_user WHERE id = ? ",
                 Integer.class,
                 idPersona
         );
@@ -56,5 +69,11 @@ public class OviUserDao {
     }
 
 
+    public void cambiarEstadoRol(int personaSolicitante, EstadoRol estadoRol) {
+        String sql = "UPDATE ovi_user SET "
+                + "estado = ?::estado_rol_enum "
+                + "WHERE id = ?" ;
+        jdbcTemplate.update(sql,estadoRol.getTexto(),personaSolicitante);
+    }
 }
 

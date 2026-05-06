@@ -2,6 +2,7 @@ package es.uji.ei1027.ovi.dao;
 
 import es.uji.ei1027.ovi.RowMapper.PapPatiRowMapper;
 import es.uji.ei1027.ovi.modelo.PapPati.PapPati;
+import es.uji.ei1027.ovi.modelo.Roles.EstadoRol;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -12,16 +13,19 @@ import javax.sql.DataSource;
 public class PapPatiDao {
 
     private JdbcTemplate jdbcTemplate;
+    private  EspecialidadesDao especialidadesDao;
 
     @Autowired
-    public void setDataSource(DataSource dataSource) {
+    public void setDataSource(DataSource dataSource ,  EspecialidadesDao especialidadesDao) {
         jdbcTemplate = new JdbcTemplate(dataSource);
+        this.especialidadesDao = especialidadesDao;
     }
 
     public PapPati getPapPati(int id) {
         try {
-           return jdbcTemplate.queryForObject("SELECT * FROM pap_pati WHERE id = ? ", new PapPatiRowMapper(), id);
-
+           PapPati papPati= jdbcTemplate.queryForObject("SELECT * FROM pap_pati WHERE id = ? ", new PapPatiRowMapper(), id);
+            papPati.setEspecialidades(especialidadesDao.getEspecialidades(id));
+            return papPati;
 
         } catch (EmptyResultDataAccessException e) {
             return null;
@@ -42,8 +46,7 @@ public class PapPatiDao {
                 "carnet_conducir = ?, " +
                 "url_cv = ?, " +
                 "descripcion_perfil = ?, " +
-                "centro_social_referencia = ?, " +
-                "estado = ?::estado_rol_enum " +
+                "centro_social_referencia = ? " +
                 "WHERE id = ?";
 
         jdbcTemplate.update(sql,
@@ -56,7 +59,6 @@ public class PapPatiDao {
                 papPati.getUrlCV(),
                 papPati.getDescripcionPerfil(),
                 papPati.getCentroSocial(),
-                papPati.getEstadoRol().getTexto(),
                 papPati.getIdPatPati()
         );
     }
@@ -82,6 +84,20 @@ public class PapPatiDao {
                 papPati.getCentroSocial()
         );
 
+    }
+    public boolean existePapPati(int idPersona) {
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM pap_pati WHERE id = ?",
+                Integer.class,
+                idPersona
+        );
+        return count != null;
+    }
+    public void cambiarEstadoRol(int personaSolicitante, EstadoRol estadoRol) {
+        String sql = "UPDATE pap_pati SET "
+                + "estado = ?::estado_rol_enum "
+                + "WHERE id = ?" ;
+        jdbcTemplate.update(sql,estadoRol.getTexto(),personaSolicitante);
     }
 
 }

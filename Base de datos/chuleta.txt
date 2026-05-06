@@ -1,3 +1,4 @@
 Para que funcione el acceso a Windows tienes  que poner esto en tu powershell 
- 5432:db-aules.uji.es:5432 al416129@lynx.uji.es
+ssh al416129@lynx.uji.es 
+psql -h db-aules.uji.es -U ei102725daa -d ei102725daa
 el al pon el tuyo
