@@ -1,6 +1,7 @@
 package es.uji.ei1027.ovi.controller;
 
 import es.uji.ei1027.ovi.Service.PersonaService;
+import es.uji.ei1027.ovi.Service.SolicitudesService;
 import es.uji.ei1027.ovi.dao.PersonaDao;
 import es.uji.ei1027.ovi.dao.SolicitudesDao;
 import es.uji.ei1027.ovi.modelo.Solicitud.Solicitud;
@@ -13,11 +14,15 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/Solicitudes")
 public class SolicitudController {
     private SolicitudesDao solicitudDao;
-
+    private SolicitudesService solicitudesService;
 
     @Autowired
     public void setSolicitudDao(SolicitudesDao solicitudDao) {this.solicitudDao = solicitudDao;}
 
+    @Autowired
+    public void setSolicitudesService(SolicitudesService solicitudesService) {
+        this.solicitudesService = solicitudesService;
+    }
 
     @RequestMapping("/listId")
     public String  listaporId(Model model){
@@ -42,20 +47,20 @@ public class SolicitudController {
     }
     @PostMapping("/update/{id}")
     public String updateSolicitud(@PathVariable int id, @ModelAttribute("solicitud") Solicitud solicitud) {
-        solicitudDao.updateSolicitud(id, solicitud);
+        solicitudesService.updateSolicitud(id, solicitud);
         return "redirect:/Solicitudes/listId";
     }
     @RequestMapping("/aprobarRapido/{id}")
     public String  aprobarRapido(Model model,@PathVariable int id){
 
-        solicitudDao.aprobarRapido(id);
+        solicitudesService.aprobarRapido(id);
         return "redirect:/Solicitudes/listId";
     }
     //esta en estado de pruebas la idea es que redirija a una  pagina donde te permita hem poner el motivo de la resolucion
     @RequestMapping("/rechazarRapido/{id}")
     public String  rechazarRapido(Model model,@PathVariable int id){
         //aqui cojera el metodo para mandarte a la pagina de lo de añadir motivo de rechazo
-        solicitudDao.rechazarRapido(id);
+        solicitudesService.rechazarRapido(id);
         return "redirect:/Solicitudes/listId";
     }
     @RequestMapping("/delete/{id}")

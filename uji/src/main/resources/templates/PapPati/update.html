@@ -108,6 +108,43 @@
             background-color: #193f63;
             border-color: #193f63;
         }
+        .status-badge {
+            display: inline-block;
+            font-weight: 700;
+            border-radius: 999px;
+            padding: 0.45rem 0.9rem;
+            font-size: 0.9rem;
+            border: 1px solid transparent;
+        }
+
+        .status-activo {
+            background: #d1fae5;
+            color: #065f46;
+            border-color: #a7f3d0;
+        }
+
+        .status-pendiente {
+            background: #fef3c7;
+            color: #92400e;
+            border-color: #fde68a;
+        }
+
+        .status-rechazado {
+            background: #fee2e2;
+            color: #991b1b;
+            border-color: #fecaca;
+        }
+
+        .status-sin-estado {
+            background: #e5e7eb;
+            color: #374151;
+            border-color: #d1d5db;
+        }
+
+        .status-help-text {
+            font-size: 0.88rem;
+            color: #64748b;
+        }
     </style>
 </head>
 
@@ -121,14 +158,44 @@
             <div>
                 <h1 class="section-title">Editar rol PapPati</h1>
                 <p class="section-subtitle mb-0">
-                    Modifica la información específica del rol PAP/PATI
+                    Modifica los datos asociados al rol PAP/PATI
                 </p>
             </div>
 
-            <span class="role-badge"
-                  th:text="'Persona ID ' + ${papPati.idPatPati}">
-                Persona ID 1
+            <!-- ESTADO DEL ROL: SOLO LECTURA -->
+            <div class="d-flex flex-column align-items-md-end gap-2">
+
+                
+
+                <div th:switch="${papPati.estadoRol != null ? papPati.estadoRol.name() : 'SinEstado'}">
+
+            <span th:case="'Activo'"
+                  class="status-badge status-activo">
+                Rol activo
             </span>
+
+                    <span th:case="'Pendiente'"
+                          class="status-badge status-pendiente">
+                Rol pendiente
+            </span>
+
+                    <span th:case="'Rechazado'"
+                          class="status-badge status-rechazado">
+                Rol rechazado
+            </span>
+
+                    <span th:case="*"
+                          class="status-badge status-sin-estado">
+                Sin estado
+            </span>
+
+                </div>
+
+                <span class="status-help-text">
+            Solo lectura
+        </span>
+
+            </div>
         </div>
 
         <form th:object="${papPati}"

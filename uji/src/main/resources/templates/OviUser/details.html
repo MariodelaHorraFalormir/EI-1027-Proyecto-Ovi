@@ -162,6 +162,56 @@
             font-size: 0.92rem;
             color: #6c757d;
         }
+        .status-readonly-box {
+            background-color: white;
+            border: 1px solid #d8e0ea;
+            border-radius: 14px;
+            padding: 0.9rem 1rem;
+            min-height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .status-badge {
+            display: inline-block;
+            font-weight: 700;
+            border-radius: 999px;
+            padding: 0.45rem 0.9rem;
+            font-size: 0.9rem;
+            border: 1px solid transparent;
+        }
+
+        .status-activo {
+            background: #d1fae5;
+            color: #065f46;
+            border-color: #a7f3d0;
+        }
+
+        .status-pendiente {
+            background: #fef3c7;
+            color: #92400e;
+            border-color: #fde68a;
+        }
+
+        .status-rechazado {
+            background: #fee2e2;
+            color: #991b1b;
+            border-color: #fecaca;
+        }
+
+        .status-sin-estado {
+            background: #e5e7eb;
+            color: #374151;
+            border-color: #d1d5db;
+        }
+
+        .status-help-text {
+            font-size: 0.88rem;
+            color: #64748b;
+        }
     </style>
 </head>
 <body>
@@ -176,11 +226,32 @@
                     Consulta los datos asociados al rol de usuario OVI
                 </p>
             </div>
+            <!-- ESTADO DEL ROL -->
+            <div class="d-flex flex-column align-items-md-end gap-2">
 
-            <span class="role-badge"
-                  th:text="'OviUser ID ' + ${oviUser.idOviUser}">
-                OviUser ID 1
-            </span>
+                <div th:switch="${oviUser.estado != null ? oviUser.estado.name() : 'SinEstado'}">
+
+                    <span th:case="'Activo'"
+                          class="status-badge status-activo">
+                        Rol activo
+                    </span>
+                    <span th:case="'Pendiente'"
+                          class="status-badge status-pendiente">
+                        Rol pendiente
+                    </span>
+                    <span th:case="'Rechazado'"
+                                  class="status-badge status-rechazado">
+                            Rol rechazado
+                    </span>
+                    <span th:case="*"
+                          class="status-badge status-sin-estado">
+                        Sin estado
+                    </span>
+                </div>
+
+            </div>
+
+
         </div>
 
         <!-- DATOS DEL ROL -->

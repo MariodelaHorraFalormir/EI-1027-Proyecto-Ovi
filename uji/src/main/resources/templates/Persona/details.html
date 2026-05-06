@@ -289,12 +289,7 @@
                    class="btn btn-primary">
                     Ver OVI User
                 </a>
-
-                <a th:if="${personaFormulario.oviUser != null}"
-                   th:href="@{/DiversidadFuncional/listaID/{id}(id=${personaFormulario.persona.idPersona})}"
-                   class="btn btn-outline-primary">
-                    Ver diversidades funcionales
-                </a>
+                
 
                 <a th:if="${personaFormulario.patPati != null}"
                    th:href="@{/PapPati/details/{id}(id=${personaFormulario.persona.idPersona})}"

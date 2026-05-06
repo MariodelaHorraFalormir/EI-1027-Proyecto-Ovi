@@ -2,6 +2,7 @@ package es.uji.ei1027.ovi.dao;
 
 import es.uji.ei1027.ovi.RowMapper.PapPatiRowMapper;
 import es.uji.ei1027.ovi.modelo.PapPati.PapPati;
+import es.uji.ei1027.ovi.modelo.Roles.EstadoRol;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -91,6 +92,12 @@ public class PapPatiDao {
                 idPersona
         );
         return count != null;
+    }
+    public void cambiarEstadoRol(int personaSolicitante, EstadoRol estadoRol) {
+        String sql = "UPDATE pap_pati SET "
+                + "estado = ?::estado_rol_enum "
+                + "WHERE id = ?" ;
+        jdbcTemplate.update(sql,estadoRol.getTexto(),personaSolicitante);
     }
 
 }

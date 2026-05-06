@@ -27,11 +27,11 @@ public enum EstadoRol {
     public String getTexto() {
         switch (this) {
             case Pendiente:
-                return "Pendiente";
+                return "Pendiento";
             case Activo:
-                return "Aprobada";
+                return "Aprobado";
             case Rechazado:
-                return "Rechazada";
+                return "Rechazado";
             default:
                 throw new IllegalStateException("Valor no esperado: " + this);
         }

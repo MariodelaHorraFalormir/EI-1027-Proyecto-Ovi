@@ -2,6 +2,7 @@ package es.uji.ei1027.ovi.dao;
 
 import es.uji.ei1027.ovi.RowMapper.OviUserRowMapper;
 import es.uji.ei1027.ovi.modelo.OviUser.OviUser;
+import es.uji.ei1027.ovi.modelo.Roles.EstadoRol;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -60,13 +61,19 @@ public class OviUserDao {
     }
     public boolean existeOviUser(int idPersona) {
         Integer count = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM ovi_user WHERE id = ?",
+                "SELECT COUNT(*) FROM ovi_user WHERE id = ? ",
                 Integer.class,
                 idPersona
         );
-        return count != null ;
+        return count != null && count > 0;
     }
 
 
+    public void cambiarEstadoRol(int personaSolicitante, EstadoRol estadoRol) {
+        String sql = "UPDATE ovi_user SET "
+                + "estado = ?::estado_rol_enum "
+                + "WHERE id = ?" ;
+        jdbcTemplate.update(sql,estadoRol.getTexto(),personaSolicitante);
+    }
 }
 

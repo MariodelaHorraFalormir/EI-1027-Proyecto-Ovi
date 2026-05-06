@@ -21,7 +21,7 @@ public class OviUserRowMapper implements RowMapper<OviUser> {
         oviUser.setIdOviUser(rs.getInt("id"));
         oviUser.setCentroSocialReferencia(rs.getString("centro_social_referencia"));
         oviUser.setUrlProyectoDeVida(rs.getString("url_proyecto_de_vida"));
-        oviUser.setGradoDependencia(rs.getInt("grado_dependencia"));
+        oviUser.setGradoDiversidadFuncional(rs.getInt("grado_diversidad_funcional"));
         oviUser.setEstado(EstadoRol.fromString(rs.getString("estado")));
         oviUser.setGradoDependencia(rs.getObject("grado_dependencia", Integer.class));
         //Aqui tengo que ser capaz de Cargar las diversidades funcionales
