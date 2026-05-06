@@ -111,20 +111,18 @@
                 </div>
             </div>
 
-
-
-
             <div class="col-md-4">
                 <div class="card card-option">
                     <div class="card-body d-flex flex-column">
                         <h2 class="section-title">Lista de solicitudes</h2>
                         <p class="section-text">
-                          acceso la parte de gestion de solicitudes
+                            acceso la parte de gestion de solicitudes
                         </p>
                         <a href="Solicitudes/listId" class="btn btn-warning mt-auto">Ver solicitudes</a>
                     </div>
                 </div>
             </div>
+
             <div class="col-md-4">
                 <div class="card card-option">
                     <div class="card-body d-flex flex-column">
@@ -148,6 +146,20 @@
                         </p>
                         <a th:href="@{/Rol/solicitar/Pap_pati}" class="btn btn-dark mt-auto">
                             Solicitar Pap Pati
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card card-option">
+                    <div class="card-body d-flex flex-column">
+                        <h2 class="section-title">Solicitar rol PaRequest</h2>
+                        <p class="section-text">
+                            Iniciar el proceso para solicitar el rol de Asistente Personal (PA) dentro de la plataforma.
+                        </p>
+                        <a th:href="@{/Rol/solicitar/Pa_request}" class="btn btn-secondary mt-auto" style="background-color: #6366f1; border-color: #6366f1;">
+                            Solicitar PaRequest
                         </a>
                     </div>
                 </div>

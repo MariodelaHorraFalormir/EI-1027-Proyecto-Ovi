@@ -1,0 +1,428 @@
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"ExternalStorageConfigurationManager\" enabled=\"true\" />\r\n  <component name=\"MavenProjectsManager\">\r\n    <option name=\"originalFiles\">\r\n      <list>\r\n        <option value=\"$PROJECT_DIR$/ovi/pom.xml\" />\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"ProjectRootManager\" version=\"2\" project-jdk-name=\"21\" project-jdk-type=\"JavaSDK\">\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/misc.xml b/.idea/misc.xml
+--- a/.idea/misc.xml	(revision 571c38455336d37fe23b9d9b760cfd0ee5c57798)
++++ b/.idea/misc.xml	(date 1777024251742)
+@@ -4,8 +4,11 @@
+   <component name="MavenProjectsManager">
+     <option name="originalFiles">
+       <list>
+-        <option value="$PROJECT_DIR$/ovi/pom.xml" />
++        <option value="$PROJECT_DIR$/uji/pom.xml" />
+       </list>
+     </option>
+   </component>
+-  <component name="ProjectRootManager" version="2" project-jdk-name="21" project-jdk-type="JavaSDK">
++  <component name="ProjectRootManager" version="2" languageLevel="JDK_21" project-jdk-name="21" project-jdk-type="JavaSDK">
++    <output url="file://$PROJECT_DIR$/uji/target" />
++  </component>
++</project>
+\ No newline at end of file
+Index: uji/src/main/resources/templates/Index.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><!DOCTYPE html>\r\n<html lang=\"en\">\r\n<head>\r\n    <meta charset=\"UTF-8\">\r\n    <title>Title</title>\r\n</head>\r\n<body>\r\n\r\n<h1> Inicio</h1>\r\n<a href =\"test\">Test </a>\r\n<br></br>\r\n<a href =\"Persona/listId\">Prueba Dao Personas  </a>\r\n<br></br>\r\n<a href =\"Persona/cuestion\">Cuestion </a>\r\n\r\n</body>\r\n</html>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/uji/src/main/resources/templates/Index.html b/uji/src/main/resources/templates/Index.html
+--- a/uji/src/main/resources/templates/Index.html	(revision 571c38455336d37fe23b9d9b760cfd0ee5c57798)
++++ b/uji/src/main/resources/templates/Index.html	(date 1777024251780)
+@@ -1,17 +1,21 @@
+ <!DOCTYPE html>
+-<html lang="en">
++<html lang="es">
+ <head>
+     <meta charset="UTF-8">
+-    <title>Title</title>
++    <title>Inicio - SgOVI</title>
+ </head>
+ <body>
+ 
+ <h1> Inicio</h1>
+-<a href ="test">Test </a>
++
++<a href="test">Test</a>
+ <br></br>
+-<a href ="Persona/listId">Prueba Dao Personas  </a>
++<a href="Persona/listId">Prueba Dao Personas</a>
+ <br></br>
+-<a href ="Persona/cuestion">Cuestion </a>
++<a href="Persona/cuestion">Cuestion</a>
++<br></br>
++
++<a href="OviUser/list">Gestión de Ovi Users</a>
+ 
+ </body>
+ </html>
+\ No newline at end of file
+Index: .idea/encodings.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"Encoding\">\r\n    <file url=\"file://$PROJECT_DIR$/ovi/src/main/java\" charset=\"UTF-8\" />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/encodings.xml b/.idea/encodings.xml
+--- a/.idea/encodings.xml	(revision 571c38455336d37fe23b9d9b760cfd0ee5c57798)
++++ b/.idea/encodings.xml	(date 1777024251838)
+@@ -2,5 +2,6 @@
+ <project version="4">
+   <component name="Encoding">
+     <file url="file://$PROJECT_DIR$/ovi/src/main/java" charset="UTF-8" />
++    <file url="file://$PROJECT_DIR$/uji/src/main/java" charset="UTF-8" />
+   </component>
+ </project>
+\ No newline at end of file
+Index: .idea/EI-1027-Proyecto-Ovi.iml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<module type=\"JAVA_MODULE\" version=\"4\">\r\n  <component name=\"NewModuleRootManager\" inherit-compiler-output=\"true\">\r\n    <exclude-output />\r\n    <content url=\"file://$MODULE_DIR$\">\r\n      <sourceFolder url=\"file://$MODULE_DIR$/ovi/src/main/java\" isTestSource=\"false\" />\r\n    </content>\r\n    <orderEntry type=\"inheritedJdk\" />\r\n    <orderEntry type=\"sourceFolder\" forTests=\"false\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.springframework.boot:spring-boot:3.5.0\" level=\"project\" />\r\n  </component>\r\n</module>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/EI-1027-Proyecto-Ovi.iml b/.idea/EI-1027-Proyecto-Ovi.iml
+--- a/.idea/EI-1027-Proyecto-Ovi.iml	(revision 571c38455336d37fe23b9d9b760cfd0ee5c57798)
++++ b/.idea/EI-1027-Proyecto-Ovi.iml	(date 1777024251976)
+@@ -4,9 +4,19 @@
+     <exclude-output />
+     <content url="file://$MODULE_DIR$">
+       <sourceFolder url="file://$MODULE_DIR$/ovi/src/main/java" isTestSource="false" />
++      <sourceFolder url="file://$MODULE_DIR$/uji/src/main/java" isTestSource="false" />
+     </content>
+     <orderEntry type="inheritedJdk" />
+     <orderEntry type="sourceFolder" forTests="false" />
+     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot:3.5.0" level="project" />
++    <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot:3.4.1" level="project" />
++    <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-autoconfigure:3.4.1" level="project" />
++    <orderEntry type="library" name="Maven: org.springframework:spring-context:6.2.1" level="project" />
++    <orderEntry type="library" name="Maven: org.springframework:spring-beans:6.2.1" level="project" />
++    <orderEntry type="library" name="Maven: org.springframework:spring-beans:6.2.1" level="project" />
++    <orderEntry type="library" name="Maven: org.springframework:spring-tx:6.2.1" level="project" />
++    <orderEntry type="library" name="Maven: org.springframework:spring-jdbc:6.2.1" level="project" />
++    <orderEntry type="library" name="Maven: org.springframework:spring-jdbc:6.2.1" level="project" />
++    <orderEntry type="library" name="Maven: org.springframework:spring-beans:6.2.1" level="project" />
+   </component>
+ </module>
+\ No newline at end of file
+Index: uji/src/main/java/es/uji/ei1027/ovi/validator/OviUserValidator.java
+===================================================================
+diff --git a/uji/src/main/java/es/uji/ei1027/ovi/validator/OviUserValidator.java b/uji/src/main/java/es/uji/ei1027/ovi/validator/OviUserValidator.java
+new file mode 100644
+--- /dev/null	(date 1777024251879)
++++ b/uji/src/main/java/es/uji/ei1027/ovi/validator/OviUserValidator.java	(date 1777024251879)
+@@ -0,0 +1,33 @@
++package es.uji.ei1027.ovi.validator;
++
++import es.uji.ei1027.ovi.modelo.Persona.Roles.OviUser;
++import org.springframework.stereotype.Component;
++import org.springframework.validation.Errors;
++import org.springframework.validation.ValidationUtils;
++import org.springframework.validation.Validator;
++
++@Component
++public class OviUserValidator implements Validator {
++
++    @Override
++    public boolean supports(Class<?> clazz) {
++        return OviUser.class.isAssignableFrom(clazz);
++    }
++
++    @Override
++    public void validate(Object target, Errors errors) {
++        OviUser oviUser = (OviUser) target;
++
++        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "nombre", "obligatorio", "El nombre es obligatorio");
++        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "apellidos", "obligatorio", "Los apellidos son obligatorios");
++        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "mail", "obligatorio", "El email es obligatorio");
++
++        if (oviUser.getMail() != null && !oviUser.getMail().contains("@")) {
++            errors.rejectValue("mail", "formato", "El formato del email no es correcto");
++        }
++
++        if (oviUser.getPais() == null || oviUser.getPais().trim().isEmpty()) {
++            errors.rejectValue("pais", "obligatorio", "Debes indicar un país");
++        }
++    }
++}
+\ No newline at end of file
+Index: uji/src/main/resources/templates/OviUser/update.html
+===================================================================
+diff --git a/uji/src/main/resources/templates/OviUser/update.html b/uji/src/main/resources/templates/OviUser/update.html
+new file mode 100644
+--- /dev/null	(date 1777024251908)
++++ b/uji/src/main/resources/templates/OviUser/update.html	(date 1777024251908)
+@@ -0,0 +1,56 @@
++<!DOCTYPE html>
++<html xmlns:th="http://www.thymeleaf.org">
++<head>
++    <meta charset="UTF-8">
++    <title>Editar OVI User</title>
++    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">
++</head>
++<body class="container mt-5">
++<div class="card border-warning">
++    <div class="card-header bg-warning text-dark">
++        <h2>Modificar Datos de Usuario</h2>
++    </div>
++    <div class="card-body">
++        <form th:action="@{/OviUser/update}" th:object="${oviUser}" method="post">
++            <input type="hidden" th:field="*{idPersona}" />
++
++            <div class="row">
++                <div class="col-md-6 mb-3">
++                    <label class="form-label">Nombre</label>
++                    <input type="text" class="form-control" th:field="*{nombre}" />
++                </div>
++                <div class="col-md-6 mb-3">
++                    <label class="form-label">Apellidos</label>
++                    <input type="text" class="form-control" th:field="*{apellidos}" />
++                </div>
++                <div class="col-md-12 mb-3">
++                    <label class="form-label">Email</label>
++                    <input type="email" class="form-control" th:field="*{mail}" />
++                    <div class="text-danger" th:if="${#fields.hasErrors('mail')}" th:errors="*{mail}"></div>
++                </div>
++                <div class="col-md-4 mb-3">
++                    <label class="form-label">País</label>
++                    <input type="text" class="form-control" th:field="*{pais}" />
++                </div>
++                <div class="col-md-4 mb-3">
++                    <label class="form-label">Teléfono</label>
++                    <input type="text" class="form-control" th:field="*{telefono}" />
++                </div>
++                <div class="col-md-4 mb-3">
++                    <label class="form-label">Género</label>
++                    <select class="form-select" th:field="*{genero}">
++                        <option th:each="g : ${T(es.uji.ei1027.ovi.modelo.Persona.Genero).values()}"
++                                th:value="${g}" th:text="${g}"></option>
++                    </select>
++                </div>
++            </div>
++
++            <div class="mt-4">
++                <button type="submit" class="btn btn-warning">Guardar Cambios</button>
++                <a th:href="@{/OviUser/list}" class="btn btn-outline-secondary">Cancelar</a>
++            </div>
++        </form>
++    </div>
++</div>
++</body>
++</html>
+\ No newline at end of file
+Index: uji/src/main/resources/templates/OviUser/add.html
+===================================================================
+diff --git a/uji/src/main/resources/templates/OviUser/add.html b/uji/src/main/resources/templates/OviUser/add.html
+new file mode 100644
+--- /dev/null	(date 1777024251810)
++++ b/uji/src/main/resources/templates/OviUser/add.html	(date 1777024251810)
+@@ -0,0 +1,67 @@
++<!DOCTYPE html>
++<html xmlns:th="http://www.thymeleaf.org" lang="es">
++<head>
++    <meta charset="UTF-8">
++    <title>Registro OVI User</title>
++    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">
++</head>
++<body class="container mt-5">
++<div class="card shadow">
++    <div class="card-header bg-primary text-white">
++        <h2>Nuevo Usuario OVI</h2>
++    </div>
++    <div class="card-body">
++        <form th:action="@{/OviUser/add}" th:object="${oviUser}" method="post">
++            <div class="row">
++                <div class="col-md-6 mb-3">
++                    <label class="form-label">Nombre</label>
++                    <input type="text" class="form-control" th:field="*{nombre}" />
++                    <div class="text-danger" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
++                </div>
++                <div class="col-md-6 mb-3">
++                    <label class="form-label">Apellidos</label>
++                    <input type="text" class="form-control" th:field="*{apellidos}" />
++                </div>
++
++                <div class="col-md-6 mb-3">
++                    <label class="form-label">Email</label>
++                    <input type="email" class="form-control" th:field="*{mail}" />
++                    <div class="text-danger" th:if="${#fields.hasErrors('mail')}" th:errors="*{mail}"></div>
++                </div>
++
++                <div class="col-md-3 mb-3">
++                    <label class="form-label">Género</label>
++                    <select class="form-select" th:field="*{genero}">
++                        <option th:each="g : ${T(es.uji.ei1027.ovi.modelo.Persona.Genero).values()}"
++                                th:value="${g}" th:text="${g}"></option>
++                    </select>
++                </div>
++
++                <div class="col-md-3 mb-3">
++                    <label class="form-label">País</label>
++                    <input type="text" class="form-control" th:field="*{pais}" />
++                </div>
++
++                <div class="col-md-4 mb-3">
++                    <label class="form-label">Fecha Nacimiento</label>
++                    <input type="date" class="form-control" th:field="*{fechaNacimiento}" />
++                </div>
++                <div class="col-md-4 mb-3">
++                    <label class="form-label">Teléfono</label>
++                    <input type="text" class="form-control" th:field="*{telefono}" />
++                </div>
++                <div class="col-md-4 mb-3">
++                    <label class="form-label">Dirección</label>
++                    <input type="text" class="form-control" th:field="*{direccion}" />
++                </div>
++            </div>
++
++            <div class="mt-3">
++                <button type="submit" class="btn btn-success">Registrar Usuario</button>
++                <a href="/" class="btn btn-secondary">Volver</a>
++            </div>
++        </form>
++    </div>
++</div>
++</body>
++</html>
+\ No newline at end of file
+Index: uji/src/main/java/es/uji/ei1027/ovi/controller/OviUserController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/uji/src/main/java/es/uji/ei1027/ovi/controller/OviUserController.java b/uji/src/main/java/es/uji/ei1027/ovi/controller/OviUserController.java
+new file mode 100644
+--- /dev/null	(date 1777024251946)
++++ b/uji/src/main/java/es/uji/ei1027/ovi/controller/OviUserController.java	(date 1777024251946)
+@@ -0,0 +1,79 @@
++package es.uji.ei1027.ovi.controller;
++
++import es.uji.ei1027.ovi.dao.OviUserDao;
++import es.uji.ei1027.ovi.dao.PersonaDao;
++import es.uji.ei1027.ovi.modelo.Persona.Roles.OviUser;
++import es.uji.ei1027.ovi.validator.OviUserValidator;
++import org.springframework.beans.factory.annotation.Autowired;
++import org.springframework.stereotype.Controller;
++import org.springframework.ui.Model;
++import org.springframework.validation.BindingResult;
++import org.springframework.web.bind.annotation.*;
++
++@Controller
++@RequestMapping("/OviUser")
++public class OviUserController {
++
++    private OviUserDao oviUserDao;
++    private PersonaDao personaDao;
++    private OviUserValidator oviUserValidator;
++
++    @Autowired
++    public void setOviUserDao(OviUserDao oviUserDao) {
++        this.oviUserDao = oviUserDao;
++    }
++
++    @Autowired
++    public void setPersonaDao(PersonaDao personaDao) {
++        this.personaDao = personaDao;
++    }
++
++    @Autowired
++    public void setOviUserValidator(OviUserValidator oviUserValidator) {
++        this.oviUserValidator = oviUserValidator;
++    }
++
++    @GetMapping("/list")
++    public String listOviUsers(Model model) {
++        // Asumiendo que añades un método getOviUsers() en tu DAO que devuelva List<OviUser>
++        // Si no, puedes usar personaDao.getPersonasOrderId() temporalmente
++        model.addAttribute("oviUsers", personaDao.getPersonasOrderId());
++        return "OviUser/list";
++    }
++
++    @GetMapping("/add")
++    public String addOviUser(Model model) {
++        model.addAttribute("oviUser", new OviUser());
++        return "OviUser/add";
++    }
++
++    @PostMapping("/add")
++    public String processAddSubmit(@ModelAttribute("oviUser") OviUser oviUser,
++                                   BindingResult bindingResult) {
++        oviUserValidator.validate(oviUser, bindingResult);
++        if (bindingResult.hasErrors())
++            return "OviUser/add";
++
++        int idPersona = personaDao.addPersonaYDevolverId(oviUser);
++        oviUserDao.addOviUser(idPersona);
++
++        return "redirect:/OviUser/list";
++    }
++
++    @GetMapping("/update/{id}")
++    public String editOviUser(Model model, @PathVariable int id) {
++        model.addAttribute("oviUser", personaDao.getPersona(id));
++        return "OviUser/update";
++    }
++
++    @PostMapping("/update")
++    public String processUpdateSubmit(@ModelAttribute("oviUser") OviUser oviUser,
++                                      BindingResult bindingResult) {
++        oviUserValidator.validate(oviUser, bindingResult);
++        if (bindingResult.hasErrors())
++            return "OviUser/update";
++
++        personaDao.updatePersona(oviUser);
++        return "redirect:/OviUser/list";
++    }
++}
+\ No newline at end of file
+Index: uji/src/main/resources/templates/OviUser/list.html
+===================================================================
+diff --git a/uji/src/main/resources/templates/OviUser/list.html b/uji/src/main/resources/templates/OviUser/list.html
+new file mode 100644
+--- /dev/null	(date 1777024252008)
++++ b/uji/src/main/resources/templates/OviUser/list.html	(date 1777024252008)
+@@ -0,0 +1,38 @@
++<!DOCTYPE html>
++<html xmlns:th="http://www.thymeleaf.org">
++<head>
++    <meta charset="UTF-8">
++    <title>Lista OVI Users</title>
++    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">
++</head>
++<body class="container mt-4">
++<div class="d-flex justify-content-between align-items-center mb-4">
++    <h1>Usuarios registrados en la OVI</h1>
++    <a th:href="@{/OviUser/add}" class="btn btn-primary">Nuevo Usuario</a>
++</div>
++
++<table class="table table-hover shadow-sm">
++    <thead class="table-dark">
++    <tr>
++        <th>ID</th>
++        <th>Nombre completo</th>
++        <th>Email</th>
++        <th>País</th>
++        <th>Acciones</th>
++    </tr>
++    </thead>
++    <tbody>
++    <tr th:each="u : ${oviUsers}">
++        <td th:text="${u.idPersona}"></td>
++        <td th:text="${u.nombre} + ' ' + ${u.apellidos}"></td>
++        <td th:text="${u.mail}"></td>
++        <td th:text="${u.pais}"></td>
++        <td>
++            <a th:href="@{/OviUser/update/{id}(id=${u.idPersona})}" class="btn btn-sm btn-warning">Editar</a>
++        </td>
++    </tr>
++    </tbody>
++</table>
++<a href="/" class="btn btn-secondary">Volver al Inicio</a>
++</body>
++</html>
+\ No newline at end of file
