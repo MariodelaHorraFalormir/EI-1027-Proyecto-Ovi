@@ -60,7 +60,7 @@ public class RolController {
 
         Integer idPersona = personaService.getIdPersonaByMail(persona.getMail());
 
-        if (idPersona == null) {
+        if (idPersona == null ) {
             model.addAttribute("tipoSolicitud", tipoSolicitud);
             model.addAttribute("textoRol", tipoSolicitud.getTexto());
             model.addAttribute("persona", persona);

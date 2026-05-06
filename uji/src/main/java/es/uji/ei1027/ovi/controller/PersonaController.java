@@ -1,10 +1,13 @@
 package es.uji.ei1027.ovi.controller;
 
 import es.uji.ei1027.ovi.Service.PersonaService;
+import es.uji.ei1027.ovi.Validadores.PersonaValidator;
 import es.uji.ei1027.ovi.dao.PersonaDao;
+import es.uji.ei1027.ovi.modelo.Login.UsuarioSesion;
 import es.uji.ei1027.ovi.modelo.OviUser.OviUser;
 import es.uji.ei1027.ovi.modelo.Persona.Persona;
 import es.uji.ei1027.ovi.modelo.Persona.PersonaFormulario;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -48,8 +51,14 @@ public class PersonaController {
         PersonaFormulario formulario = personaService.getPersonaFormulario(id);
         model.addAttribute("personaFormulario", formulario);
         return "Persona/update";
-        //
 
+    }
+    @GetMapping("/details/{id}")
+    public String details(@PathVariable int id, Model model) {
+        PersonaFormulario personaFormulario = personaService.getPersonaFormulario(id);
+
+        model.addAttribute("personaFormulario", personaFormulario);
+        return "Persona/details";
     }
 
     @RequestMapping(value = "/update", method = RequestMethod.POST)
@@ -75,26 +84,36 @@ public class PersonaController {
             @ModelAttribute("persona") Persona persona,
             BindingResult bindingResult,
             Model model) {
-
+        PersonaValidator validator = new PersonaValidator();
+        validator.validate(persona, bindingResult);
         if (bindingResult.hasErrors()) {
             return "Persona/registro";
         }
 
         try {
-            if (personaDao.existeMail(persona.getMail())) {
-                throw new IllegalArgumentException("Ya existe una persona registrada con ese correo.");
-            }
-
-            persona.setFechaAlta(LocalDate.now());
-            persona.setFechaBaja(null);
-
-            personaDao.addPersonaYDevolverId(persona);
-            return "redirect:/";
+            personaService.registrarPersona(persona);
+            return "redirect:/login";
         } catch (IllegalArgumentException e) {
             model.addAttribute("errorMail", e.getMessage());
             model.addAttribute("persona", persona);
             return "Persona/registro";
         }
+    }
+    @GetMapping("/mi-perfil")
+    public String miPerfil(HttpSession session, Model model) {
+        UsuarioSesion usuario = (UsuarioSesion) session.getAttribute("usuario");
+
+        if (usuario == null) {
+            session.setAttribute("nextUrl", "/Persona/mi-perfil");
+            return "redirect:/login";
+        }
+
+        PersonaFormulario personaFormulario =
+                personaService.getPersonaFormulario(usuario.getIdPersona());
+
+        model.addAttribute("personaFormulario", personaFormulario);
+
+        return "Persona/details";
     }
 }
 

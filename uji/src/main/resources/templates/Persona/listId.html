@@ -63,6 +63,7 @@
                 <th class="no-wrap">Teléfono</th>
                 <th class="no-wrap">Fecha Alta</th>
                 <th class="no-wrap">Fecha Baja</th>
+                <th class="no-wrap">Detalles</th>
                 <th class="no-wrap">Editar</th>
                 <th class="no-wrap">Borrar</th>
             </tr>
@@ -85,6 +86,12 @@
 
                 <td class="no-wrap"
                     th:text="${persona.fechaBaja != null ? #temporals.format(persona.fechaBaja, 'dd/MM/yyyy') : '-'}">
+                </td>
+                <td class="no-wrap">
+                    <a th:href="@{/Persona/details/{id}(id=${persona.idPersona})}"
+                       class="btn btn-info">
+                        Detalles
+                    </a>
                 </td>
 
                 <td class="no-wrap">

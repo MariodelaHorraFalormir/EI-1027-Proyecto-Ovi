@@ -100,5 +100,16 @@ public class PersonaDao {
             return null;
         }
     }
+    public Persona getPersonaByMail(String mail) {
+        try {
+            return jdbcTemplate.queryForObject(
+                    "SELECT * FROM persona WHERE mail = ?",
+                    new PersonaRowMapper(),
+                    mail
+            );
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
 
 }

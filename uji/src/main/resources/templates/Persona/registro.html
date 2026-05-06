@@ -125,6 +125,10 @@
         .alert {
             border-radius: 14px;
         }
+        .error{
+            color: #dc3545;
+            font-size: 90%;
+        }
     </style>
 </head>
 <body>
@@ -156,36 +160,42 @@
                         <label class="data-label" for="nombre">Nombre</label>
                         <input type="text" id="nombre" class="form-control"
                                th:field="*{nombre}" placeholder="Introduce el nombre" required>
+                        <div th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}" class="error"></div>
                     </div>
 
                     <div class="col-md-6">
                         <label class="data-label" for="apellidos">Apellidos</label>
                         <input type="text" id="apellidos" class="form-control"
                                th:field="*{apellidos}" placeholder="Introduce los apellidos" required>
+                        <div th:if="${#fields.hasErrors('apellidos')}" th:errors="*{apellidos}" class="error"></div>
                     </div>
 
                     <div class="col-md-6">
                         <label class="data-label" for="mail">Correo electrónico</label>
                         <input type="email" id="mail" class="form-control"
                                th:field="*{mail}" placeholder="correo@ejemplo.com" required>
+                        <div th:if="${#fields.hasErrors('mail')}" th:errors="*{mail}" class="error"></div>
                     </div>
 
                     <div class="col-md-6">
                         <label class="data-label" for="telefono">Teléfono</label>
                         <input type="text" id="telefono" class="form-control"
                                th:field="*{telefono}" placeholder="600123123" required>
+                        <div th:if="${#fields.hasErrors('telefono')}" th:errors="*{telefono}" class="error"></div>
                     </div>
 
                     <div class="col-md-4">
                         <label class="data-label" for="dni">DNI</label>
                         <input type="text" id="dni" class="form-control"
                                th:field="*{dni}" placeholder="12345678A" required>
+                        <div th:if="${#fields.hasErrors('dni')}" th:errors="*{dni}" class="error"></div>
                     </div>
 
                     <div class="col-md-4">
                         <label class="data-label" for="pais">País</label>
                         <input type="text" id="pais" class="form-control"
                                th:field="*{pais}" placeholder="España" required>
+                        <div th:if="${#fields.hasErrors('pais')}" th:errors="*{pais}" class="error"></div>
                     </div>
 
                     <div class="col-md-4">
@@ -208,6 +218,7 @@
                         <label class="data-label" for="fechaNacimiento">Fecha de nacimiento</label>
                         <input type="date" id="fechaNacimiento" class="form-control"
                                th:field="*{fechaNacimiento}" required>
+                        <div th:if="${#fields.hasErrors('fechaNacimiento')}" th:errors="*{fechaNacimiento}" class="error"></div>
                     </div>
                 </div>
             </div>
@@ -219,21 +230,18 @@
                     <span class="role-badge">Cuenta</span>
                 </div>
 
-                <div class="row g-4">
-                    <div class="col-md-6">
-                        <label class="data-label" for="contrasena">Contraseña</label>
-                        <input type="password" id="contrasena" class="form-control"
-                               th:field="*{contrasena}" placeholder="Introduce una contraseña" required>
-                    </div>
-
-                    </div>
+                <div class="col-md-6">
+                    <label class="data-label" for="contrasena">Contraseña</label>
+                    <input type="password" id="contrasena" class="form-control"
+                           th:field="*{contrasena}" placeholder="Introduce una contraseña" required>
+                    <div th:if="${#fields.hasErrors('contrasena')}" th:errors="*{contrasena}" class="error"></div>
                 </div>
-            </div>
 
             <div class="actions">
                 <button type="submit" class="btn btn-primary">Registrarme</button>
                 <a th:href="@{/}" class="btn btn-secondary">Volver al inicio</a>
                 <a th:href="@{/Persona/listId}" class="btn btn-outline-secondary">Ver personas</a>
+            </div>
             </div>
 
         </form>
