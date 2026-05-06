@@ -57,14 +57,7 @@ public class OviUserController {
         model.addAttribute("solicitud", solicitud);
         return "OviUser/create";
     }
-    @GetMapping("/details/{id}")
-    public String detalles(Model model , @PathVariable int id) {
-       OviUser oviUser = oviUserDao.getOviUser(id);
 
-        model.addAttribute("oviUser", oviUser);
-        model.addAttribute("diversidades", diversidadFuncionalDao.obtenerDiverdadesPorId(id));
-        return "OviUser/details";
-    }
     @PostMapping("/create/{id}")
     public String procesarRegistro(
             @ModelAttribute("oviUser") OviUser oviUser,@ModelAttribute("solicitud") Solicitud solicitud ,
@@ -109,7 +102,14 @@ public class OviUserController {
 
         return "redirect:/Persona/update/" + id;
     }
+    @GetMapping("/details/{id}")
+    public String detalles(Model model , @PathVariable int id) {
+        OviUser oviUser = oviUserDao.getOviUser(id);
 
+        model.addAttribute("oviUser", oviUser);
+        model.addAttribute("diversidades", diversidadFuncionalDao.obtenerDiverdadesPorId(id));
+        return "OviUser/details";
+    }
 
 
 

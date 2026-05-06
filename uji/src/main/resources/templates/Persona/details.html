@@ -269,7 +269,7 @@
 
         <!-- ROLES ASOCIADOS -->
         <div class="block-card"
-             th:if="${personaFormulario.oviUser != null or personaFormulario.patPati != null}">
+             th:if="${personaFormulario.tieneOviUser() or personaFormulario.tienePapPati()}">
 
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
                 <div>
@@ -289,9 +289,9 @@
                    class="btn btn-primary">
                     Ver OVI User
                 </a>
-                
 
-                <a th:if="${personaFormulario.patPati != null}"
+
+                <a th:if="${personaFormulario.papPati != null}"
                    th:href="@{/PapPati/details/{id}(id=${personaFormulario.persona.idPersona})}"
                    class="btn btn-success">
                     Ver PAP/PATI
@@ -302,7 +302,7 @@
 
         <!-- SIN ROLES ASOCIADOS -->
         <div class="block-card"
-             th:if="${personaFormulario.oviUser == null and personaFormulario.patPati == null}">
+             th:if="${personaFormulario.oviUser == null and personaFormulario.papPati == null}">
 
             <div class="block-title mb-1">Roles asociados</div>
 
