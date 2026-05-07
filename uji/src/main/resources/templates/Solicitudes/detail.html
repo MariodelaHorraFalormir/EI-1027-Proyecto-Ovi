@@ -2,11 +2,10 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Detalle de solicitud</title>
+    <title>Detalle de solicitud y Propuesta</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"/>
 
     <style>
         body {
@@ -15,7 +14,7 @@
         }
 
         .detail-card {
-            max-width: 950px;
+            max-width: 1000px; /* Un poco más ancho para que quepa bien la tabla de candidatos */
             margin: 40px auto;
             background: white;
             border-radius: 20px;
@@ -52,6 +51,30 @@
             padding: 0.5rem 0.8rem;
             border-radius: 999px;
         }
+
+        /* Estilos nuevos para la sección del técnico */
+        .panel-tecnico {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .panel-tecnico-title {
+            color: #0f172a;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .table-custom th {
+            background-color: #1f3b5b;
+            color: white;
+        }
+        .table-custom td {
+            vertical-align: middle;
+        }
     </style>
 </head>
 <body>
@@ -61,9 +84,9 @@
 
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
             <div>
-                <h1 class="section-title">Detalle de solicitud</h1>
+                <h1 class="section-title">Gestión de Solicitud</h1>
                 <p class="section-subtitle mb-0">
-                    Información completa de la solicitud seleccionada
+                    Panel del Técnico: Revisión y propuesta de candidatos
                 </p>
             </div>
 
@@ -75,7 +98,6 @@
         </div>
 
         <div class="row g-4">
-
             <div class="col-md-6">
                 <div class="data-label">ID de la solicitud</div>
                 <div class="data-value" th:text="${solicitud.idSolicitud}"></div>
@@ -83,9 +105,7 @@
 
             <div class="col-md-6">
                 <div class="data-label">Persona solicitante</div>
-                <div class="data-value"
-                     th:text="${solicitud.personaSolicitante != null ? solicitud.personaSolicitante : '-'}">
-                </div>
+                <div class="data-value" th:text="${solicitud.personaSolicitante != null ? solicitud.personaSolicitante : '-'}"></div>
             </div>
 
             <div class="col-md-6">
@@ -116,43 +136,81 @@
 
             <div class="col-md-6">
                 <div class="data-label">Técnico revisor</div>
-                <div class="data-value"
-                     th:text="${solicitud.tecnicoRevisor != null ? solicitud.tecnicoRevisor : '-'}">
-                </div>
+                <div class="data-value" th:text="${solicitud.tecnicoRevisor != null ? solicitud.tecnicoRevisor : '-'}"></div>
             </div>
 
             <div class="col-md-6">
                 <div class="data-label">Fecha de creación</div>
-                <div class="data-value"
-                     th:text="${solicitud.fechaCreacion != null ? #temporals.format(solicitud.fechaCreacion, 'dd/MM/yyyy') : '-'}">
-                </div>
+                <div class="data-value" th:text="${solicitud.fechaCreacion != null ? #temporals.format(solicitud.fechaCreacion, 'dd/MM/yyyy') : '-'}"></div>
             </div>
 
             <div class="col-md-6">
                 <div class="data-label">Fecha de resolución</div>
-                <div class="data-value"
-                     th:text="${solicitud.fechaResolucion != null ? #temporals.format(solicitud.fechaResolucion, 'dd/MM/yyyy') : '-'}">
-                </div>
+                <div class="data-value" th:text="${solicitud.fechaResolucion != null ? #temporals.format(solicitud.fechaResolucion, 'dd/MM/yyyy') : '-'}"></div>
             </div>
 
             <div class="col-12">
-                <div class="data-label">Mensaje de la solicitud</div>
-                <div class="data-value"
-                     th:text="${solicitud.mensajeSolicitud != null and !#strings.isEmpty(solicitud.mensajeSolicitud) ? solicitud.mensajeSolicitud : '-'}">
-                </div>
-            </div>
-
-            <div class="col-12">
-                <div class="data-label">Motivo de resolución</div>
-                <div class="data-value"
-                     th:text="${solicitud.motivoResolucion != null and !#strings.isEmpty(solicitud.motivoResolucion) ? solicitud.motivoResolucion : '-'}">
-                </div>
+                <div class="data-label">Preferencias y Mensaje de la solicitud</div>
+                <div class="data-value" th:text="${solicitud.mensajeSolicitud != null and !#strings.isEmpty(solicitud.mensajeSolicitud) ? solicitud.mensajeSolicitud : '-'}"></div>
             </div>
         </div>
 
-        <div class="mt-4 d-flex gap-2">
+        <div class="panel-tecnico" th:if="${solicitud.estadoSolicitud != null and solicitud.estadoSolicitud.toString() == 'Pendiente'}">
+            <h2 class="panel-tecnico-title">Generar Propuesta</h2>
+            <p class="text-muted mb-4">
+                El sistema ha analizado la petición y sugiere los siguientes perfiles óptimos basándose en la <strong>proximidad geográfica</strong>, la <strong>disponibilidad horaria</strong> y las <strong>preferencias</strong> del usuario.
+            </p>
+
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered table-custom" aria-label="Tabla de candidatos recomendados">
+                    <caption>Lista de asistentes sugeridos ordenados por porcentaje de afinidad</caption>
+                    <thead>
+                    <tr>
+                        <th scope="col">Candidato/a</th>
+                        <th scope="col">Proximidad Geográfica</th>
+                        <th scope="col">Disponibilidad</th>
+                        <th scope="col">Afinidad</th>
+                        <th scope="col">Acción</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td class="fw-bold">Laura Martínez (PAP)</td>
+                        <td>Mismo distrito (1.2 km)</td>
+                        <td>Mañanas (L-V)</td>
+                        <td><span class="badge bg-success text-white">98% Match</span></td>
+                        <td>
+                            <a th:href="@{/Solicitudes/aprobarRapido/{id}(id=${solicitud.idSolicitud})}"
+                               class="btn btn-sm btn-primary"
+                               aria-label="Aprobar solicitud y proponer a Laura Martínez">
+                                Aprobar y Proponer
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">David Serrano (PATI)</td>
+                        <td>Zona adyacente (4.5 km)</td>
+                        <td>Tardes (L-J)</td>
+                        <td><span class="badge bg-warning text-dark">75% Match</span></td>
+                        <td>
+                            <a th:href="@{/Solicitudes/aprobarRapido/{id}(id=${solicitud.idSolicitud})}"
+                               class="btn btn-sm btn-outline-primary"
+                               aria-label="Aprobar solicitud y proponer a David Serrano">
+                                Aprobar y Proponer
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="mt-4 d-flex gap-2 border-top pt-4">
             <a th:href="@{/Solicitudes/listId}" class="btn btn-secondary">Volver al listado</a>
             <a th:href="@{/}" class="btn btn-outline-dark">Ir al inicio</a>
+            <a th:if="${solicitud.estadoSolicitud != null and solicitud.estadoSolicitud.toString() == 'Pendiente'}"
+               th:href="@{/Solicitudes/rechazarRapido/{id}(id=${solicitud.idSolicitud})}"
+               class="btn btn-danger ms-auto">Rechazar Solicitud</a>
         </div>
 
     </div>

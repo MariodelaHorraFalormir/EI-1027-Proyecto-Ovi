@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Nueva Petición - OVI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"/>
+  <style>
+    body {
+      background: linear-gradient(135deg, #f4f7fb, #e9f0f8);
+      min-height: 100vh;
+    }
+    .hero-box {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      padding: 3rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .main-title {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #1f3b5b;
+    }
+    .top-badge {
+      display: inline-block;
+      background: #dbeafe;
+      color: #1d4ed8;
+      font-weight: 600;
+      padding: 0.4rem 0.8rem;
+      border-radius: 999px;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+    }
+    .form-label {
+      font-weight: 600;
+      color: #334155;
+    }
+    /* Para accesibilidad, aseguramos que los inputs tengan borde claro */
+    .form-control, .form-select {
+      border: 1px solid #94a3b8;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container py-5">
+  <div class="hero-box">
+
+    <div class="mb-4">
+      <div class="top-badge">Formulario de Asistencia</div>
+      <h1 class="main-title">Registrar Petición de Asistencia Personal</h1>
+      <p class="text-muted mt-2">Rellena el siguiente formulario para solicitar un asistente personal (PAP o PATI) detallando tus necesidades.</p>
+    </div>
+
+    <form action="#" method="post" aria-label="Formulario para solicitar asistencia personal">
+
+      <div class="row g-3 mb-4">
+        <div class="col-md-6">
+          <label for="tipoSolicitud" class="form-label">Tipo de Asistencia Requerida *</label>
+          <select id="tipoSolicitud" name="tipoSolicitud" class="form-select" required aria-required="true">
+            <option value="">Selecciona una opción...</option>
+            <option value="PAP">Asistencia Personal (PAP)</option>
+            <option value="PATI">Asistencia Infantil (PATI)</option>
+          </select>
+        </div>
+      </div>
+
+      <fieldset class="border p-3 rounded mb-4">
+        <legend class="w-auto px-2 fs-5 fw-bold text-secondary">Fechas del Servicio</legend>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label for="fechaInicioAsistencia" class="form-label">Fecha de Inicio Estimada</label>
+            <input type="date" id="fechaInicioAsistencia" name="fechaInicioAsistencia" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label for="fechaFinAsistencia" class="form-label">Fecha de Fin (Opcional)</label>
+            <input type="date" id="fechaFinAsistencia" name="fechaFinAsistencia" class="form-control">
+          </div>
+        </div>
+      </fieldset>
+
+      <div class="mb-4">
+        <label for="mensajeSolicitud" class="form-label">Preferencias y Comentarios (Disponibilidad, tipo de tareas, necesidades geográficas...) *</label>
+        <textarea id="mensajeSolicitud" name="mensajeSolicitud" class="form-control" rows="4" required aria-required="true" placeholder="Ej: Necesito asistencia por las mañanas en la zona de Castellón..."></textarea>
+      </div>
+
+      <div class="d-flex justify-content-between mt-5">
+        <a th:href="@{/Solicitudes/misSolicitudes}" class="btn btn-outline-secondary btn-lg">Cancelar</a>
+        <button type="submit" class="btn btn-primary btn-lg">Enviar Petición</button>
+      </div>
+
+    </form>
+
+  </div>
+</div>
+
+</body>
+</html>

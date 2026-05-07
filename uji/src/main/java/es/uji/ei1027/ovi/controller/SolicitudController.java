@@ -69,4 +69,21 @@ public class SolicitudController {
         return "redirect:/Solicitudes/listId";
     }
 
+    // --- VISTAS DEL FRONT-OFFICE (USUARIO) ---
+
+    @GetMapping("/misSolicitudes")
+    public String misSolicitudes(Model model) {
+        // Como dijo Mario, hasta que tengamos el login hecho,
+        // para ver que la tabla funciona y tiene buen diseño,
+        // le paso temporalmente todas las solicitudes que haya en la BD.
+        model.addAttribute("solicitudes", solicitudDao.getSolicitudesOrderId());
+
+        return "Solicitudes/misSolicitudes";
+    }
+
+    @GetMapping("/nueva")
+    public String crearSolicitud() {
+        return "Solicitudes/create";
+    }
+
 }
