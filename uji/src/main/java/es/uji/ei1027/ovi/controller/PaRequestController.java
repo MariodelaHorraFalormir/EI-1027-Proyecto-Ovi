@@ -67,30 +67,24 @@ public class PaRequestController {
         }
 
         try {
-            // 1. ASIGNAR VALORES OBLIGATORIOS (Esto evita el NullPointerException)
             LocalDate hoy = LocalDate.now();
 
-            // Datos para PaRequest
             paRequest.setOviUser(id);
             paRequest.setFechaCreacion(hoy);
-            paRequest.setStatus(StatusPaRequest.En_espera); // <--- ESTO ARREGLA EL ERROR
+            paRequest.setStatus(StatusPaRequest.En_espera);
 
-            // Datos para la Solicitud general
             solicitud.setPersonaSolicitante(id);
             solicitud.setFechaCreacion(hoy);
             solicitud.setEstadoSolicitud(EstadoSolicitud.Pendiente);
             solicitud.setCategoriaSolicitud(CategoriaSolicitud.Rol);
             solicitud.setTipoSolicitud(TipoSolicitud.Pa_request);
 
-            // 2. GUARDAR EN BD (Ahora ya no fallará el DAO)
             paRequestDao.addPaRequest(paRequest);
             solicitudesDao.createSolicitud(solicitud);
 
-            // 3. REDIRECCIÓN (Ahora sí llegará aquí porque no hay excepción)
             return "redirect:/";
 
         } catch (Exception e) {
-            // Imprimimos el error para estar seguros
             System.out.println("ERROR AL GUARDAR: " + e.getMessage());
             e.printStackTrace();
             return "PaRequest/create";

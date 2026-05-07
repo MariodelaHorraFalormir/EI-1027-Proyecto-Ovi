@@ -12,15 +12,21 @@ public class PaRequestRowMapper implements RowMapper<PaRequest> {
     @Override
     public PaRequest mapRow(ResultSet rs, int rowNum) throws SQLException {
         PaRequest paRequest = new PaRequest();
-
         paRequest.setId(rs.getInt("id"));
         paRequest.setStatus(StatusPaRequest.fromString(rs.getString("status")));
         paRequest.setFechaCreacion(rs.getDate("fecha_creacion").toLocalDate());
 
-        if (rs.getDate("fecha_resolucion") != null) {
+        if (rs.getDate("fecha_resolucion") != null)
             paRequest.setFechaResolucion(rs.getDate("fecha_resolucion").toLocalDate());
-        }
 
+        // Mapeo de nuevos campos
+        if (rs.getDate("fecha_inicio") != null)
+            paRequest.setFechaInicio(rs.getDate("fecha_inicio").toLocalDate());
+        if (rs.getDate("fecha_fin") != null)
+            paRequest.setFechaFin(rs.getDate("fecha_fin").toLocalDate());
+
+        paRequest.setTipoAsistencia(rs.getString("tipo_asistencia"));
+        paRequest.setPreferencias(rs.getString("preferencias"));
         paRequest.setOviUser(rs.getInt("ovi_user"));
 
         return paRequest;
