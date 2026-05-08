@@ -1,6 +1,6 @@
 package es.uji.ei1027.ovi.controller;
 
-import es.uji.ei1027.ovi.Service.PersonaService;
+import es.uji.ei1027.ovi.Service.*;
 import es.uji.ei1027.ovi.dao.EspecialidadesDao;
 import es.uji.ei1027.ovi.dao.PapPatiDao;
 import es.uji.ei1027.ovi.dao.SolicitudesDao;
@@ -13,6 +13,8 @@ import es.uji.ei1027.ovi.modelo.Solicitud.CategoriaSolicitud;
 import es.uji.ei1027.ovi.modelo.Solicitud.EstadoSolicitud;
 import es.uji.ei1027.ovi.modelo.Solicitud.Solicitud;
 import es.uji.ei1027.ovi.modelo.Solicitud.TipoSolicitud;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,6 +30,15 @@ public class PapPatiController {
     private SolicitudesDao solicitudesDao;
     private PapPatiDao papPatiDao;
     private EspecialidadesDao especialidadesDao;
+    private SolicitudesService solicitudesService;
+    private PapPatiService papPatiService;
+    private SesionService sesionService;
+    @Autowired
+    public void setPapPatiService(PapPatiService papPatiService) {
+        this.papPatiService = papPatiService;
+    }
+    @Autowired
+    public void setSolicitudesService(SolicitudesService solicitudesService) {this.solicitudesService = solicitudesService;}
     @Autowired
     public void setSolicitudDao(SolicitudesDao solicitudDao) {this.solicitudesDao = solicitudDao;}
     @Autowired
@@ -35,13 +46,42 @@ public class PapPatiController {
     @Autowired
     public void setPapPatiDao(PapPatiDao papPatiDao) {this.papPatiDao = papPatiDao;
     }
+    @Autowired
+    public void setSesionService(SesionService sesionService) {
+        this.sesionService = sesionService;
+    }
+
+    @GetMapping("/solicitud")
+    public String gestionarSolicitudOviUser(HttpSession session) {
+
+        if (!sesionService.hayUsuarioLogueado(session)) {
+            sesionService.guardarNextUrl(session, "/PapPati/solicitud");
+            return "redirect:/login";
+        }
+        int idPersona = sesionService.getUsuario(session).getIdPersona();
+        String rutaDestino = papPatiService.obtenerRutaSolicitudPapPati(idPersona);
+
+        return "redirect:" + rutaDestino;
+    }
+
     @GetMapping("/create/{id}")
-    public String mostrarFormularioRegistro(Model model , @PathVariable int id) {
-        Solicitud solicitud = new Solicitud();
-        solicitud.setPersonaSolicitante(id);
-        solicitud.setCategoriaSolicitud(CategoriaSolicitud.Rol);
-        solicitud.setTipoSolicitud(TipoSolicitud.Pap_pati);
-        solicitud.setEstadoSolicitud(EstadoSolicitud.Pendiente);
+    public String mostrarFormularioRegistro(Model model , @PathVariable int id , HttpSession session) {
+        Solicitud solicitud = solicitudesService.solicitudRol(id,TipoSolicitud.Pap_pati);
+        String url = "/PapPati/create/" + id;
+
+        if (!sesionService.hayUsuarioLogueado(session)) {
+            return sesionService.redirigirALogin(session, url);
+        }
+
+        int idPersona = sesionService.getUsuario(session).getIdPersona();
+
+        if (idPersona != id) {
+            return "redirect:/";
+        }
+
+        if (papPatiDao.getPapPati(id) != null) {
+            return "redirect:/PapPati/solicitud";
+        }
         PapPati papPati = new PapPati();
         papPati.setIdPatPati(id);
         model.addAttribute("papPati", papPati);
@@ -50,6 +90,9 @@ public class PapPatiController {
         model.addAttribute("especialidadesSeleccionadas", List.of());
         return "PapPati/create";
     }
+
+
+
     @PostMapping("/create/{id}")
     public String procesarRegistro(
             @ModelAttribute("papPati") PapPati papPati, @ModelAttribute("solicitud") Solicitud solicitud ,
