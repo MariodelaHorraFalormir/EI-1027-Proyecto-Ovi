@@ -106,7 +106,7 @@
                         <p class="section-text">
                             Consultar las personas registradas ordenadas por ID.
                         </p>
-                        <a href="Persona/listId" class="btn btn-success mt-auto">Ver personas</a>
+                        <a href="/Persona/list/todas" class="btn btn-success mt-auto">Ver personas</a>
                     </div>
                 </div>
             </div>
@@ -162,7 +162,7 @@
                 </a>
 
                 <a th:if="${session.usuario != null}"
-                   th:href="@{/Persona/mi-perfil}"
+                   th:href="@{/Persona/details/{id}(id=${session.usuario.getIdPersona()})}"
                    class="btn btn-primary">
                     Ver mi perfil
                 </a>

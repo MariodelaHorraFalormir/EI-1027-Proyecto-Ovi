@@ -1,6 +1,8 @@
 package es.uji.ei1027.ovi.controller;
 
+import es.uji.ei1027.ovi.Service.AuthService;
 import es.uji.ei1027.ovi.Service.PersonaService;
+import es.uji.ei1027.ovi.Service.SesionService;
 import es.uji.ei1027.ovi.modelo.Login.LoginForm;
 import es.uji.ei1027.ovi.modelo.Login.UsuarioSesion;
 import jakarta.servlet.http.HttpSession;
@@ -13,18 +15,29 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 public class LoginController {
 
-    private PersonaService personaService;
+    private AuthService authService;
+    private SesionService sesionService;
 
     @Autowired
-    public void setPersonaService(PersonaService personaService) {
-        this.personaService = personaService;
+    public void setAuthService(AuthService authService) {
+        this.authService = authService;
     }
 
+    @Autowired
+    public void setSesionService(SesionService sesionService) {
+        this.sesionService = sesionService;
+    }
+
+
     @GetMapping("/login")
-    public String mostrarLogin(Model model) {
+    public String mostrarLogin(Model model, HttpSession session) {
+        if (sesionService.hayUsuarioLogueado(session)) {
+            return "redirect:/";
+        }
         model.addAttribute("login", new LoginForm());
         return "login/login";
     }
+
 
     @PostMapping("/login")
     public String procesarLogin(@ModelAttribute("login") LoginForm login,
@@ -44,7 +57,7 @@ public class LoginController {
             return "login/login";
         }
 
-        UsuarioSesion usuarioSesion = personaService.autenticar(
+        UsuarioSesion usuarioSesion = authService.autenticar(
                 login.getMail(),
                 login.getContrasena()
         );
@@ -54,21 +67,14 @@ public class LoginController {
             return "login/login";
         }
 
-        session.setAttribute("usuario", usuarioSesion);
+       sesionService.guardarUsuario(session, usuarioSesion);
 
-        String nextUrl = (String) session.getAttribute("nextUrl");
-
-        if (nextUrl != null) {
-            session.removeAttribute("nextUrl");
-            return "redirect:" + nextUrl;
-        }
-
-        return "redirect:/Persona/mi-perfil";
+        return sesionService.redirigirDespuesDelLogin(session);
     }
 
     @GetMapping("/logout")
     public String logout(HttpSession session) {
-        session.invalidate();
+        sesionService.cerrarSesion(session);
         return "redirect:/";
     }
 }

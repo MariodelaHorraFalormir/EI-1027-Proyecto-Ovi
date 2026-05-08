@@ -1,6 +1,7 @@
 package es.uji.ei1027.ovi.controller;
 
 import es.uji.ei1027.ovi.Service.PersonaService;
+import es.uji.ei1027.ovi.Service.SesionService;
 import es.uji.ei1027.ovi.dao.OviUserDao;
 import es.uji.ei1027.ovi.dao.DiversidadFuncionalDao;
 import es.uji.ei1027.ovi.dao.PersonaDao;
@@ -34,6 +35,12 @@ public class OviUserController {
     private OviUserDao oviUserDao;
     private PersonaService personaService;
     private DiversidadFuncionalDao diversidadFuncionalDao;
+    private SesionService sesionService;
+
+    @Autowired
+    public void setSesionService(SesionService sesionService) {
+        this.sesionService = sesionService;
+    }
     @Autowired
     public void  setDiversidadFuncionalDao(DiversidadFuncionalDao diversidadFuncionalDao){this.diversidadFuncionalDao=diversidadFuncionalDao;}
     @Autowired
