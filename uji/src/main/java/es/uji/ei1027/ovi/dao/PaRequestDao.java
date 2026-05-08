@@ -2,6 +2,7 @@ package es.uji.ei1027.ovi.dao;
 
 import es.uji.ei1027.ovi.RowMapper.PaRequestRowMapper;
 import es.uji.ei1027.ovi.modelo.PaRequest.PaRequest;
+import es.uji.ei1027.ovi.modelo.PaRequest.StatusPaRequest; // IMPORTANTE: He añadido este import
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -22,19 +23,11 @@ public class PaRequestDao {
     }
 
     public void addPaRequest(PaRequest paRequest) {
-
-        // 2. Usamos OVERRIDING SYSTEM VALUE para que Postgres nos deje meter el ID manual
-        // a pesar de ser una columna GENERATED ALWAYS
-        String sql = "INSERT INTO pa_request ( status, fecha_creacion, fecha_resolucion, ovi_user) " +
-                "VALUES ( ?::status_pa_request_enum, ?, ?, ?)";
-
-        jdbcTemplate.update(
-                sql,
         Integer maxId = jdbcTemplate.queryForObject("SELECT MAX(id) FROM pa_request", Integer.class);
         int nextId = (maxId == null) ? 1 : maxId + 1;
 
-        String sql = "INSERT INTO pa_request (id, status, fecha_creacion, ovi_user, fecha_inicio, fecha_fin, tipo_asistencia, preferencias) " +
-                "OVERRIDING SYSTEM VALUE VALUES (?, ?::status_pa_request_enum, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO pa_request (id, status, fecha_creacion, ovi_user, fecha_inicio, fecha_fin, tipo_asistencia, preferencias, fecha_resolucion) " +
+                "OVERRIDING SYSTEM VALUE VALUES (?, ?::status_pa_request_enum, ?, ?, ?, ?, ?, ?, ?)";
 
         jdbcTemplate.update(sql,
                 nextId,
@@ -44,19 +37,22 @@ public class PaRequestDao {
                 paRequest.getFechaInicio() != null ? Date.valueOf(paRequest.getFechaInicio()) : null,
                 paRequest.getFechaFin() != null ? Date.valueOf(paRequest.getFechaFin()) : null,
                 paRequest.getTipoAsistencia(),
-                paRequest.getPreferencias()
-                paRequest.getFechaResolucion() != null ? Date.valueOf(paRequest.getFechaResolucion()) : null,
-                paRequest.getOviUser()
+                paRequest.getPreferencias(),
+                paRequest.getFechaResolucion() != null ? Date.valueOf(paRequest.getFechaResolucion()) : null
         );
     }
 
     public void updatePaRequest(PaRequest paRequest) {
         jdbcTemplate.update(
-                "UPDATE pa_request SET status = ?::status_pa_request_enum, fecha_creacion = ?, fecha_resolucion = ?, ovi_user = ? WHERE id = ?",
+                "UPDATE pa_request SET status = ?::status_pa_request_enum, fecha_creacion = ?, fecha_resolucion = ?, ovi_user = ?, fecha_inicio = ?, fecha_fin = ?, tipo_asistencia = ?, preferencias = ? WHERE id = ?",
                 paRequest.getStatus().getTexto(),
                 Date.valueOf(paRequest.getFechaCreacion()),
                 paRequest.getFechaResolucion() != null ? Date.valueOf(paRequest.getFechaResolucion()) : null,
                 paRequest.getOviUser(),
+                paRequest.getFechaInicio() != null ? Date.valueOf(paRequest.getFechaInicio()) : null,
+                paRequest.getFechaFin() != null ? Date.valueOf(paRequest.getFechaFin()) : null,
+                paRequest.getTipoAsistencia(),
+                paRequest.getPreferencias(),
                 paRequest.getId()
         );
     }
@@ -77,16 +73,14 @@ public class PaRequestDao {
         }
     }
 
-    public List<PaRequest> getPaRequests() {
-        return jdbcTemplate.query("SELECT * FROM pa_request", new PaRequestRowMapper());
-
     public void cambiarEstadoPaRequest(int personaSolicitante, StatusPaRequest statusPaRequest) {
-
+        // Ojo: Si 'statusPaRequest' sigue dando error aquí, asegúrate de que exista ese Enum en la carpeta modelo
         String sql = "UPDATE ovi_user SET "
                 + "estado = ?::status_pa_request_enum "
                 + "WHERE id = ?" ;
         jdbcTemplate.update(sql,statusPaRequest.getTexto(),personaSolicitante);
     }
+
     public List<PaRequest> getPaRequests() {
         return jdbcTemplate.query("SELECT * FROM pa_request", new PaRequestRowMapper());
     }

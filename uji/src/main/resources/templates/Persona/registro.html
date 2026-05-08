@@ -2,11 +2,10 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Registro de persona</title>
+    <title>Registro - OVI</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"/>
 
     <style>
         body {
@@ -56,16 +55,14 @@
             margin-bottom: 0.45rem;
         }
 
-        .form-control,
-        .form-select {
+        .form-control, .form-select {
             border-radius: 12px;
             padding: 0.75rem 0.95rem;
             border: 1px solid #d8e0ea;
             background-color: #fff;
         }
 
-        .form-control:focus,
-        .form-select:focus {
+        .form-control:focus, .form-select:focus {
             border-color: #7aa7d9;
             box-shadow: 0 0 0 0.2rem rgba(58, 123, 213, 0.12);
         }
@@ -112,19 +109,6 @@
             border-color: #193f63;
         }
 
-        .btn-outline-secondary:hover {
-            background-color: #6c757d;
-            color: white;
-        }
-
-        .text-muted-small {
-            font-size: 0.92rem;
-            color: #6c757d;
-        }
-
-        .alert {
-            border-radius: 14px;
-        }
         .error{
             color: #dc3545;
             font-size: 90%;
@@ -132,6 +116,8 @@
     </style>
 </head>
 <body>
+
+<div th:replace="~{layout/navbar :: main-nav}"></div>
 
 <div class="container">
     <div class="edit-card">
@@ -143,7 +129,6 @@
                     Completa los datos para darte de alta en la plataforma OVI
                 </p>
             </div>
-
             <span class="role-badge">Nueva alta</span>
         </div>
 
@@ -151,50 +136,43 @@
 
         <form th:object="${persona}" method="post" th:action="@{/Persona/registro}">
 
-            <!-- DATOS PERSONALES -->
             <div class="block-card">
                 <div class="block-title">Datos personales</div>
 
                 <div class="row g-4">
                     <div class="col-md-6">
                         <label class="data-label" for="nombre">Nombre</label>
-                        <input type="text" id="nombre" class="form-control"
-                               th:field="*{nombre}" placeholder="Introduce el nombre" required>
+                        <input type="text" id="nombre" class="form-control" th:field="*{nombre}" placeholder="Introduce el nombre" required>
                         <div th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}" class="error"></div>
                     </div>
 
                     <div class="col-md-6">
                         <label class="data-label" for="apellidos">Apellidos</label>
-                        <input type="text" id="apellidos" class="form-control"
-                               th:field="*{apellidos}" placeholder="Introduce los apellidos" required>
+                        <input type="text" id="apellidos" class="form-control" th:field="*{apellidos}" placeholder="Introduce los apellidos" required>
                         <div th:if="${#fields.hasErrors('apellidos')}" th:errors="*{apellidos}" class="error"></div>
                     </div>
 
                     <div class="col-md-6">
                         <label class="data-label" for="mail">Correo electrónico</label>
-                        <input type="email" id="mail" class="form-control"
-                               th:field="*{mail}" placeholder="correo@ejemplo.com" required>
+                        <input type="email" id="mail" class="form-control" th:field="*{mail}" placeholder="correo@ejemplo.com" required>
                         <div th:if="${#fields.hasErrors('mail')}" th:errors="*{mail}" class="error"></div>
                     </div>
 
                     <div class="col-md-6">
                         <label class="data-label" for="telefono">Teléfono</label>
-                        <input type="text" id="telefono" class="form-control"
-                               th:field="*{telefono}" placeholder="600123123" required>
+                        <input type="text" id="telefono" class="form-control" th:field="*{telefono}" placeholder="600123123" required>
                         <div th:if="${#fields.hasErrors('telefono')}" th:errors="*{telefono}" class="error"></div>
                     </div>
 
                     <div class="col-md-4">
                         <label class="data-label" for="dni">DNI</label>
-                        <input type="text" id="dni" class="form-control"
-                               th:field="*{dni}" placeholder="12345678A" required>
+                        <input type="text" id="dni" class="form-control" th:field="*{dni}" placeholder="12345678A" required>
                         <div th:if="${#fields.hasErrors('dni')}" th:errors="*{dni}" class="error"></div>
                     </div>
 
                     <div class="col-md-4">
                         <label class="data-label" for="pais">País</label>
-                        <input type="text" id="pais" class="form-control"
-                               th:field="*{pais}" placeholder="España" required>
+                        <input type="text" id="pais" class="form-control" th:field="*{pais}" placeholder="España" required>
                         <div th:if="${#fields.hasErrors('pais')}" th:errors="*{pais}" class="error"></div>
                     </div>
 
@@ -210,49 +188,41 @@
 
                     <div class="col-md-8">
                         <label class="data-label" for="direccion">Dirección</label>
-                        <input type="text" id="direccion" class="form-control"
-                               th:field="*{direccion}" placeholder="Calle, número, piso..." required>
+                        <input type="text" id="direccion" class="form-control" th:field="*{direccion}" placeholder="Calle, número, piso..." required>
                     </div>
 
                     <div class="col-md-4">
                         <label class="data-label" for="fechaNacimiento">Fecha de nacimiento</label>
-                        <input type="date" id="fechaNacimiento" class="form-control"
-                               th:field="*{fechaNacimiento}" required>
+                        <input type="date" id="fechaNacimiento" class="form-control" th:field="*{fechaNacimiento}" required>
                         <div th:if="${#fields.hasErrors('fechaNacimiento')}" th:errors="*{fechaNacimiento}" class="error"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- ACCESO -->
             <div class="block-card">
                 <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
                     <div class="block-title mb-0">Acceso a la plataforma</div>
                     <span class="role-badge">Cuenta</span>
                 </div>
 
-                <div class="col-md-6">
-                    <label class="data-label" for="contrasena">Contraseña</label>
-                    <input type="password" id="contrasena" class="form-control"
-                           th:field="*{contrasena}" placeholder="Introduce una contraseña" required>
-                    <div th:if="${#fields.hasErrors('contrasena')}" th:errors="*{contrasena}" class="error"></div>
-                </div>
-
-                <div class="col-md-6">
+                <div class="row g-4">
+                    <div class="col-md-6">
                         <label class="data-label" for="contrasena">Contraseña</label>
-                        <input type="password" id="contrasena" class="form-control"
-                               th:field="*{contrasena}" placeholder="Introduce una contraseña" required>
+                        <input type="password" id="contrasena" class="form-control" th:field="*{contrasena}" placeholder="Introduce una contraseña" required>
+                        <div th:if="${#fields.hasErrors('contrasena')}" th:errors="*{contrasena}" class="error"></div>
+                    </div>
                 </div>
             </div>
 
             <div class="actions">
                 <button type="submit" class="btn btn-primary">Registrarme</button>
-                <a th:href="@{/}" class="btn btn-secondary">Volver al inicio</a>
-                <a th:href="@{/Persona/listId}" class="btn btn-outline-secondary">Ver personas</a>
+                <a th:href="@{/login}" class="btn btn-outline-secondary">Ya tengo cuenta</a>
             </div>
 
         </form>
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
