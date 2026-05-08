@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.Date;
-import java.time.LocalDate;
+import java.util.List;
 
 @Repository
 public class PaRequestDao {
@@ -22,6 +22,14 @@ public class PaRequestDao {
     }
 
     public void addPaRequest(PaRequest paRequest) {
+
+        // 2. Usamos OVERRIDING SYSTEM VALUE para que Postgres nos deje meter el ID manual
+        // a pesar de ser una columna GENERATED ALWAYS
+        String sql = "INSERT INTO pa_request ( status, fecha_creacion, fecha_resolucion, ovi_user) " +
+                "VALUES ( ?::status_pa_request_enum, ?, ?, ?)";
+
+        jdbcTemplate.update(
+                sql,
         Integer maxId = jdbcTemplate.queryForObject("SELECT MAX(id) FROM pa_request", Integer.class);
         int nextId = (maxId == null) ? 1 : maxId + 1;
 
@@ -37,6 +45,8 @@ public class PaRequestDao {
                 paRequest.getFechaFin() != null ? Date.valueOf(paRequest.getFechaFin()) : null,
                 paRequest.getTipoAsistencia(),
                 paRequest.getPreferencias()
+                paRequest.getFechaResolucion() != null ? Date.valueOf(paRequest.getFechaResolucion()) : null,
+                paRequest.getOviUser()
         );
     }
 
@@ -67,6 +77,8 @@ public class PaRequestDao {
         }
     }
 
+    public List<PaRequest> getPaRequests() {
+        return jdbcTemplate.query("SELECT * FROM pa_request", new PaRequestRowMapper());
 
     public void cambiarEstadoPaRequest(int personaSolicitante, StatusPaRequest statusPaRequest) {
 

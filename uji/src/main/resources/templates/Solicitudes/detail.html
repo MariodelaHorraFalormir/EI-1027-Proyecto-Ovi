@@ -98,6 +98,7 @@
         </div>
 
         <div class="row g-4">
+
             <div class="col-md-6">
                 <div class="data-label">ID de la solicitud</div>
                 <div class="data-value" th:text="${solicitud.idSolicitud}"></div>
@@ -204,6 +205,19 @@
                 </table>
             </div>
         </div>
+
+        <div class="mt-4 d-flex gap-2">
+            <a th:href="@{${urlVolverSolicitudes}}"
+               class="btn btn-secondary"
+               th:text="${textoVolverSolicitudes}">
+                Volver
+            </a>
+
+            <a th:if="${puedeEditarSolicitud}"
+               th:href="@{/Solicitudes/update/{id}(id=${solicitud.idSolicitud})}"
+               class="btn btn-warning">
+                Editar solicitud
+            </a>
 
         <div class="mt-4 d-flex gap-2 border-top pt-4">
             <a th:href="@{/Solicitudes/listId}" class="btn btn-secondary">Volver al listado</a>

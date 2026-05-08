@@ -1,11 +1,16 @@
 package es.uji.ei1027.ovi.controller;
 
+import es.uji.ei1027.ovi.Service.AuthService;
 import es.uji.ei1027.ovi.Service.PersonaService;
+import es.uji.ei1027.ovi.Service.SesionService;
 import es.uji.ei1027.ovi.Validadores.PersonaValidator;
 import es.uji.ei1027.ovi.dao.PersonaDao;
+import es.uji.ei1027.ovi.modelo.Login.UsuarioSesion;
 import es.uji.ei1027.ovi.modelo.OviUser.OviUser;
 import es.uji.ei1027.ovi.modelo.Persona.Persona;
 import es.uji.ei1027.ovi.modelo.Persona.PersonaFormulario;
+import es.uji.ei1027.ovi.modelo.Roles.RolUsuario;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,64 +18,111 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Controller
 @RequestMapping("/Persona")
 public class PersonaController {
     private PersonaService personaService;
-    private PersonaDao personaDao;
+    private AuthService authService;
+    private SesionService sesionService;
 
 
     @Autowired
     public void setPersonaService(PersonaService personaService) {
         this.personaService = personaService;
     }
-
     @Autowired
-    public void setPersonaDao(PersonaDao personaDao) {
-        this.personaDao = personaDao;
+    public void setAuthService(AuthService authService) {
+        this.authService = authService;
     }
 
-    @RequestMapping("/listId")
-    public String listaporId(Model model) {
+    @Autowired
+    public void setSesionService(SesionService sesionService) {
+        this.sesionService = sesionService;
+    }
 
-        model.addAttribute("personasOrderId", personaDao.getPersonasOrderId());
-        return "Persona/listId";
+
+
+    @GetMapping("/list/{tipo}")
+    public String listarPorTipo(@PathVariable String tipo, Model model , HttpSession session) {
+        String url = "/Persona/list/" + tipo;
+        UsuarioSesion usuario = sesionService.getUsuario(session);
+        if (usuario == null) {
+            return sesionService.redirigirALogin(session,url);
+        }
+        if (!personaService.esAdminOvi(usuario)) {
+            return "redirect:/";
+        }
+        List<Persona> personas = personaService.getPersonasPorTipo(tipo);
+        model.addAttribute("personasOrderId", personas);
+        model.addAttribute("tituloListado", personaService.getTituloListado(tipo));
+        return "Persona/list";
     }
 
     @RequestMapping(value = "/delete/{id}")
     public String processDelete(@PathVariable int id) {
-        personaDao.deletePersona(id);
-        return "redirect:../listId";
+        personaService.deletePersona(id);
+        return "redirect:/Persona/list/todas";
     }
 
-    @RequestMapping(value = "/update/{id}", method = RequestMethod.GET)
-    public String editPersona(Model model, @PathVariable int id) {
+    @GetMapping("/update/{id}")
+    public String editPersona(Model model, @PathVariable int id , HttpSession session) {
+        // Recupera de la sesión el usuario que ha iniciado sesión.
+        // Si no existe, significa que no hay ningún usuario logueado.
+        UsuarioSesion usuario = (UsuarioSesion) session.getAttribute("usuario");
+        String url = "/Persona/update/" + id;
+        //si no hay ningun usuario  le obligo a logearse
+        if (usuario == null) {
+            //esta linea la usare para volver aqui cuando acabe el loggin
+            return  sesionService.redirigirALogin(session,url);
+        }
+
+        if (!personaService.puedeEditarPersona(usuario, id)) {
+            return "redirect:/";
+        }
         PersonaFormulario formulario = personaService.getPersonaFormulario(id);
-        model.addAttribute("personaFormulario", formulario);
+        cargarModeloPersona(model,usuario,formulario);
         return "Persona/update";
 
     }
-    @GetMapping("/details/{id}")
-    public String details(@PathVariable int id, Model model) {
-        PersonaFormulario personaFormulario = personaService.getPersonaFormulario(id);
-
-        model.addAttribute("personaFormulario", personaFormulario);
-
-        return "Persona/details";
-    }
-
-    @RequestMapping(value = "/update", method = RequestMethod.POST)
+    @PostMapping("/update")
     public String processUpdateSubmit(
             @ModelAttribute("personaFormulario") PersonaFormulario formulario,
-            BindingResult bindingResult) {
+            BindingResult bindingResult,
+            HttpSession session) {
+        int id = formulario.getPersona().getIdPersona();
+        String url = "/Persona/update/"+id;
 
+        UsuarioSesion usuario = (UsuarioSesion) session.getAttribute("usuario");
+
+        if (usuario == null) {
+            return sesionService.redirigirALogin(session,url);
+        }
+        if (!personaService.puedeEditarPersona(usuario, id)) {
+            return "redirect:/";
+        }
         if (bindingResult.hasErrors()) {
             return "Persona/update";
         }
-
         personaService.updatePersonaFormulario(formulario);
-        return "redirect:/Persona/listId";
+        return "redirect:/Persona/details/" + id;
+    }
+    @GetMapping("/details/{id}")
+    public String details(@PathVariable int id, Model model , HttpSession session) {
+        UsuarioSesion usuario = (UsuarioSesion) session.getAttribute("usuario");
+        String url = "/Persona/details/" + id;
+        if (usuario == null) {
+            return sesionService.redirigirALogin(session,url);
+        }
+
+        if (!personaService.puedeVerDetallePersona(usuario, id)) {
+            return "redirect:/";
+        }
+
+        PersonaFormulario personaFormulario = personaService.getPersonaFormulario(id);
+        cargarModeloPersona(model, usuario, personaFormulario);
+        return "Persona/details";
     }
     @GetMapping("/registro")
     public String mostrarFormularioRegistro(Model model) {
@@ -90,20 +142,31 @@ public class PersonaController {
         }
 
         try {
-            if (personaDao.existeMail(persona.getMail())) {
-                throw new IllegalArgumentException("Ya existe una persona registrada con ese correo.");
-            }
-
-            persona.setFechaAlta(LocalDate.now());
-            persona.setFechaBaja(null);
-
-            personaDao.addPersonaYDevolverId(persona);
-            return "redirect:/";
+            authService.registrarPersona(persona);
+            return "redirect:/login";
         } catch (IllegalArgumentException e) {
             model.addAttribute("errorMail", e.getMessage());
+            persona.setContrasena(null);
             model.addAttribute("persona", persona);
             return "Persona/registro";
         }
+    }
+    private void cargarModeloPersona(
+            Model model,
+            UsuarioSesion usuario,
+            PersonaFormulario formulario
+    ) {
+        int idPersona = formulario.getPersona().getIdPersona();
+
+        model.addAttribute("personaFormulario", formulario);
+
+        model.addAttribute("esAdmin", personaService.esAdminOvi(usuario));
+        model.addAttribute("esSuPropioPerfil", personaService.esSuPropioPerfil(usuario, idPersona));
+        model.addAttribute("puedeEditarPersona", personaService.puedeEditarPersona(usuario, idPersona));
+
+        model.addAttribute("puedeVerBloqueRoles", personaService.puedeVerBloqueRoles(usuario, formulario));
+        model.addAttribute("puedeVerBotonOviUser", personaService.puedeVerBotonOviUser(usuario, formulario));
+        model.addAttribute("puedeVerBotonPapPati", personaService.puedeVerBotonPapPati(usuario, formulario));
     }
 }
 
