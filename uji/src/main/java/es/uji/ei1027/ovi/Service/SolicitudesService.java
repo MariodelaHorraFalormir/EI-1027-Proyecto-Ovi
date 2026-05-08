@@ -4,16 +4,20 @@ import es.uji.ei1027.ovi.dao.OviUserDao;
 import es.uji.ei1027.ovi.dao.PaRequestDao;
 import es.uji.ei1027.ovi.dao.PapPatiDao;
 import es.uji.ei1027.ovi.dao.SolicitudesDao;
+import es.uji.ei1027.ovi.modelo.Login.UsuarioSesion;
 import es.uji.ei1027.ovi.modelo.PaRequest.StatusPaRequest;
 import es.uji.ei1027.ovi.modelo.Roles.EstadoRol;
+import es.uji.ei1027.ovi.modelo.Solicitud.CategoriaSolicitud;
 import es.uji.ei1027.ovi.modelo.Solicitud.EstadoSolicitud;
 import es.uji.ei1027.ovi.modelo.Solicitud.Solicitud;
+import es.uji.ei1027.ovi.modelo.Solicitud.TipoSolicitud;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class SolicitudesService {
@@ -31,7 +35,11 @@ public class SolicitudesService {
     private PaRequestDao paRequestDao;
 
     @Transactional
-    public void updateSolicitud(int idOriginal, Solicitud solicitudNueva) {
+    public void updateSolicitud(int idOriginal, Solicitud solicitudNueva , UsuarioSesion admin) {
+
+        if (!puedeGestionarSolicitudes(admin)) {
+            throw new IllegalArgumentException("No tienes permisos para gestionar solicitudes");
+        }
 
         Solicitud solicitudAntigua = solicitudesDao.getSolicitudById(idOriginal);
 
@@ -39,7 +47,7 @@ public class SolicitudesService {
             throw new IllegalArgumentException("No existe la solicitud con id " + idOriginal);
         }
 
-        prepararResolucion(solicitudNueva);
+        prepararResolucion(solicitudNueva,admin);
 
         solicitudesDao.updateSolicitud(idOriginal, solicitudNueva);
 
@@ -47,15 +55,17 @@ public class SolicitudesService {
     }
 
     @Transactional
-    public void aprobarRapido(int idOriginal) {
-
+    public void aprobarRapido(int idOriginal, UsuarioSesion admin) {
+        if (!puedeGestionarSolicitudes(admin)) {
+            throw new IllegalArgumentException("No tienes permisos para gestionar solicitudes");
+        }
         Solicitud solicitudAntigua = solicitudesDao.getSolicitudById(idOriginal);
 
         if (solicitudAntigua == null) {
             throw new IllegalArgumentException("No existe la solicitud con id " + idOriginal);
         }
 
-        solicitudesDao.aprobarRapido(idOriginal);
+        solicitudesDao.aprobarRapido(idOriginal,admin.getIdPersona());
 
         if (solicitudAntigua.getEstadoSolicitud() != EstadoSolicitud.Aprobada) {
             aplicarAprobacion(solicitudAntigua);
@@ -63,22 +73,24 @@ public class SolicitudesService {
     }
 
     @Transactional
-    public void rechazarRapido(int idOriginal) {
-
+    public void rechazarRapido(int idOriginal , UsuarioSesion admin) {
+        if (!puedeGestionarSolicitudes(admin)) {
+            throw new IllegalArgumentException("No tienes permisos para gestionar solicitudes");
+        }
         Solicitud solicitudAntigua = solicitudesDao.getSolicitudById(idOriginal);
 
         if (solicitudAntigua == null) {
             throw new IllegalArgumentException("No existe la solicitud con id " + idOriginal);
         }
 
-        solicitudesDao.rechazarRapido(idOriginal);
+        solicitudesDao.rechazarRapido(idOriginal , admin.getIdPersona());
 
         if (solicitudAntigua.getEstadoSolicitud() != EstadoSolicitud.Rechazada) {
             aplicarRechazo(solicitudAntigua);
         }
     }
 
-    private void prepararResolucion(Solicitud solicitud) {
+    private void prepararResolucion(Solicitud solicitud , UsuarioSesion admin) {
 
         if (solicitud.getEstadoSolicitud() == EstadoSolicitud.Aprobada ||
                 solicitud.getEstadoSolicitud() == EstadoSolicitud.Rechazada) {
@@ -87,6 +99,7 @@ public class SolicitudesService {
 
             // Temporal hasta tener login
             solicitud.setTecnicoRevisor(1);
+            solicitud.setTecnicoRevisor(admin.getIdPersona());
         }
 
         if (solicitud.getEstadoSolicitud() == EstadoSolicitud.Rechazada &&
@@ -136,6 +149,14 @@ public class SolicitudesService {
             }
         }
     }
+    public Solicitud solicitudRol(int id , TipoSolicitud tipoSolicitud) {
+        Solicitud solicitud = new Solicitud();
+        solicitud.setPersonaSolicitante(id);
+        solicitud.setCategoriaSolicitud(CategoriaSolicitud.Rol);
+        solicitud.setTipoSolicitud(tipoSolicitud);
+        solicitud.setEstadoSolicitud(EstadoSolicitud.Pendiente);
+        return solicitud;
+    }
 
     private void aplicarRechazo(Solicitud solicitud) {
 
@@ -160,5 +181,28 @@ public class SolicitudesService {
                 // Otros tipos de solicitud no modifican roles/procesos todavía
             }
         }
+    }
+    public List<Solicitud> getSolicitudesPorTipo(String tipo) {
+        return switch (tipo) {
+            case "todas" -> solicitudesDao.getSolicitudesOrderId();
+            case "ovi-users" -> solicitudesDao.getSolicitudesPorTipo(TipoSolicitud.Ovi_user);
+            case "pap-patis" -> solicitudesDao.getSolicitudesPorTipo(TipoSolicitud.Pap_pati);
+            case "pa-requests" -> solicitudesDao.getSolicitudesPorTipo(TipoSolicitud.Pa_request);
+            default -> throw new IllegalArgumentException("Tipo de listado de solicitudes no válido: " + tipo);
+        };
+    }
+
+    public String getTituloListado(String tipo) {
+        return switch (tipo) {
+            case "todas" -> "Todas las solicitudes";
+            case "ovi-users" -> "Solicitudes de OVI User";
+            case "pap-patis" -> "Solicitudes de PAP/PATI";
+            case "pa-requests" -> "Solicitudes de procesos PA Request";
+            default -> "Listado de solicitudes";
+        };
+    }
+
+    public boolean puedeGestionarSolicitudes(UsuarioSesion usuario) {
+        return usuario != null && usuario.esAdminOvi();
     }
 }

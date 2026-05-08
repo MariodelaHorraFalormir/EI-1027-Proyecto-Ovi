@@ -14,6 +14,15 @@ public class PersonaFormulario {
     private OviUser oviUser;
     private Persona persona;
     private AdminOvi adminOvi;
+    private String nuevaContrasena;
+
+    public String getNuevaContrasena() {
+        return nuevaContrasena;
+    }
+
+    public void setNuevaContrasena(String nuevaContrasena) {
+        this.nuevaContrasena = nuevaContrasena;
+    }
     public AdminOvi getAdminOvi() {
         return adminOvi;
     }

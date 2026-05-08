@@ -151,7 +151,18 @@
         </div>
 
         <div class="mt-4 d-flex gap-2">
-            <a th:href="@{/Solicitudes/listId}" class="btn btn-secondary">Volver al listado</a>
+            <a th:href="@{${urlVolverSolicitudes}}"
+               class="btn btn-secondary"
+               th:text="${textoVolverSolicitudes}">
+                Volver
+            </a>
+
+            <a th:if="${puedeEditarSolicitud}"
+               th:href="@{/Solicitudes/update/{id}(id=${solicitud.idSolicitud})}"
+               class="btn btn-warning">
+                Editar solicitud
+            </a>
+
             <a th:href="@{/}" class="btn btn-outline-dark">Ir al inicio</a>
         </div>
 

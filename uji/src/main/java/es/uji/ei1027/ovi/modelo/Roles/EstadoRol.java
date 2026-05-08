@@ -29,7 +29,7 @@ public enum EstadoRol {
             case Pendiente:
                 return "Pendiento";
             case Activo:
-                return "Aprobado";
+                return "Activo";
             case Rechazado:
                 return "Rechazado";
             default:

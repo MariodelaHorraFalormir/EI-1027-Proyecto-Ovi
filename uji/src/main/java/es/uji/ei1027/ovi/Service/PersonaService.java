@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class PersonaService {
@@ -37,16 +38,19 @@ public class PersonaService {
     public void setOviUserDao(OviUserDao oviUserDao) {
         this.oviUserDao = oviUserDao;
     }
+
     @Autowired
-    public void setAdminOviDao(AdminOviDao adminOviDao) {this.adminOviDao = adminOviDao;}
+    public void setAdminOviDao(AdminOviDao adminOviDao) {
+        this.adminOviDao = adminOviDao;
+    }
 
     public PersonaFormulario getPersonaFormulario(int id) {
         PersonaFormulario formulario = new PersonaFormulario();
         formulario.setPersona(personaDao.getPersona(id));
-        if (patPatiDao.existePapPati(id) ){
+        if (patPatiDao.existePapPati(id)) {
             formulario.setPapPati(patPatiDao.getPapPati(id));
         }
-        if (oviUserDao.existeOviUser(id)){
+        if (oviUserDao.existeOviUser(id)) {
             formulario.setOviUser(oviUserDao.getOviUser(id));
         }
         if (adminOviDao.existeAdminOvi(id)) {
@@ -54,98 +58,97 @@ public class PersonaService {
         }
         return formulario;
     }
+    public boolean puedeVerDetallePersona(UsuarioSesion usuario, int idPersona) {
+        return esAdminOvi(usuario) || esSuPropioPerfil(usuario, idPersona);
+    }
+
     @Transactional
     public void updatePersonaFormulario(PersonaFormulario formulario) {
-        personaDao.updatePersona(formulario.getPersona());
-
-        if (formulario.getPapPati() != null) {
-            patPatiDao.update(formulario.getPapPati());
-        }
-
-        if (formulario.getOviUser() != null) {
-            oviUserDao.updateOviUser(formulario.getOviUser());
-        }
-
-    }
-    @Transactional
-    public void registrarOviUser(PersonaFormulario formulario) {
         Persona persona = formulario.getPersona();
-
-        if (personaDao.existeMail(persona.getMail())) {
-            throw new IllegalArgumentException("Ya existe una persona registrada con ese correo.");
+        if (persona.getGenero() == null) {
+            persona.setGenero(personaDao.getGeneroById(persona.getIdPersona()));
         }
+        personaDao.updatePersona(persona);
+        actualizarContrasenaSiProcede(persona.getIdPersona(),formulario.getNuevaContrasena());
 
-        persona.setFechaAlta(LocalDate.now());
-        persona.setFechaBaja(null);
-
-        int idPersona = personaDao.addPersonaYDevolverId(persona);
     }
-    @Transactional
-    public String asignarRolOviUserPorMail(String mail) {
-        Integer idPersona = personaDao.getIdPersonaByMail(mail);
-
-        if (idPersona == null) {
-            throw new IllegalArgumentException("No existe ninguna persona con ese correo.");
+    private void actualizarContrasenaSiProcede(int idPersona, String nuevaContrasena) {
+        if (nuevaContrasena == null || nuevaContrasena.isBlank()) {
+            return;
         }
 
-        if (oviUserDao.existeOviUser(idPersona)) {
-            return "La persona ya tiene el rol OVI user.";
-        }
-
-        return "Rol OVI user asignado correctamente.";
+        BasicPasswordEncryptor passwordEncryptor = new BasicPasswordEncryptor();
+        String newpass = passwordEncryptor.encryptPassword(nuevaContrasena);
+        personaDao.updatePass(newpass, idPersona);
     }
-
     public Integer getIdPersonaByMail(String mail) {
-        return  personaDao.getIdPersonaByMail(mail);
+        return personaDao.getIdPersonaByMail(mail);
 
-    }
-    public UsuarioSesion autenticar(String mail, String contrasena) {
-        if (mail == null || contrasena == null) {
-            return null;
-        }
-
-        Persona persona = personaDao.getPersonaByMail(mail.trim());
-
-        if (persona == null) {
-            return null;
-        }
-
-        BasicPasswordEncryptor passwordEncryptor = new BasicPasswordEncryptor();
-
-        if (!passwordEncryptor.checkPassword(contrasena, persona.getContrasena())) {
-            return null;
-        }
-
-        PersonaFormulario formulario = getPersonaFormulario(persona.getIdPersona());
-
-        UsuarioSesion usuarioSesion = new UsuarioSesion();
-        usuarioSesion.setIdPersona(persona.getIdPersona());
-        usuarioSesion.setMail(persona.getMail());
-        usuarioSesion.setNombre(persona.getNombre());
-        usuarioSesion.setRolesActivos(formulario.getRolesActivos());
-        usuarioSesion.setRolesExistentes(formulario.getRolesExistentes());
-
-        if (formulario.getOviUser() != null) {
-            usuarioSesion.setEstadoOviUser(formulario.getOviUser().getEstado());
-        }
-
-        if (formulario.getPapPati() != null) {
-            usuarioSesion.setEstadoPapPati(formulario.getPapPati().getEstadoRol());
-        }
-        return usuarioSesion;
     }
     @Transactional
-    public int registrarPersona(Persona persona) {
-        if (personaDao.existeMail(persona.getMail())) {
-            throw new IllegalArgumentException("Ya existe una persona registrada con ese correo.");
+    public void deletePersona(int id) {
+        personaDao.deletePersona(id);
+    }
+
+    public List<Persona> getPersonasPorTipo(String tipo) {
+        return switch (tipo) {
+            case "todas" -> personaDao.getPersonasOrderId();
+            case "ovi-users" -> personaDao.getPersonasOviUsers();
+            case "pap-patis" -> personaDao.getPersonasPapPati();
+            case "admins" -> personaDao.getPersonasAdminOvi();
+            default -> throw new IllegalArgumentException("Tipo de listado no válido: " + tipo);
+        };
+    }
+
+    public String getTituloListado(String tipo) {
+        return switch (tipo) {
+            case "todas" -> "Todas las personas";
+            case "ovi-users" -> "Usuarios OVI";
+            case "pap-patis" -> "PAP/PATI";
+            case "admins" -> "Administradores OVI";
+            default -> "Listado de personas";
+        };
+    }
+    public boolean esAdminOvi(UsuarioSesion usuario) {
+        return usuario != null && usuario.esAdminOvi();
+    }
+
+    public boolean esSuPropioPerfil(UsuarioSesion usuario, int idPersona) {
+        return usuario != null && usuario.getIdPersona() == idPersona;
+    }
+
+    public boolean puedeEditarPersona(UsuarioSesion usuario, int idPersona) {
+        return esAdminOvi(usuario) || esSuPropioPerfil(usuario, idPersona);
+    }
+
+    public boolean puedeVerBotonOviUser(UsuarioSesion usuario, PersonaFormulario formulario) {
+        if (formulario == null || !formulario.tieneOviUser()) {
+            return false;
         }
 
-        BasicPasswordEncryptor passwordEncryptor = new BasicPasswordEncryptor();
-        persona.setContrasena(passwordEncryptor.encryptPassword(persona.getContrasena()));
+        if (esAdminOvi(usuario)) {
+            return true;
+        }
 
-        persona.setFechaAlta(LocalDate.now());
-        persona.setFechaBaja(null);
+        return formulario.tieneOviUserActivo()
+                || formulario.tieneOviUserRechazado();
+    }
 
-        return personaDao.addPersonaYDevolverId(persona);
+    public boolean puedeVerBotonPapPati(UsuarioSesion usuario, PersonaFormulario formulario) {
+        if (formulario == null || !formulario.tienePapPati()) {
+            return false;
+        }
+
+        if (esAdminOvi(usuario)) {
+            return true;
+        }
+
+        return formulario.tienePapPatiActivo()
+                || formulario.tienePapPatiRechazado();
+    }
+
+    public boolean puedeVerBloqueRoles(UsuarioSesion usuario, PersonaFormulario formulario) {
+        return puedeVerBotonOviUser(usuario, formulario)
+                || puedeVerBotonPapPati(usuario, formulario);
     }
 }

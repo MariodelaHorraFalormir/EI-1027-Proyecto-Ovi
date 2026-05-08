@@ -146,7 +146,7 @@ public class UsuarioSesion {
     }
 
     public boolean tienePapPatiPendiente() {
-        return estadoPapPati == EstadoRol.Pendiente;
+            return estadoPapPati == EstadoRol.Pendiente;
     }
 
     public boolean tienePapPatiRechazado() {

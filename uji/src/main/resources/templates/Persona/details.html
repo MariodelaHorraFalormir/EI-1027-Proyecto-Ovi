@@ -269,7 +269,7 @@
 
         <!-- ROLES ASOCIADOS -->
         <div class="block-card"
-             th:if="${personaFormulario.tieneOviUser() or personaFormulario.tienePapPati()}">
+             th:if="${puedeVerBloqueRoles}">
 
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
                 <div>
@@ -284,14 +284,14 @@
 
             <div class="d-flex gap-3 flex-wrap">
 
-                <a th:if="${personaFormulario.oviUser != null}"
+                <a th:if="${puedeVerBotonOviUser}"
                    th:href="@{/OviUser/details/{id}(id=${personaFormulario.persona.idPersona})}"
                    class="btn btn-primary">
                     Ver OVI User
                 </a>
 
 
-                <a th:if="${personaFormulario.papPati != null}"
+                <a th:if="${puedeVerBotonPapPati}"
                    th:href="@{/PapPati/details/{id}(id=${personaFormulario.persona.idPersona})}"
                    class="btn btn-success">
                     Ver PAP/PATI
@@ -302,7 +302,7 @@
 
         <!-- SIN ROLES ASOCIADOS -->
         <div class="block-card"
-             th:if="${personaFormulario.oviUser == null and personaFormulario.papPati == null}">
+             th:if="${!puedeVerBloqueRoles}">
 
             <div class="block-title mb-1">Roles asociados</div>
 
@@ -313,12 +313,14 @@
 
         <!-- ACCIONES -->
         <div class="actions">
-            <a th:href="@{/Persona/update/{id}(id=${personaFormulario.persona.idPersona})}"
+            <a th:if="${puedeEditarPersona}"
+               th:href="@{/Persona/update/{id}(id=${personaFormulario.persona.idPersona})}"
                class="btn btn-primary">
                 Editar persona
             </a>
 
-            <a th:href="@{/Persona/listId}"
+            <a th:if="${esAdmin}"
+               th:href="@{/Persona/list/todas}"
                class="btn btn-secondary">
                 Volver al listado
             </a>
