@@ -2,8 +2,6 @@ package es.uji.ei1027.ovi.dao;
 
 import es.uji.ei1027.ovi.RowMapper.PaRequestRowMapper;
 import es.uji.ei1027.ovi.modelo.PaRequest.PaRequest;
-import es.uji.ei1027.ovi.modelo.PaRequest.StatusPaRequest;
-import es.uji.ei1027.ovi.modelo.Solicitud.EstadoSolicitud;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -24,22 +22,27 @@ public class PaRequestDao {
     }
 
     public void addPaRequest(PaRequest paRequest) {
-        LocalDate fechaResolucion;
-        if (paRequest.getFechaResolucion() != null) {
-             fechaResolucion = paRequest.getFechaResolucion();
-        }else{fechaResolucion = null;}
-        jdbcTemplate.update(
-                "INSERT INTO pa_request (status, fecha_creacion, fecha_resolucion, ovi_user) VALUES (?, ?, ?, ?)",
+        Integer maxId = jdbcTemplate.queryForObject("SELECT MAX(id) FROM pa_request", Integer.class);
+        int nextId = (maxId == null) ? 1 : maxId + 1;
+
+        String sql = "INSERT INTO pa_request (id, status, fecha_creacion, ovi_user, fecha_inicio, fecha_fin, tipo_asistencia, preferencias) " +
+                "OVERRIDING SYSTEM VALUE VALUES (?, ?::status_pa_request_enum, ?, ?, ?, ?, ?, ?)";
+
+        jdbcTemplate.update(sql,
+                nextId,
                 paRequest.getStatus().getTexto(),
                 Date.valueOf(paRequest.getFechaCreacion()),
-                fechaResolucion,
-                paRequest.getOviUser()
+                paRequest.getOviUser(),
+                paRequest.getFechaInicio() != null ? Date.valueOf(paRequest.getFechaInicio()) : null,
+                paRequest.getFechaFin() != null ? Date.valueOf(paRequest.getFechaFin()) : null,
+                paRequest.getTipoAsistencia(),
+                paRequest.getPreferencias()
         );
     }
 
     public void updatePaRequest(PaRequest paRequest) {
         jdbcTemplate.update(
-                "UPDATE pa_request SET status = ?, fecha_creacion = ?, fecha_resolucion = ?, ovi_user = ? WHERE id = ?",
+                "UPDATE pa_request SET status = ?::status_pa_request_enum, fecha_creacion = ?, fecha_resolucion = ?, ovi_user = ? WHERE id = ?",
                 paRequest.getStatus().getTexto(),
                 Date.valueOf(paRequest.getFechaCreacion()),
                 paRequest.getFechaResolucion() != null ? Date.valueOf(paRequest.getFechaResolucion()) : null,
@@ -71,5 +74,8 @@ public class PaRequestDao {
                 + "estado = ?::status_pa_request_enum "
                 + "WHERE id = ?" ;
         jdbcTemplate.update(sql,statusPaRequest.getTexto(),personaSolicitante);
+    }
+    public List<PaRequest> getPaRequests() {
+        return jdbcTemplate.query("SELECT * FROM pa_request", new PaRequestRowMapper());
     }
 }

@@ -237,11 +237,17 @@
                     <div th:if="${#fields.hasErrors('contrasena')}" th:errors="*{contrasena}" class="error"></div>
                 </div>
 
+                <div class="col-md-6">
+                        <label class="data-label" for="contrasena">Contraseña</label>
+                        <input type="password" id="contrasena" class="form-control"
+                               th:field="*{contrasena}" placeholder="Introduce una contraseña" required>
+                </div>
+            </div>
+
             <div class="actions">
                 <button type="submit" class="btn btn-primary">Registrarme</button>
                 <a th:href="@{/}" class="btn btn-secondary">Volver al inicio</a>
                 <a th:href="@{/Persona/listId}" class="btn btn-outline-secondary">Ver personas</a>
-            </div>
             </div>
 
         </form>
