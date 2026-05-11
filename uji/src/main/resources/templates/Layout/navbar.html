@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
-<nav th:fragment="main-nav" class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm" aria-label="Menú principal de navegación">
+<nav th:fragment="main-nav" class="navbar navbar-expand-lg bg-primary shadow-sm" data-bs-theme="dark" aria-label="Menú principal de navegación">
   <div class="container">
-    <a class="navbar-brand fw-bold" th:href="@{/}">
+
+    <a class="navbar-brand fw-bold text-white" th:href="@{/}">
       <span style="font-size: 1.5rem;">OVI</span> <span class="fw-light">UJI</span>
     </a>
 
@@ -15,10 +16,7 @@
 
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link" th:href="@{/}">Inicio</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" th:href="@{/servicios}">Servicios</a>
+          <a class="nav-link text-white fw-semibold" th:href="@{/servicios}">Servicios</a>
         </li>
       </ul>
 
@@ -26,21 +24,20 @@
 
         <th:block th:if="${session.usuario == null}">
           <li class="nav-item">
-            <a class="nav-link" th:href="@{/Persona/registro}">Registrarse</a>
+            <a class="nav-link text-white fw-semibold" th:href="@{/Persona/registro}">Registrarse</a>
           </li>
           <li class="nav-item ms-2">
-            <a class="btn btn-light text-primary fw-bold rounded-pill px-4" th:href="@{/login}">Iniciar Sesión</a>
+            <a class="btn btn-light fw-bold rounded-pill px-4" style="color: #003366;" th:href="@{/login}">Iniciar Sesión</a>
           </li>
         </th:block>
 
         <th:block th:if="${session.usuario != null}">
-
           <li class="nav-item me-3" th:if="${session.usuario.rol == 'Técnico' or session.usuario.rol == 'Admin'}">
             <a class="nav-link text-warning fw-bold" th:href="@{/Solicitudes/listId}">Gestión OVI</a>
           </li>
 
           <li class="nav-item me-3" th:if="${session.usuario.rol == 'Usuario'}">
-            <a class="nav-link fw-bold" th:href="@{/Solicitudes/misSolicitudes}">Mis Peticiones</a>
+            <a class="nav-link text-white fw-bold" th:href="@{/Solicitudes/misSolicitudes}">Mis Peticiones</a>
           </li>
 
           <li class="nav-item dropdown">

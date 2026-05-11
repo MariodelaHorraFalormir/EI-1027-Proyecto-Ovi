@@ -4,15 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="476f260d-be58-4910-acd1-5677917beb2a" name="Changes" comment="CRUD completo de Persona terminado (Añadir, Editar, Borrar, Listar) con vistas Bootstrap">
-      <change afterPath="$PROJECT_DIR$/uji/src/main/resources/templates/Layout/navbar.html" afterDir="false" />
+    <list default="true" id="476f260d-be58-4910-acd1-5677917beb2a" name="Changes" comment="Merge con Main y Pruebas. Creación del layout base (Navbar) inyectado en index, login y registro. Corrección de rutas y resolución de conflictos en el DAO.">
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/uji/src/main/java/es/uji/ei1027/ovi/dao/PaRequestDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/uji/src/main/java/es/uji/ei1027/ovi/dao/PaRequestDao.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/uji/src/main/java/es/uji/ei1027/ovi/modelo/Login/GenerarPasswordAdmin.java" beforeDir="false" afterPath="$PROJECT_DIR$/uji/src/main/java/es/uji/ei1027/ovi/modelo/Login/GenerarPasswordAdmin.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/uji/src/main/resources/templates/Persona/registro.html" beforeDir="false" afterPath="$PROJECT_DIR$/uji/src/main/resources/templates/Persona/registro.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/uji/src/main/resources/templates/Layout/navbar.html" beforeDir="false" afterPath="$PROJECT_DIR$/uji/src/main/resources/templates/Layout/navbar.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/uji/src/main/resources/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/uji/src/main/resources/templates/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/uji/src/main/resources/templates/login/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/uji/src/main/resources/templates/login/login.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -162,7 +159,17 @@
       <workItem from="1777026400654" duration="1061000" />
       <workItem from="1777130750334" duration="48000" />
       <workItem from="1778088335456" duration="9375000" />
+      <workItem from="1778444069312" duration="1968000" />
     </task>
+    <task id="LOCAL-00001" summary="Merge con Main y Pruebas. Creación del layout base (Navbar) inyectado en index, login y registro. Corrección de rutas y resolución de conflictos en el DAO.">
+      <option name="closed" value="true" />
+      <created>1778263164191</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1778263164191</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -170,6 +177,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="CRUD completo de Persona terminado (Añadir, Editar, Borrar, Listar) con vistas Bootstrap" />
-    <option name="LAST_COMMIT_MESSAGE" value="CRUD completo de Persona terminado (Añadir, Editar, Borrar, Listar) con vistas Bootstrap" />
+    <MESSAGE value="Merge con Main y Pruebas. Creación del layout base (Navbar) inyectado en index, login y registro. Corrección de rutas y resolución de conflictos en el DAO." />
+    <option name="LAST_COMMIT_MESSAGE" value="Merge con Main y Pruebas. Creación del layout base (Navbar) inyectado en index, login y registro. Corrección de rutas y resolución de conflictos en el DAO." />
   </component>
 </project>
