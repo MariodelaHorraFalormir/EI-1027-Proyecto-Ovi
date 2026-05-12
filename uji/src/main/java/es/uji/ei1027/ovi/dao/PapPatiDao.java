@@ -8,6 +8,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.util.List;
+
 @Repository
 public class PapPatiDao {
 
@@ -82,6 +84,11 @@ public class PapPatiDao {
                 papPati.getCentroSocial()
         );
 
+    }
+
+    public List<PapPati> getTodosPapPati() {
+        String sql = "SELECT * FROM pap_pati WHERE estado_rol = 'Activo'";
+        return jdbcTemplate.query(sql, new PapPatiRowMapper());
     }
 
 }

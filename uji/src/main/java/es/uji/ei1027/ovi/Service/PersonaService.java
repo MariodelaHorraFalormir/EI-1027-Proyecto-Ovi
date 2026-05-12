@@ -9,6 +9,13 @@ import es.uji.ei1027.ovi.modelo.Persona.PersonaFormulario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import es.uji.ei1027.ovi.modelo.PaRequest.PaRequest;
+import es.uji.ei1027.ovi.modelo.PapPati.PapPati;
+import es.uji.ei1027.ovi.modelo.Persona.Persona;
+import es.uji.ei1027.ovi.modelo.Personalidad;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.Comparator;
 
 import java.time.LocalDate;
 
@@ -85,5 +92,39 @@ public class PersonaService {
     public Integer getIdPersonaByMail(String mail) {
         return  personaDao.getIdPersonaByMail(mail);
 
+    }
+
+    public List<PapPati> getRecomendaciones(PaRequest request) {
+        List<PapPati> todosLosAsistentes = patPatiDao.getTodosPapPati();
+
+        return todosLosAsistentes.stream()
+                .filter(asistente -> {
+                    Persona datosPersona = personaDao.getPersona(asistente.getIdPatPati());
+                    if (request.getGeneroPreferido() == null) return true;
+                    return datosPersona.getGenero().equals(request.getGeneroPreferido());
+                })
+                .filter(asistente -> {
+                    return asistente.getExperiencia() >= request.getExperienciaMinima();
+                })
+                .peek(asistente -> {
+                    double score = calcularPorcentajeAfinidad(request.getPersonalidadDeseada(), asistente.getPersonalidad());
+                    asistente.setScoreAfinidad(score);
+                })
+                .sorted(Comparator.comparing(PapPati::getScoreAfinidad).reversed())
+                .collect(Collectors.toList());
+    }
+
+    private double calcularPorcentajeAfinidad(Personalidad deseada, Personalidad real) {
+        if (deseada == null || real == null) return 0.0;
+
+        int diferenciaTotal = Math.abs(deseada.getMovimiento() - real.getMovimiento()) +
+                Math.abs(deseada.getHabla() - real.getHabla()) +
+                Math.abs(deseada.getExpresividad() - real.getExpresividad()) +
+                Math.abs(deseada.getCaracter() - real.getCaracter()) +
+                Math.abs(deseada.getNaturaleza() - real.getNaturaleza());
+
+        double afinidad = 100.0 - ((diferenciaTotal / 35.0) * 100.0);
+
+        return Math.round(afinidad * 100.0) / 100.0;
     }
 }

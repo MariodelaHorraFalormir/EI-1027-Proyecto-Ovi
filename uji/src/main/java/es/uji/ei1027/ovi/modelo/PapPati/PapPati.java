@@ -1,5 +1,6 @@
 package es.uji.ei1027.ovi.modelo.PapPati;
 
+import es.uji.ei1027.ovi.modelo.Personalidad;
 import es.uji.ei1027.ovi.modelo.Roles.EstadoRol;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -21,6 +22,25 @@ public class PapPati {
     private LocalDate fechaFinDisponibilidad;
     private List<Especialidad> especialidades;
     private int idPatPati;
+
+    private Personalidad personalidad;
+    private double scoreAfinidad;
+
+    public Personalidad getPersonalidad() {
+        return personalidad;
+    }
+
+    public void setPersonalidad(Personalidad personalidad) {
+        this.personalidad = personalidad;
+    }
+
+    public double getScoreAfinidad() {
+        return scoreAfinidad;
+    }
+
+    public void setScoreAfinidad(double scoreAfinidad) {
+        this.scoreAfinidad = scoreAfinidad;
+    }
 
     public int getIdPatPati() {
         return idPatPati;

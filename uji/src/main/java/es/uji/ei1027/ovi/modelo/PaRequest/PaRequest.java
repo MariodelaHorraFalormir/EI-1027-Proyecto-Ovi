@@ -1,5 +1,7 @@
 package es.uji.ei1027.ovi.modelo.PaRequest;
 
+import es.uji.ei1027.ovi.modelo.Persona.Genero;
+import es.uji.ei1027.ovi.modelo.Personalidad;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
@@ -8,6 +10,11 @@ import java.time.LocalDate;
     public class PaRequest {
         private int id;
         private StatusPaRequest status;
+
+        private Genero generoPreferido;
+        private int experienciaMinima;
+        private Personalidad personalidadDeseada; // La clase que acabas de crear
+        private Integer idPapPatiAsignado;
 
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         private LocalDate fechaCreacion;
@@ -83,6 +90,38 @@ import java.time.LocalDate;
 
         public void setOviUser(int oviUser) {
             this.oviUser = oviUser;
+        }
+
+        public Genero getGeneroPreferido() {
+            return generoPreferido;
+        }
+
+        public void setGeneroPreferido(Genero generoPreferido) {
+            this.generoPreferido = generoPreferido;
+        }
+
+        public int getExperienciaMinima() {
+            return experienciaMinima;
+        }
+
+        public void setExperienciaMinima(int experienciaMinima) {
+            this.experienciaMinima = experienciaMinima;
+        }
+
+        public Personalidad getPersonalidadDeseada() {
+            return personalidadDeseada;
+        }
+
+        public void setPersonalidadDeseada(Personalidad personalidadDeseada) {
+            this.personalidadDeseada = personalidadDeseada;
+        }
+
+        public Integer getIdPapPatiAsignado() {
+            return idPapPatiAsignado;
+        }
+
+        public void setIdPapPatiAsignado(Integer idPapPatiAsignado) {
+            this.idPapPatiAsignado = idPapPatiAsignado;
         }
     }
 
