@@ -2,6 +2,7 @@ package es.uji.ei1027.ovi.dao;
 
 import es.uji.ei1027.ovi.RowMapper.PapPatiRowMapper;
 import es.uji.ei1027.ovi.modelo.PapPati.PapPati;
+import es.uji.ei1027.ovi.modelo.Personalidad;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -89,6 +90,17 @@ public class PapPatiDao {
     public List<PapPati> getTodosPapPati() {
         String sql = "SELECT * FROM pap_pati WHERE estado_rol = 'Activo'";
         return jdbcTemplate.query(sql, new PapPatiRowMapper());
+    }
+
+    public List<PapPati> getRecomendados(String genero, int expMin, Personalidad deseada) {
+        String sql = "SELECT * FROM pappati WHERE genero = ? AND experiencia >= ? " +
+                "ORDER BY (ABS(movimiento - ?) + ABS(habla - ?) + ABS(expresividad - ?) + " +
+                "ABS(caracter - ?) + ABS(naturaleza - ?)) ASC LIMIT 5";
+
+        return jdbcTemplate.query(sql, new PapPatiRowMapper(),
+                genero, expMin,
+                deseada.getMovimiento(), deseada.getHabla(), deseada.getExpresividad(),
+                deseada.getCaracter(), deseada.getNaturaleza());
     }
 
 }

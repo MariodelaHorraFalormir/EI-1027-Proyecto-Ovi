@@ -22,10 +22,10 @@ public class PaRequestRowMapper implements RowMapper<PaRequest> {
             paRequest.setFechaResolucion(rs.getDate("fecha_resolucion").toLocalDate());
 
         // Mapeo de nuevos campos
-        if (rs.getDate("fecha_inicio") != null)
-            paRequest.setFechaInicio(rs.getDate("fecha_inicio").toLocalDate());
-        if (rs.getDate("fecha_fin") != null)
-            paRequest.setFechaFin(rs.getDate("fecha_fin").toLocalDate());
+        if (rs.getDate("fecha_creacion") != null)
+            paRequest.setFechaInicio(rs.getDate("fecha_creacion").toLocalDate());
+        if (rs.getDate("fecha_resolucion") != null)
+            paRequest.setFechaFin(rs.getDate("fecha_resolucion").toLocalDate());
 
         paRequest.setTipoAsistencia(rs.getString("tipo_asistencia"));
         paRequest.setPreferencias(rs.getString("preferencias"));

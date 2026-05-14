@@ -35,6 +35,11 @@ public class PersonaController {
         this.personaDao = personaDao;
     }
 
+    @Autowired
+    public void setPaRequestDao(PaRequestDao paRequestDao) {
+        this.paRequestDao = paRequestDao;
+    }
+
     @RequestMapping("/listId")
     public String listaporId(Model model) {
 

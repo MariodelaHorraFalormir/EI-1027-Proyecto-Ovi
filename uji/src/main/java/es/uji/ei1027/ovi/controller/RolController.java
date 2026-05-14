@@ -74,7 +74,7 @@ public class RolController {
             case Pap_pati:
                 return "redirect:/PapPati/create/" + idPersona;
             case Pa_request:
-                return "redirect:/PaRequest/create/" + idPersona; // <--- AÑADIR ESTO
+                return "redirect:/PaRequest/create/" + idPersona;
             default:
                 return "redirect:/";
         }
