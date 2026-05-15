@@ -26,9 +26,10 @@
               th:object="${paRequest}"
               method="post">
 
-            <input type="hidden" name="tipoSolicitud" value="Pa_request" />
-            <input type="hidden" name="categoriaSolicitud" value="Rol" />
-            <input type="hidden" name="estadoSolicitud" value="Pendiente" />
+            <input type="hidden" name="tipoSolicitud" th:value="${solicitud.tipoSolicitud}" />
+            <input type="hidden" name="categoriaSolicitud" th:value="${solicitud.categoriaSolicitud}" />
+            <input type="hidden" name="estadoSolicitud" th:value="${solicitud.estadoSolicitud}" />
+            <input type="hidden" name="personaSolicitante" th:value="${solicitud.personaSolicitante}" />
 
             <div class="block-card">
                 <div class="block-title">Información de la Solicitud</div>

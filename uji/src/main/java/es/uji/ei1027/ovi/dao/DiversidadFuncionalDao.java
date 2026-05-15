@@ -48,7 +48,7 @@ public class DiversidadFuncionalDao {
         );
     }
     public DiversidadFuncional obtenerDiversidadFuncionalPorId(int idDiversidad) {
-        String sql = "SELECT id, ovi_user_id, tipo " +
+        String sql = "SELECT id, ovi_user, tipo , observaciones " +
                 "FROM diversidad_funcional WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, new DiversidadFuncionalRowMapper(), idDiversidad);
     }

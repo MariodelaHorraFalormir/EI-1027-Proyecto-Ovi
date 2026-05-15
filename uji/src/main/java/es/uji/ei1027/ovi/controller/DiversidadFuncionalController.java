@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
+//comentario par github 
 @Controller
 @RequestMapping("/DiversidadFuncional")
 public class DiversidadFuncionalController {
@@ -37,11 +37,18 @@ public class DiversidadFuncionalController {
 
         return "DiversidadFuncional/create";
     }
+    @GetMapping("/details/{idDiversidad}")
+    public String details(@PathVariable int idDiversidad, Model model) {
+        DiversidadFuncional diversidadFuncional =
+                diversidadFuncionalDao.obtenerDiversidadFuncionalPorId(idDiversidad);
+
+        model.addAttribute("diversidadFuncional", diversidadFuncional);
+
+        return "DiversidadFuncional/details";
+    }
 
     @PostMapping("/create/{id}")
-    public String create(
-                         @ModelAttribute("diversidadFuncional") DiversidadFuncional diversidadFuncional) {
-        int id = diversidadFuncional.getOviUserId();
+    public String create(@PathVariable int id, @ModelAttribute("diversidadFuncional") DiversidadFuncional diversidadFuncional) {
         diversidadFuncional.setOviUserId(id);
         diversidadFuncionalDao.addDiversidadFuncional(diversidadFuncional);
 

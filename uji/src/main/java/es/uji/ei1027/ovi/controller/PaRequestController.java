@@ -4,7 +4,6 @@ import es.uji.ei1027.ovi.dao.PaRequestDao;
 import es.uji.ei1027.ovi.dao.SolicitudesDao;
 import es.uji.ei1027.ovi.modelo.PaRequest.PaRequest;
 import es.uji.ei1027.ovi.modelo.PaRequest.StatusPaRequest;
-import es.uji.ei1027.ovi.modelo.Personalidad;
 import es.uji.ei1027.ovi.modelo.Solicitud.CategoriaSolicitud;
 import es.uji.ei1027.ovi.modelo.Solicitud.EstadoSolicitud;
 import es.uji.ei1027.ovi.modelo.Solicitud.Solicitud;
@@ -34,25 +33,24 @@ public class PaRequestController {
         this.paRequestDao = paRequestDao;
     }
 
-
-
     @GetMapping("/create/{id}")
-    public String crearPaRequest(Model model, @PathVariable int id) {
+    public String mostrarFormularioRegistro(Model model, @PathVariable int id) {
+        // Objeto para la tabla 'solicitud' (Gestión técnica)
+        Solicitud solicitud = new Solicitud();
+        solicitud.setPersonaSolicitante(id);
+        solicitud.setCategoriaSolicitud(CategoriaSolicitud.Rol); // O 'Servicio' según prefieras
+        solicitud.setTipoSolicitud(TipoSolicitud.Pa_request);
+        solicitud.setEstadoSolicitud(EstadoSolicitud.Pendiente);
+        solicitud.setFechaCreacion(LocalDate.now());
+
+        // Objeto para la tabla 'pa_request' (Lógica de negocio)
         PaRequest paRequest = new PaRequest();
         paRequest.setOviUser(id);
         paRequest.setStatus(StatusPaRequest.En_espera);
         paRequest.setFechaCreacion(LocalDate.now());
 
-        Personalidad p = new Personalidad();
-        p.setMovimiento(4);
-        p.setHabla(4);
-        p.setExpresividad(4);
-        p.setCaracter(4);
-        p.setNaturaleza(4);
-        paRequest.setPersonalidadDeseada(p);
-
         model.addAttribute("paRequest", paRequest);
-        model.addAttribute("solicitud", new Solicitud());
+        model.addAttribute("solicitud", solicitud);
 
         return "PaRequest/create";
     }
@@ -69,27 +67,33 @@ public class PaRequestController {
         }
 
         try {
+            // 1. ASIGNAR VALORES OBLIGATORIOS (Esto evita el NullPointerException)
             LocalDate hoy = LocalDate.now();
 
+            // Datos para PaRequest
             paRequest.setOviUser(id);
             paRequest.setFechaCreacion(hoy);
-            paRequest.setStatus(StatusPaRequest.En_espera);
+            paRequest.setStatus(StatusPaRequest.En_espera); // <--- ESTO ARREGLA EL ERROR
 
+            // Datos para la Solicitud general
             solicitud.setPersonaSolicitante(id);
             solicitud.setFechaCreacion(hoy);
             solicitud.setEstadoSolicitud(EstadoSolicitud.Pendiente);
             solicitud.setCategoriaSolicitud(CategoriaSolicitud.Rol);
             solicitud.setTipoSolicitud(TipoSolicitud.Pa_request);
 
+            // 2. GUARDAR EN BD (Ahora ya no fallará el DAO)
             paRequestDao.addPaRequest(paRequest);
             solicitudesDao.createSolicitud(solicitud);
 
+            // 3. REDIRECCIÓN (Ahora sí llegará aquí porque no hay excepción)
             return "redirect:/";
 
         } catch (Exception e) {
+            // Imprimimos el error para estar seguros
+            System.out.println("ERROR AL GUARDAR: " + e.getMessage());
             e.printStackTrace();
             return "PaRequest/create";
         }
     }
-
 }

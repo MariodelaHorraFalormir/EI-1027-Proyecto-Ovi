@@ -3,9 +3,9 @@ package es.uji.ei1027.ovi.RowMapper;
 import es.uji.ei1027.ovi.modelo.PapPati.Disponibilidad;
 import es.uji.ei1027.ovi.modelo.PapPati.PapPati;
 import es.uji.ei1027.ovi.modelo.Roles.EstadoRol;
-import es.uji.ei1027.ovi.modelo.Personalidad; // Importante
 import org.springframework.jdbc.core.RowMapper;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -22,18 +22,14 @@ public class PapPatiRowMapper implements RowMapper<PapPati> {
         papPati.setUrlCV(rs.getString("url_cv"));
         papPati.setDescripcionPerfil(rs.getString("descripcion_perfil"));
         papPati.setCentroSocial(rs.getString("centro_social_referencia"));
-        papPati.setEstadoRol(EstadoRol.fromString(rs.getString("estado_rol")));
-
-        // --- MAPEO DE PERSONALIDAD TOMODACHI (NUEVO) ---
-        Personalidad p = new Personalidad();
-        p.setMovimiento(rs.getInt("p_movimiento"));
-        p.setHabla(rs.getInt("p_habla"));
-        p.setExpresividad(rs.getInt("p_expresividad"));
-        p.setCaracter(rs.getInt("p_caracter"));
-        p.setNaturaleza(rs.getInt("p_naturaleza"));
-
-        papPati.setPersonalidad(p);
-
+        papPati.setEstadoRol(EstadoRol.fromString(rs.getString("estado")));
+        Date fechaInicio = rs.getDate("fecha_inicio_disponible");
+        Date fechaFin = rs.getDate("fecha_fin_disponible");
+        if (fechaFin != null) {
+            papPati.setFechaFinDisponibilidad(fechaFin.toLocalDate());
+        }
+        //aqui hay añadir una forma de consultar las especialidades por id
+        //
         return papPati;
     }
 }

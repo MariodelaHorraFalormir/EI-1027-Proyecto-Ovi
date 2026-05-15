@@ -22,9 +22,12 @@ public class PaRequestDao {
     }
 
     public void addPaRequest(PaRequest paRequest) {
+        // 1. Calculamos el ID manualmente para evitar el conflicto de duplicados
         Integer maxId = jdbcTemplate.queryForObject("SELECT MAX(id) FROM pa_request", Integer.class);
         int nextId = (maxId == null) ? 1 : maxId + 1;
 
+        // 2. Usamos OVERRIDING SYSTEM VALUE para que Postgres nos deje meter el ID manual
+        // a pesar de ser una columna GENERATED ALWAYS
         String sql = "INSERT INTO pa_request (id, status, fecha_creacion, fecha_resolucion, ovi_user) " +
                 "OVERRIDING SYSTEM VALUE " +
                 "VALUES (?, ?::status_pa_request_enum, ?, ?, ?)";
@@ -68,19 +71,5 @@ public class PaRequestDao {
 
     public List<PaRequest> getPaRequests() {
         return jdbcTemplate.query("SELECT * FROM pa_request", new PaRequestRowMapper());
-    }
-
-    public List<PaRequest> getRequestsAceptadasParaPappati(int idPapPati) {
-        return jdbcTemplate.query(
-                "SELECT * FROM pa_request WHERE id_pappati_asignado = ? AND status = 'Aceptado'",
-                new PaRequestRowMapper(),
-                idPapPati
-        );
-    }
-
-    public void asignarAsistente(int idRequest, int idPapPati) {
-        String sql = "UPDATE pa_request SET id_pappati_asignado = ?, status = 'Aceptado'::status_pa_request_enum WHERE id = ?";
-
-        jdbcTemplate.update(sql, idPapPati, idRequest);
     }
 }

@@ -1,11 +1,8 @@
 package es.uji.ei1027.ovi.controller;
 
 import es.uji.ei1027.ovi.Service.PersonaService;
-import es.uji.ei1027.ovi.dao.PaRequestDao;
 import es.uji.ei1027.ovi.dao.PersonaDao;
 import es.uji.ei1027.ovi.modelo.OviUser.OviUser;
-import es.uji.ei1027.ovi.modelo.PaRequest.PaRequest;
-import es.uji.ei1027.ovi.modelo.PapPati.PapPati;
 import es.uji.ei1027.ovi.modelo.Persona.Persona;
 import es.uji.ei1027.ovi.modelo.Persona.PersonaFormulario;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,14 +12,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Controller
 @RequestMapping("/Persona")
 public class PersonaController {
     private PersonaService personaService;
     private PersonaDao personaDao;
-    private PaRequestDao paRequestDao;
 
 
     @Autowired
@@ -33,11 +28,6 @@ public class PersonaController {
     @Autowired
     public void setPersonaDao(PersonaDao personaDao) {
         this.personaDao = personaDao;
-    }
-
-    @Autowired
-    public void setPaRequestDao(PaRequestDao paRequestDao) {
-        this.paRequestDao = paRequestDao;
     }
 
     @RequestMapping("/listId")
@@ -105,27 +95,6 @@ public class PersonaController {
             model.addAttribute("persona", persona);
             return "Persona/registro";
         }
-    }
-
-    @GetMapping("/recomendar/{idRequest}")
-    public String verRecomendados(@PathVariable int idRequest, Model model) {
-
-        PaRequest request = paRequestDao.getPaRequestById(idRequest);
-
-        List<PapPati> recomendados = personaService.getRecomendaciones(request);
-
-        model.addAttribute("recomendados", recomendados);
-        model.addAttribute("paRequest", request);
-
-        return "Persona/recomendados";
-    }
-
-    @PostMapping("/aceptarCandidato")
-    public String aceptarCandidato(@RequestParam("idRequest") int idRequest,
-                                   @RequestParam("idPapPati") int idPapPati) {
-        paRequestDao.asignarAsistente(idRequest, idPapPati);
-
-        return "redirect:/PaRequest/list";
     }
 }
 
