@@ -30,28 +30,47 @@
             <a class="btn btn-light fw-bold rounded-pill px-4" style="color: #003366;" th:href="@{/login}">Iniciar Sesión</a>
           </li>
         </th:block>
-
         <th:block th:if="${session.usuario != null}">
-          <li class="nav-item me-3" th:if="${session.usuario.rol == 'Técnico' or session.usuario.rol == 'Admin'}">
-            <a class="nav-link text-warning fw-bold" th:href="@{/Solicitudes/listId}">Gestión OVI</a>
+
+          <li class="nav-item me-3" th:if="${session.usuario.esAdminOvi()}">
+            <a class="nav-link text-warning fw-bold" th:href="@{/Solicitudes/list/todas}">
+              Gestión OVI
+            </a>
           </li>
 
-          <li class="nav-item me-3" th:if="${session.usuario.rol == 'Usuario'}">
-            <a class="nav-link text-white fw-bold" th:href="@{/Solicitudes/misSolicitudes}">Mis Peticiones</a>
+          <li class="nav-item me-3" th:if="${!session.usuario.esAdminOvi()}">
+            <a class="nav-link text-white fw-bold"
+               th:href="@{/Persona/details/{id}(id=${session.usuario.idPersona})}">
+              Mi perfil
+            </a>
           </li>
 
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle bg-white text-primary rounded-pill px-3 py-1 fw-bold" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <a class="nav-link dropdown-toggle bg-white text-primary rounded-pill px-3 py-1 fw-bold"
+               href="#"
+               id="userDropdown"
+               role="button"
+               data-bs-toggle="dropdown"
+               aria-expanded="false">
               <span th:text="${session.usuario.nombre}">Usuario</span>
             </a>
+
             <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
-              <li><a class="dropdown-item" th:href="@{/perfil}">Mi Perfil</a></li>
+              <li>
+                <a class="dropdown-item"
+                   th:href="@{/Persona/details/{id}(id=${session.usuario.idPersona})}">
+                  Mi Perfil
+                </a>
+              </li>
               <li><hr class="dropdown-divider"></li>
               <li>
-                <a class="dropdown-item text-danger fw-bold" th:href="@{/logout}">Cerrar Sesión</a>
+                <a class="dropdown-item text-danger fw-bold" th:href="@{/logout}">
+                  Cerrar Sesión
+                </a>
               </li>
             </ul>
           </li>
+
         </th:block>
 
       </ul>

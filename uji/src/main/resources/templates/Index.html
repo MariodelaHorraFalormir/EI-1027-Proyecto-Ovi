@@ -65,12 +65,16 @@
 
             <div th:if="${session.usuario != null}" class="d-flex justify-content-center gap-3 flex-wrap">
 
-                <a th:if="${session.usuario.rol == 'Usuario'}" th:href="@{/Solicitudes/misSolicitudes}" class="btn btn-success btn-lg px-5 py-3 fw-bold rounded-pill shadow-sm">
-                    Ir a mi Panel de Usuario
+                <a th:if="${session.usuario != null and !session.usuario.esAdminOvi()}"
+                   th:href="@{/Persona/details/{id}(id=${session.usuario.idPersona})}"
+                   class="btn btn-success btn-lg px-5 py-3 fw-bold rounded-pill shadow-sm">
+                    Ir a mi perfil
                 </a>
 
-                <a th:if="${session.usuario.rol == 'Técnico' or session.usuario.rol == 'Admin'}" th:href="@{/Solicitudes/listId}" class="btn btn-warning btn-lg px-5 py-3 fw-bold rounded-pill shadow-sm text-dark">
-                    Ir al Panel de Gestión (Técnico)
+                <a th:if="${session.usuario != null and session.usuario.esAdminOvi()}"
+                   th:href="@{/Solicitudes/list/todas}"
+                   class="btn btn-warning btn-lg px-5 py-3 fw-bold rounded-pill shadow-sm text-dark">
+                    Ir al Panel de Gestión
                 </a>
             </div>
 
