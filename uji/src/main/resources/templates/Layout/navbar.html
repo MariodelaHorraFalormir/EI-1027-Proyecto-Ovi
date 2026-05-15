@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<nav th:fragment="main-nav" class="navbar navbar-expand-lg bg-primary shadow-sm" data-bs-theme="dark" aria-label="Menú principal de navegación">
+  <div class="container">
+
+    <a class="navbar-brand fw-bold text-white" th:href="@{/}">
+      <span style="font-size: 1.5rem;">OVI</span> <span class="fw-light">UJI</span>
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Desplegar menú de navegación">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarContent">
+
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link text-white fw-semibold" th:href="@{/servicios}">Servicios</a>
+        </li>
+      </ul>
+
+      <ul class="navbar-nav ms-auto align-items-center">
+
+        <th:block th:if="${session.usuario == null}">
+          <li class="nav-item">
+            <a class="nav-link text-white fw-semibold" th:href="@{/Persona/registro}">Registrarse</a>
+          </li>
+          <li class="nav-item ms-2">
+            <a class="btn btn-light fw-bold rounded-pill px-4" style="color: #003366;" th:href="@{/login}">Iniciar Sesión</a>
+          </li>
+        </th:block>
+
+        <th:block th:if="${session.usuario != null}">
+          <li class="nav-item me-3" th:if="${session.usuario.rol == 'Técnico' or session.usuario.rol == 'Admin'}">
+            <a class="nav-link text-warning fw-bold" th:href="@{/Solicitudes/listId}">Gestión OVI</a>
+          </li>
+
+          <li class="nav-item me-3" th:if="${session.usuario.rol == 'Usuario'}">
+            <a class="nav-link text-white fw-bold" th:href="@{/Solicitudes/misSolicitudes}">Mis Peticiones</a>
+          </li>
+
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle bg-white text-primary rounded-pill px-3 py-1 fw-bold" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <span th:text="${session.usuario.nombre}">Usuario</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
+              <li><a class="dropdown-item" th:href="@{/perfil}">Mi Perfil</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <a class="dropdown-item text-danger fw-bold" th:href="@{/logout}">Cerrar Sesión</a>
+              </li>
+            </ul>
+          </li>
+        </th:block>
+
+      </ul>
+    </div>
+  </div>
+</nav>
+</body>
+</html>

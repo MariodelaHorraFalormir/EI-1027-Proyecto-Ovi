@@ -67,7 +67,7 @@ public class PaRequestDao {
     }
 
     public List<PaRequest> getPaRequests() {
-        return jdbcTemplate.query("SELECT * FROM pa_request", new PaRequestRowMapper());
+        return jdbcTemplate.query("SELECT * FROM pa_request", new PaRequestRowMapper());}
 
     public void cambiarEstadoPaRequest(int personaSolicitante, StatusPaRequest statusPaRequest) {
 
