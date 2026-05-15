@@ -201,6 +201,22 @@ public class SolicitudesService {
             default -> "Listado de solicitudes";
         };
     }
+    public List<Solicitud> getSolicitudesDeUsuario(UsuarioSesion usuario) {
+        if (usuario == null) {
+            return List.of();
+        }
+
+        return solicitudesDao.getSolicitudesPorPersona(usuario.getIdPersona());
+    }
+
+    public boolean puedeVerSolicitud(UsuarioSesion usuario, Solicitud solicitud) {
+        if (usuario == null || solicitud == null) {
+            return false;
+        }
+
+        return puedeGestionarSolicitudes(usuario)
+                || solicitud.getPersonaSolicitante() == usuario.getIdPersona();
+    }
 
     public boolean puedeGestionarSolicitudes(UsuarioSesion usuario) {
         return usuario != null && usuario.esAdminOvi();
