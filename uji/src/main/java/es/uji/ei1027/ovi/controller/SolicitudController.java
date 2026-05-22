@@ -48,22 +48,28 @@ public class SolicitudController {
         model.addAttribute("tipoActual", tipo);
         return "Solicitudes/listId";
     }
-    @RequestMapping("/detail/{id}")
-    public String  detalles(Model model,@PathVariable int id , HttpSession session){
+    @GetMapping("/detail/{id}")
+    public String detalles(Model model, @PathVariable int id, HttpSession session) {
         String url = "/Solicitudes/detail/" + id;
+
         UsuarioSesion usuario = sesionService.getUsuario(session);
+
         if (usuario == null) {
             return sesionService.redirigirALogin(session, url);
         }
+
         Solicitud solicitud = solicitudDao.getSolicitudById(id);
+
         if (solicitud == null) {
             return "redirect:/";
         }
-        if (!solicitudesService.puedeGestionarSolicitudes(usuario)){
+
+        if (!solicitudesService.puedeVerSolicitud(usuario, solicitud)) {
             return "redirect:/";
         }
+
         boolean esAdmin = solicitudesService.puedeGestionarSolicitudes(usuario);
-        boolean esSuSolicitud = solicitud.getIdSolicitud() == usuario.getIdPersona();
+
         if (esAdmin) {
             model.addAttribute("urlVolverSolicitudes", "/Solicitudes/list/todas");
             model.addAttribute("textoVolverSolicitudes", "Volver al listado");
@@ -71,9 +77,11 @@ public class SolicitudController {
             model.addAttribute("urlVolverSolicitudes", "/Solicitudes/mis");
             model.addAttribute("textoVolverSolicitudes", "Volver a mis solicitudes");
         }
-        model.addAttribute("solicitud", solicitudDao.getSolicitudById(id));
+
+        model.addAttribute("solicitud", solicitud);
         model.addAttribute("esAdmin", esAdmin);
         model.addAttribute("puedeEditarSolicitud", esAdmin);
+
         return "Solicitudes/detail";
     }
     @RequestMapping(value ="/update/{id}" ,method = RequestMethod.GET)
@@ -163,5 +171,22 @@ public class SolicitudController {
         }
         solicitudDao.deleteSolicitud(id);
         return "redirect:/Solicitudes/list/todas";    }
+
+
+    @GetMapping("/mis")
+    public String misSolicitudes(Model model, HttpSession session) {
+        String url = "/Solicitudes/mis";
+
+        UsuarioSesion usuario = sesionService.getUsuario(session);
+
+        if (usuario == null) {
+            return sesionService.redirigirALogin(session, url);
+        }
+
+        model.addAttribute("solicitudes", solicitudesService.getSolicitudesDeUsuario(usuario));
+        model.addAttribute("tituloListado", "Mis solicitudes");
+
+        return "Solicitudes/mis";
+    }
 
 }

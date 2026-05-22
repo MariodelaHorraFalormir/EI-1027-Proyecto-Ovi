@@ -37,6 +37,25 @@ public class SolicitudesDao {
             return new ArrayList<>();
         }
     }
+    public List<Solicitud> getSolicitudesPorPersona(int idPersona) {
+        try {
+            String sql = """
+            SELECT *
+            FROM solicitud
+            WHERE persona_solicitante = ?
+            ORDER BY id DESC
+        """;
+
+            return jdbcTemplate.query(
+                    sql,
+                    new SolicitudRowMapper(),
+                    idPersona
+            );
+
+        } catch (EmptyResultDataAccessException e) {
+            return new ArrayList<>();
+        }
+    }
     public Solicitud getSolicitudById(int id) {
         try {
             return jdbcTemplate.queryForObject("SELECT * FROM solicitud WHERE id = ? ", new SolicitudRowMapper(), id);

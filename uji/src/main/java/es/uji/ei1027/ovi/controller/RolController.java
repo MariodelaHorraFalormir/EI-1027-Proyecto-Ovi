@@ -42,6 +42,7 @@ public class RolController {
 
     private boolean esRolValido(TipoSolicitud tipoSolicitud) {
         return tipoSolicitud == TipoSolicitud.Ovi_user ||
-                tipoSolicitud == TipoSolicitud.Pap_pati;
+                tipoSolicitud == TipoSolicitud.Pap_pati ||
+                tipoSolicitud == TipoSolicitud.Pa_request;
     }
 }
