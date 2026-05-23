@@ -58,6 +58,34 @@
                 </div>
             </div>
 
+            <div class="block-card">
+                <div class="block-title">Detalles del Servicio</div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Fecha Inicio:</label>
+                        <input type="date" th:field="*{fechaInicio}" class="form-control" required/>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Fecha Fin (Opcional):</label>
+                        <input type="date" th:field="*{fechaFin}" class="form-control"/>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Tipo de Asistencia:</label>
+                    <select th:field="*{tipoAsistencia}" class="form-select" required>
+                        <option value="">Selecciona una opción...</option>
+                        <option value="Movilidad">Apoyo a la movilidad</option>
+                        <option value="Higiene">Higiene personal</option>
+                        <option value="Acompañamiento">Acompañamiento académico</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Preferencias o notas adicionales:</label>
+                    <textarea th:field="*{preferencias}" class="form-control" rows="3"
+                              placeholder="Indica aquí si prefieres algún horario específico, género del asistente, etc."></textarea>
+                </div>
+            </div>
+
             <div class="d-flex gap-3 justify-content-end mt-4">
                 <a th:href="@{/}" class="btn btn-outline-secondary px-4">Cancelar</a>
                 <button type="submit" class="btn btn-primary px-5">Enviar Solicitud</button>
