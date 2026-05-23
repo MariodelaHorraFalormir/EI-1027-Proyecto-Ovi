@@ -2,6 +2,7 @@ package es.uji.ei1027.ovi.dao;
 
 import es.uji.ei1027.ovi.RowMapper.PaRequestRowMapper;
 import es.uji.ei1027.ovi.modelo.PaRequest.PaRequest;
+import es.uji.ei1027.ovi.modelo.PaRequest.StatusPaRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -71,5 +72,10 @@ public class PaRequestDao {
 
     public List<PaRequest> getPaRequests() {
         return jdbcTemplate.query("SELECT * FROM pa_request", new PaRequestRowMapper());
+    }
+
+    public void cambiarEstadoPaRequest(int oviUser, StatusPaRequest statusPaRequest) {
+        String sql = "UPDATE pa_request SET status = ?::status_pa_request_enum WHERE ovi_user = ?";
+        jdbcTemplate.update(sql, statusPaRequest.getTexto(), oviUser);
     }
 }
