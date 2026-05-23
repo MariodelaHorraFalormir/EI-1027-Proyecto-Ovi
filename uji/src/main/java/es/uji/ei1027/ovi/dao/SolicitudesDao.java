@@ -110,9 +110,9 @@ public class SolicitudesDao {
 
         String sql = "" +
                 "UPDATE solicitud " +
-                "SET estado = ?::estado_solicitud_enum,tecnico_revisor = ?, fecha_resolucion = ?" +
+                "SET estado = ?::estado_solicitud_enum,tecnico_revisor = ?, fecha_resolucion = CURRENT_TIMESTAMP" +
                 " WHERE id = ?";
-        jdbcTemplate.update(sql, EstadoSolicitud.Aprobada.toString(),idTecnicoRevisor, LocalDateTime.now(), idOriginal);
+        jdbcTemplate.update(sql, EstadoSolicitud.Aprobada.toString(),idTecnicoRevisor, idOriginal);
 
 
     }
@@ -120,9 +120,9 @@ public class SolicitudesDao {
 
         String sql = "" +
                 "UPDATE solicitud " +
-                "SET estado = ?::estado_solicitud_enum,tecnico_revisor = ?, fecha_resolucion = ? ,motivo_resolucion =? " +
+                "SET estado = ?::estado_solicitud_enum,tecnico_revisor = ?, fecha_resolucion = CURRENT_TIMESTAMP ,motivo_resolucion =? " +
                 " WHERE id = ?";
-        jdbcTemplate.update(sql, EstadoSolicitud.Rechazada.toString(),idTecnicoRevisor, LocalDateTime.now(),"Rechazo Rapido", idOriginal);
+        jdbcTemplate.update(sql, EstadoSolicitud.Rechazada.toString(),idTecnicoRevisor, "Rechazo Rapido", idOriginal);
 
 
     }
@@ -166,6 +166,25 @@ public class SolicitudesDao {
                     sql,
                     new SolicitudRowMapper(),
                     tipoSolicitud.getTexto()
+            );
+
+        } catch (EmptyResultDataAccessException e) {
+            return new ArrayList<>();
+        }
+    }
+    public List<Solicitud> getSolicitudesPendientes() {
+        try {
+            String sql = """
+            SELECT *
+            FROM solicitud
+            WHERE estado = ?::estado_solicitud_enum
+            ORDER BY fecha_creacion ASC, id ASC
+        """;
+
+            return jdbcTemplate.query(
+                    sql,
+                    new SolicitudRowMapper(),
+                    EstadoSolicitud.Pendiente.getTexto()
             );
 
         } catch (EmptyResultDataAccessException e) {
