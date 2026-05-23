@@ -25,7 +25,6 @@ import java.time.LocalDate;
         private String preferencias;
 
         private int oviUser;
-        private String personalidad;
         private String generoAsistente;
         private String disponibilidadHoraria;
         private String zonaGeografica;
@@ -88,9 +87,6 @@ import java.time.LocalDate;
         public void setOviUser(int oviUser) {
             this.oviUser = oviUser;
         }
-
-        public String getPersonalidad() { return personalidad; }
-        public void setPersonalidad(String personalidad) { this.personalidad = personalidad; }
 
         public String getGeneroAsistente() { return generoAsistente; }
         public void setGeneroAsistente(String generoAsistente) { this.generoAsistente = generoAsistente; }

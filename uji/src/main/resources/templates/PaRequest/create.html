@@ -255,6 +255,12 @@
         document.getElementById('personalidadInput').value = valor;
         return true;
     }
+
+    function initDots() {
+        ['d1','d2','d3','d4','d5'].forEach(id => selectDot(id, 5));
+    }
+
+    initDots();
 </script>
 
 </body>
