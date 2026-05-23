@@ -44,7 +44,10 @@ public class PersonaDao {
 
     public void updatePersona(Persona persona) {
         jdbcTemplate.update(
-                "UPDATE persona SET nombre = ?, apellidos = ?, mail = ?, genero = ?::genero_enum, telefono = ?, direccion = ?,pais = ? , fecha_nacimiento = ?, fecha_alta = ?, fecha_baja = ?  , dni = ?  WHERE id = ?",
+                "UPDATE persona SET nombre = ?, apellidos = ?, mail = ?, genero = ?::genero_enum, " +
+                        "telefono = ?, direccion = ?, pais = ?, fecha_nacimiento = ?, fecha_alta = ?, " +
+                        "fecha_baja = ?, dni = ?, ritmo = ?, comunicacion = ?, expresividad = ?, " +
+                        "caracter = ?, naturaleza = ? WHERE id = ?",
                 persona.getNombre(),
                 persona.getApellidos(),
                 persona.getMail(),
@@ -56,11 +59,15 @@ public class PersonaDao {
                 persona.getFechaAlta(),
                 persona.getFechaBaja(),
                 persona.getDni(),
+                persona.getRitmo(),
+                persona.getComunicacion(),
+                persona.getExpresividad(),
+                persona.getCaracter(),
+                persona.getNaturaleza(),
                 persona.getIdPersona()
-
         );
-
     }
+
     public int addPersonaYDevolverId(Persona persona) {
         return jdbcTemplate.queryForObject(
                 "INSERT INTO persona (nombre, apellidos, mail, telefono, direccion, genero, pais, fecha_nacimiento, fecha_alta, fecha_baja,contrasena,dni) " +
