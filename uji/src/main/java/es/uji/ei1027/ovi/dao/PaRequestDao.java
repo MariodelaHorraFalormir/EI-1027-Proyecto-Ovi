@@ -23,15 +23,13 @@ public class PaRequestDao {
     }
 
     public void addPaRequest(PaRequest paRequest) {
-        // 1. Calculamos el ID manualmente para evitar el conflicto de duplicados
         Integer maxId = jdbcTemplate.queryForObject("SELECT MAX(id) FROM pa_request", Integer.class);
         int nextId = (maxId == null) ? 1 : maxId + 1;
 
-        // 2. Usamos OVERRIDING SYSTEM VALUE para que Postgres nos deje meter el ID manual
-        // a pesar de ser una columna GENERATED ALWAYS
-        String sql = "INSERT INTO pa_request (id, status, fecha_creacion, fecha_resolucion, ovi_user) " +
+        String sql = "INSERT INTO pa_request (id, status, fecha_creacion, fecha_resolucion, ovi_user, " +
+                "personalidad, genero_asistente, disponibilidad_horaria, zona_geografica) " +
                 "OVERRIDING SYSTEM VALUE " +
-                "VALUES (?, ?::status_pa_request_enum, ?, ?, ?)";
+                "VALUES (?, ?::status_pa_request_enum, ?, ?, ?, ?, ?, ?, ?)";
 
         jdbcTemplate.update(
                 sql,
@@ -39,7 +37,11 @@ public class PaRequestDao {
                 paRequest.getStatus().getTexto(),
                 Date.valueOf(paRequest.getFechaCreacion()),
                 paRequest.getFechaResolucion() != null ? Date.valueOf(paRequest.getFechaResolucion()) : null,
-                paRequest.getOviUser()
+                paRequest.getOviUser(),
+                paRequest.getPersonalidad(),
+                paRequest.getGeneroAsistente(),
+                paRequest.getDisponibilidadHoraria(),
+                paRequest.getZonaGeografica()
         );
     }
 
