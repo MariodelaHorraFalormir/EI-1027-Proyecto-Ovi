@@ -35,7 +35,6 @@ public class PaRequestController {
 
     @GetMapping("/create/{id}")
     public String mostrarFormularioRegistro(Model model, @PathVariable int id) {
-        // Objeto para la tabla 'solicitud' (Gestión técnica)
         Solicitud solicitud = new Solicitud();
         solicitud.setPersonaSolicitante(id);
         solicitud.setCategoriaSolicitud(CategoriaSolicitud.Proceso); // O 'Servicio' según prefieras
@@ -43,7 +42,6 @@ public class PaRequestController {
         solicitud.setEstadoSolicitud(EstadoSolicitud.Pendiente);
         solicitud.setFechaCreacion(LocalDate.now());
 
-        // Objeto para la tabla 'pa_request' (Lógica de negocio)
         PaRequest paRequest = new PaRequest();
         paRequest.setOviUser(id);
         paRequest.setStatus(StatusPaRequest.En_espera);
@@ -69,10 +67,9 @@ public class PaRequestController {
         try {
             LocalDate hoy = LocalDate.now();
 
-            // Datos para PaRequest
             paRequest.setOviUser(id);
             paRequest.setFechaCreacion(hoy);
-            paRequest.setStatus(StatusPaRequest.En_espera); // <--- ESTO ARREGLA EL ERROR
+            paRequest.setStatus(StatusPaRequest.En_espera);
 
             solicitud.setPersonaSolicitante(id);
             solicitud.setFechaCreacion(hoy);

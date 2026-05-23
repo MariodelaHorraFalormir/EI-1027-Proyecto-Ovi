@@ -29,7 +29,6 @@ public class PaRequestRowMapper implements RowMapper<PaRequest> {
         paRequest.setPreferencias(rs.getString("preferencias"));
         paRequest.setOviUser(rs.getInt("ovi_user"));
 
-        paRequest.setPersonalidad(rs.getString("personalidad"));
         paRequest.setGeneroAsistente(rs.getString("genero_asistente"));
         paRequest.setDisponibilidadHoraria(rs.getString("disponibilidad_horaria"));
         paRequest.setZonaGeografica(rs.getString("zona_geografica"));
