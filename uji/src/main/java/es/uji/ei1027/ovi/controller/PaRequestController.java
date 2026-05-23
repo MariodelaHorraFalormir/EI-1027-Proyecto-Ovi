@@ -35,7 +35,6 @@ public class PaRequestController {
 
     @GetMapping("/create/{id}")
     public String mostrarFormularioRegistro(Model model, @PathVariable int id) {
-        // Objeto para la tabla 'solicitud' (Gestión técnica)
         Solicitud solicitud = new Solicitud();
         solicitud.setPersonaSolicitante(id);
         solicitud.setCategoriaSolicitud(CategoriaSolicitud.Proceso); // O 'Servicio' según prefieras
@@ -43,7 +42,6 @@ public class PaRequestController {
         solicitud.setEstadoSolicitud(EstadoSolicitud.Pendiente);
         solicitud.setFechaCreacion(LocalDate.now());
 
-        // Objeto para la tabla 'pa_request' (Lógica de negocio)
         PaRequest paRequest = new PaRequest();
         paRequest.setOviUser(id);
         paRequest.setStatus(StatusPaRequest.En_espera);
@@ -67,26 +65,24 @@ public class PaRequestController {
         }
 
         try {
-            // 1. ASIGNAR VALORES OBLIGATORIOS (Esto evita el NullPointerException)
             LocalDate hoy = LocalDate.now();
 
-            // Datos para PaRequest
             paRequest.setOviUser(id);
             paRequest.setFechaCreacion(hoy);
-            paRequest.setStatus(StatusPaRequest.En_espera); // <--- ESTO ARREGLA EL ERROR
+            paRequest.setStatus(StatusPaRequest.En_espera);
 
+            solicitud.setPersonaSolicitante(id);
+            solicitud.setFechaCreacion(hoy);
+            solicitud.setEstadoSolicitud(EstadoSolicitud.Pendiente);
+            solicitud.setCategoriaSolicitud(CategoriaSolicitud.Proceso);
+            solicitud.setTipoSolicitud(TipoSolicitud.Pa_request);
 
-            // 2. GUARDAR EN BD (Ahora ya no fallará el DAO)
- 
-            solicitudesDao.createSolicitud(solicitud);
             paRequestDao.addPaRequest(paRequest);
+            solicitudesDao.createSolicitud(solicitud);
 
-
-            // 3. REDIRECCIÓN (Ahora sí llegará aquí porque no hay excepción)
             return "redirect:/";
 
         } catch (Exception e) {
-            // Imprimimos el error para estar seguros
             System.out.println("ERROR AL GUARDAR: " + e.getMessage());
             e.printStackTrace();
             return "PaRequest/create";

@@ -15,7 +15,31 @@ import java.time.LocalDate;
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         private LocalDate fechaResolucion;
 
+        @DateTimeFormat(pattern = "yyyy-MM-dd")
+        private LocalDate fechaInicio;
+
+        @DateTimeFormat(pattern = "yyyy-MM-dd")
+        private LocalDate fechaFin;
+
+        private String tipoAsistencia;
+        private String preferencias;
+
         private int oviUser;
+        private String generoAsistente;
+        private String disponibilidadHoraria;
+        private String zonaGeografica;
+
+        public LocalDate getFechaInicio() { return fechaInicio; }
+        public void setFechaInicio(LocalDate fechaInicio) { this.fechaInicio = fechaInicio; }
+
+        public LocalDate getFechaFin() { return fechaFin; }
+        public void setFechaFin(LocalDate fechaFin) { this.fechaFin = fechaFin; }
+
+        public String getTipoAsistencia() { return tipoAsistencia; }
+        public void setTipoAsistencia(String tipoAsistencia) { this.tipoAsistencia = tipoAsistencia; }
+
+        public String getPreferencias() { return preferencias; }
+        public void setPreferencias(String preferencias) { this.preferencias = preferencias; }
 
         public PaRequest() {
         }
@@ -63,5 +87,14 @@ import java.time.LocalDate;
         public void setOviUser(int oviUser) {
             this.oviUser = oviUser;
         }
+
+        public String getGeneroAsistente() { return generoAsistente; }
+        public void setGeneroAsistente(String generoAsistente) { this.generoAsistente = generoAsistente; }
+
+        public String getDisponibilidadHoraria() { return disponibilidadHoraria; }
+        public void setDisponibilidadHoraria(String disponibilidadHoraria) { this.disponibilidadHoraria = disponibilidadHoraria; }
+
+        public String getZonaGeografica() { return zonaGeografica; }
+        public void setZonaGeografica(String zonaGeografica) { this.zonaGeografica = zonaGeografica; }
     }
 

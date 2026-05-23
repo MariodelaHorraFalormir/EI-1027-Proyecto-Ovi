@@ -34,10 +34,11 @@ public class PersonaRowMapper implements RowMapper<Persona> {
         fecha = convFechas(fechaNacimiento,rs);
         persona.setFechaNacimiento(fecha);
 
-
-
-
-
+        persona.setRitmo(rs.getInt("ritmo"));
+        persona.setComunicacion(rs.getInt("comunicacion"));
+        persona.setExpresividad(rs.getInt("expresividad"));
+        persona.setCaracter(rs.getInt("caracter"));
+        persona.setNaturaleza(rs.getInt("naturaleza"));
 
         return persona;
 
