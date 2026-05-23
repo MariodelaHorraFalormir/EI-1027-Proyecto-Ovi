@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5a88d3d5-4f11-4e0a-ac78-4a1c24599e11" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/uji/src/main/java/es/uji/ei1027/ovi/controller/PaRequestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/uji/src/main/java/es/uji/ei1027/ovi/controller/PaRequestController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/uji/src/main/java/es/uji/ei1027/ovi/dao/PaRequestDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/uji/src/main/java/es/uji/ei1027/ovi/dao/PaRequestDao.java" afterDir="false" />
+    <list default="true" id="5a88d3d5-4f11-4e0a-ac78-4a1c24599e11" name="Changes" comment="Corrección para subir PaRequest">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/uji/src/main/java/es/uji/ei1027/ovi/UjiApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/uji/src/main/java/es/uji/ei1027/ovi/UjiApplication.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,6 +44,19 @@
     </configuration>
   </component>
   <component name="TaskManager">
+    <task id="LOCAL-00001" summary="Corrección para subir PaRequest">
+      <option name="closed" value="true" />
+      <created>1779528897628</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1779528897628</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Corrección para subir PaRequest" />
+    <option name="LAST_COMMIT_MESSAGE" value="Corrección para subir PaRequest" />
   </component>
 </project>
