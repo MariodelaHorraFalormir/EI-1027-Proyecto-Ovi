@@ -107,4 +107,48 @@ public class PaRequestController {
         model.addAttribute("totalPages", totalPages);
         return "PaRequest/mis";
     }
+
+    @GetMapping("/list")
+    public String listarPaRequests(Model model, HttpSession session) {
+        if (session.getAttribute("usuario") == null) {
+            return "redirect:/login";
+        }
+        model.addAttribute("paRequests", paRequestDao.getPaRequests());
+        return "PaRequest/list";
+    }
+
+    @GetMapping("/detail/{id}")
+    public String detallePaRequest(Model model, @PathVariable int id, HttpSession session) {
+        if (session.getAttribute("usuario") == null) {
+            return "redirect:/login";
+        }
+        PaRequest paRequest = paRequestDao.getPaRequestById(id);
+        if (paRequest == null) return "redirect:/PaRequest/list";
+        model.addAttribute("paRequest", paRequest);
+        return "PaRequest/detail";
+    }
+
+    @GetMapping("/update/{id}")
+    public String mostrarFormularioUpdate(Model model, @PathVariable int id, HttpSession session) {
+        if (session.getAttribute("usuario") == null) {
+            return "redirect:/login";
+        }
+        PaRequest paRequest = paRequestDao.getPaRequestById(id);
+        if (paRequest == null) return "redirect:/PaRequest/list";
+        model.addAttribute("paRequest", paRequest);
+        return "PaRequest/update";
+    }
+
+    @PostMapping("/update/{id}")
+    public String procesarUpdate(
+            @ModelAttribute("paRequest") PaRequest paRequest,
+            @PathVariable int id,
+            HttpSession session) {
+        if (session.getAttribute("usuario") == null) {
+            return "redirect:/login";
+        }
+        paRequest.setId(id);
+        paRequestDao.updatePaRequest(paRequest);
+        return "redirect:/PaRequest/detail/" + id;
+    }
 }

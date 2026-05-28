@@ -50,12 +50,28 @@ public class PaRequestDao {
     }
 
     public void updatePaRequest(PaRequest paRequest) {
-        jdbcTemplate.update(
-                "UPDATE pa_request SET status = ?::status_pa_request_enum, fecha_creacion = ?, fecha_resolucion = ?, ovi_user = ? WHERE id = ?",
+        String sql = "UPDATE pa_request SET " +
+                "status = ?::status_pa_request_enum, " +
+                "fecha_resolucion = ?, " +
+                "tipo_asistencia = ?, " +
+                "fecha_inicio = ?, " +
+                "fecha_fin = ?, " +
+                "genero_asistente = ?, " +
+                "disponibilidad_horaria = ?, " +
+                "zona_geografica = ?, " +
+                "preferencias = ? " +
+                "WHERE id = ?";
+
+        jdbcTemplate.update(sql,
                 paRequest.getStatus().getTexto(),
-                Date.valueOf(paRequest.getFechaCreacion()),
                 paRequest.getFechaResolucion() != null ? Date.valueOf(paRequest.getFechaResolucion()) : null,
-                paRequest.getOviUser(),
+                paRequest.getTipoAsistencia(),
+                paRequest.getFechaInicio() != null ? Date.valueOf(paRequest.getFechaInicio()) : null,
+                paRequest.getFechaFin() != null ? Date.valueOf(paRequest.getFechaFin()) : null,
+                paRequest.getGeneroAsistente(),
+                paRequest.getDisponibilidadHoraria(),
+                paRequest.getZonaGeografica(),
+                paRequest.getPreferencias(),
                 paRequest.getId()
         );
     }
