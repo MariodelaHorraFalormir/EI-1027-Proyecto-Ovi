@@ -91,6 +91,33 @@
                 </tbody>
             </table>
         </div>
+        <!-- Paginación -->
+        <div th:if="${totalPages > 1}" class="d-flex justify-content-center mt-3">
+            <nav>
+                <ul class="pagination">
+                    <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/PaRequest/list(page=${currentPage - 1})}">
+                            Anterior
+                        </a>
+                    </li>
+                    <li class="page-item"
+                        th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                        th:classappend="${i == currentPage} ? 'active'">
+                        <a class="page-link"
+                           th:href="@{/PaRequest/list(page=${i})}"
+                           th:text="${i + 1}">
+                        </a>
+                    </li>
+                    <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/PaRequest/list(page=${currentPage + 1})}">
+                            Siguiente
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
 
         <div class="mt-3">
             <a th:href="@{/}" class="btn btn-secondary">Volver al inicio</a>

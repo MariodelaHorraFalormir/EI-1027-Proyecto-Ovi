@@ -109,11 +109,22 @@ public class PaRequestController {
     }
 
     @GetMapping("/list")
-    public String listarPaRequests(Model model, HttpSession session) {
+    public String listarPaRequests(Model model, HttpSession session,
+                                   @RequestParam(defaultValue = "0") int page) {
         if (session.getAttribute("usuario") == null) {
             return "redirect:/login";
         }
-        model.addAttribute("paRequests", paRequestDao.getPaRequests());
+        int pageSize = 10;
+        List<PaRequest> todos = paRequestDao.getPaRequests();
+        int total = todos.size();
+        int totalPages = (int) Math.ceil((double) total / pageSize);
+        int from = page * pageSize;
+        int to = Math.min(from + pageSize, total);
+        List<PaRequest> pagina = todos.subList(from, to);
+
+        model.addAttribute("paRequests", pagina);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
         return "PaRequest/list";
     }
 
