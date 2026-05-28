@@ -129,6 +129,20 @@
             color: #dc3545;
             font-size: 90%;
         }
+        .personality-row { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+        .personality-label { font-size: 13px; color: #4a5568; width: 110px; flex-shrink: 0; font-weight: 600; }
+        .personality-extreme { font-size: 11px; color: #a0aec0; width: 65px; flex-shrink: 0; }
+        .personality-extreme.right { text-align: right; }
+        .dots { display: flex; gap: 5px; flex: 1; justify-content: center; }
+        .dot {
+            width: 26px; height: 26px; border-radius: 50%;
+            border: 1.5px solid #cbd5e0; background: #edf2f7;
+            cursor: pointer; transition: background 0.15s, border-color 0.15s, transform 0.1s;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px; color: #a0aec0; font-weight: 600;
+        }
+        .dot:hover { background: #c4b5f4; border-color: #7c3aed; transform: scale(1.1); }
+        .dot.selected { background: #534AB7; border-color: #534AB7; color: white; transform: scale(1.15); }
     </style>
 </head>
 <body>
@@ -223,6 +237,59 @@
                 </div>
             </div>
 
+            <!-- TEST DE PERSONALIDAD -->
+            <div class="block-card">
+                <div class="block-title">Test de Personalidad</div>
+                <p class="text-muted-small mb-3">Selecciona del 1 al 10 el punto que mejor te describe en cada dimensión.</p>
+
+                <input type="hidden" id="ritmoInput" th:field="*{ritmo}" />
+                <input type="hidden" id="comunicacionInput" th:field="*{comunicacion}" />
+                <input type="hidden" id="expresividadInput" th:field="*{expresividad}" />
+                <input type="hidden" id="caracterInput" th:field="*{caracter}" />
+                <input type="hidden" id="naturalezaInput" th:field="*{naturaleza}" />
+
+                <div class="personality-row">
+                    <span class="personality-label">Ritmo</span>
+                    <span class="personality-extreme">Tranquilo</span>
+                    <div class="dots" id="d1">
+                        <div class="dot" th:each="i : ${#numbers.sequence(1, 10)}" th:text="${i}" th:onclick="'selectDot(\'d1\',' + ${i} + ')'"></div>
+                    </div>
+                    <span class="personality-extreme right">Activo</span>
+                </div>
+                <div class="personality-row">
+                    <span class="personality-label">Comunicación</span>
+                    <span class="personality-extreme">Reservada</span>
+                    <div class="dots" id="d2">
+                        <div class="dot" th:each="i : ${#numbers.sequence(1, 10)}" th:text="${i}" th:onclick="'selectDot(\'d2\',' + ${i} + ')'"></div>
+                    </div>
+                    <span class="personality-extreme right">Directa</span>
+                </div>
+                <div class="personality-row">
+                    <span class="personality-label">Expresividad</span>
+                    <span class="personality-extreme">Discreta</span>
+                    <div class="dots" id="d3">
+                        <div class="dot" th:each="i : ${#numbers.sequence(1, 10)}" th:text="${i}" th:onclick="'selectDot(\'d3\',' + ${i} + ')'"></div>
+                    </div>
+                    <span class="personality-extreme right">Expresiva</span>
+                </div>
+                <div class="personality-row">
+                    <span class="personality-label">Carácter</span>
+                    <span class="personality-extreme">Serio</span>
+                    <div class="dots" id="d4">
+                        <div class="dot" th:each="i : ${#numbers.sequence(1, 10)}" th:text="${i}" th:onclick="'selectDot(\'d4\',' + ${i} + ')'"></div>
+                    </div>
+                    <span class="personality-extreme right">Alegre</span>
+                </div>
+                <div class="personality-row">
+                    <span class="personality-label">Naturaleza</span>
+                    <span class="personality-extreme">Rutinaria</span>
+                    <div class="dots" id="d5">
+                        <div class="dot" th:each="i : ${#numbers.sequence(1, 10)}" th:text="${i}" th:onclick="'selectDot(\'d5\',' + ${i} + ')'"></div>
+                    </div>
+                    <span class="personality-extreme right">Espontánea</span>
+                </div>
+            </div>
+
             <!-- ACCESO -->
             <div class="block-card">
                 <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
@@ -247,6 +314,26 @@
         </form>
     </div>
 </div>
+<script>
+    const inputs = {
+        d1: document.getElementById('ritmoInput'),
+        d2: document.getElementById('comunicacionInput'),
+        d3: document.getElementById('expresividadInput'),
+        d4: document.getElementById('caracterInput'),
+        d5: document.getElementById('naturalezaInput')
+    };
 
+    function selectDot(groupId, valor) {
+        inputs[groupId].value = valor;
+        const dots = document.getElementById(groupId).querySelectorAll('.dot');
+        dots.forEach((d, i) => d.classList.toggle('selected', i + 1 === valor));
+    }
+
+    function initDots() {
+        ['d1','d2','d3','d4','d5'].forEach(id => selectDot(id, 5));
+    }
+
+    initDots();
+</script>
 </body>
 </html>
