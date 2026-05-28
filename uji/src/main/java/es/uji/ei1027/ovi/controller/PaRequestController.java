@@ -90,13 +90,6 @@ public class PaRequestController {
         }
     }
 
-    @GetMapping("/mis/{id}")
-    public String misProcesos(Model model, @PathVariable int id) {
-        model.addAttribute("paRequests", paRequestDao.getPaRequestsByOviUser(id));
-        model.addAttribute("idUsuario", id);
-        return "PaRequest/mis";
-    }
-
     @GetMapping("/list")
     public String listarPaRequests(Model model, HttpSession session) {
         model.addAttribute("paRequests", paRequestDao.getPaRequests());
