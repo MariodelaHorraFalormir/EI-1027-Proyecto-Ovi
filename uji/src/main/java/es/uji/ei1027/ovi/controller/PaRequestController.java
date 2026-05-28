@@ -8,6 +8,7 @@ import es.uji.ei1027.ovi.modelo.Solicitud.CategoriaSolicitud;
 import es.uji.ei1027.ovi.modelo.Solicitud.EstadoSolicitud;
 import es.uji.ei1027.ovi.modelo.Solicitud.Solicitud;
 import es.uji.ei1027.ovi.modelo.Solicitud.TipoSolicitud;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -87,5 +88,26 @@ public class PaRequestController {
             e.printStackTrace();
             return "PaRequest/create";
         }
+    }
+
+    @GetMapping("/mis/{id}")
+    public String misProcesos(Model model, @PathVariable int id) {
+        model.addAttribute("paRequests", paRequestDao.getPaRequestsByOviUser(id));
+        model.addAttribute("idUsuario", id);
+        return "PaRequest/mis";
+    }
+
+    @GetMapping("/list")
+    public String listarPaRequests(Model model, HttpSession session) {
+        model.addAttribute("paRequests", paRequestDao.getPaRequests());
+        return "PaRequest/list";
+    }
+
+    @GetMapping("/detail/{id}")
+    public String detallePaRequest(Model model, @PathVariable int id) {
+        PaRequest paRequest = paRequestDao.getPaRequestById(id);
+        if (paRequest == null) return "redirect:/PaRequest/list";
+        model.addAttribute("paRequest", paRequest);
+        return "PaRequest/detail";
     }
 }

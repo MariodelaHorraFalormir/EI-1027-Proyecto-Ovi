@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -78,5 +79,17 @@ public class PaRequestDao {
     public void cambiarEstadoPaRequest(int oviUser, StatusPaRequest statusPaRequest) {
         String sql = "UPDATE pa_request SET status = ?::status_pa_request_enum WHERE ovi_user = ?";
         jdbcTemplate.update(sql, statusPaRequest.getTexto(), oviUser);
+    }
+
+    public List<PaRequest> getPaRequestsByOviUser(int oviUser) {
+        try {
+            return jdbcTemplate.query(
+                    "SELECT * FROM pa_request WHERE ovi_user = ? ORDER BY id DESC",
+                    new PaRequestRowMapper(),
+                    oviUser
+            );
+        } catch (EmptyResultDataAccessException e) {
+            return new ArrayList<>();
+        }
     }
 }
