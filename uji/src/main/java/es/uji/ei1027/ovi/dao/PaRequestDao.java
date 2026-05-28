@@ -28,9 +28,10 @@ public class PaRequestDao {
         int nextId = (maxId == null) ? 1 : maxId + 1;
 
         String sql = "INSERT INTO pa_request (id, status, fecha_creacion, fecha_resolucion, ovi_user, " +
-                "genero_asistente, disponibilidad_horaria, zona_geografica) " +
+                "genero_asistente, disponibilidad_horaria, zona_geografica, " +
+                "tipo_asistencia, fecha_inicio, fecha_fin) " +
                 "OVERRIDING SYSTEM VALUE " +
-                "VALUES (?, ?::status_pa_request_enum, ?, ?, ?, ?, ?, ?)";
+                "VALUES (?, ?::status_pa_request_enum, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         jdbcTemplate.update(
                 sql,
@@ -41,7 +42,10 @@ public class PaRequestDao {
                 paRequest.getOviUser(),
                 paRequest.getGeneroAsistente(),
                 paRequest.getDisponibilidadHoraria(),
-                paRequest.getZonaGeografica()
+                paRequest.getZonaGeografica(),
+                paRequest.getTipoAsistencia(),
+                paRequest.getFechaInicio() != null ? Date.valueOf(paRequest.getFechaInicio()) : null,
+                paRequest.getFechaFin() != null ? Date.valueOf(paRequest.getFechaFin()) : null
         );
     }
 

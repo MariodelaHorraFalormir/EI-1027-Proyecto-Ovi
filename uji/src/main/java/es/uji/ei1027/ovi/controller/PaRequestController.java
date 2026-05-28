@@ -16,6 +16,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Controller
 @RequestMapping("/PaRequest")
@@ -81,7 +82,7 @@ public class PaRequestController {
             paRequestDao.addPaRequest(paRequest);
             solicitudesDao.createSolicitud(solicitud);
 
-            return "redirect:/";
+            return "redirect:/PaRequest/mis/" + id;
 
         } catch (Exception e) {
             System.out.println("ERROR AL GUARDAR: " + e.getMessage());
@@ -90,9 +91,20 @@ public class PaRequestController {
         }
     }
     @GetMapping("/mis/{id}")
-    public String misProcesos(Model model, @PathVariable int id) {
-        model.addAttribute("paRequests", paRequestDao.getPaRequestsByOviUser(id));
+    public String misProcesos(Model model, @PathVariable int id,
+                              @RequestParam(defaultValue = "0") int page) {
+        int pageSize = 10;
+        List<PaRequest> todos = paRequestDao.getPaRequestsByOviUser(id);
+        int total = todos.size();
+        int totalPages = (int) Math.ceil((double) total / pageSize);
+        int from = page * pageSize;
+        int to = Math.min(from + pageSize, total);
+        List<PaRequest> pagina = todos.subList(from, to);
+
+        model.addAttribute("paRequests", pagina);
         model.addAttribute("idUsuario", id);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
         return "PaRequest/mis";
     }
 }
