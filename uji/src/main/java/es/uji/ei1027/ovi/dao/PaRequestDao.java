@@ -80,4 +80,16 @@ public class PaRequestDao {
         String sql = "UPDATE pa_request SET status = ?::status_pa_request_enum WHERE ovi_user = ?";
         jdbcTemplate.update(sql, statusPaRequest.getTexto(), oviUser);
     }
+
+    public List<PaRequest> getPaRequestsByOviUser(int oviUser) {
+        try {
+            return jdbcTemplate.query(
+                    "SELECT * FROM pa_request WHERE ovi_user = ? ORDER BY id DESC",
+                    new PaRequestRowMapper(),
+                    oviUser
+            );
+        } catch (EmptyResultDataAccessException e) {
+            return new ArrayList<>();
+        }
+    }
 }
