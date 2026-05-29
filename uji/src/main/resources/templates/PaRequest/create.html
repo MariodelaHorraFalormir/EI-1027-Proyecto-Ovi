@@ -33,6 +33,8 @@
 </head>
 <body>
 
+<div th:replace="~{layout/navbar :: main-nav}"></div>
+
 <div class="container">
     <div class="edit-card">
         <div class="text-center mb-4">
@@ -234,13 +236,14 @@
             </div>
 
             <div class="d-flex gap-3 justify-content-end mt-4">
-                <a th:href="@{/}" class="btn btn-outline-secondary px-4">Cancelar</a>
+                <a th:href="@{/PaRequest/mis/{id}(id=${paRequest.oviUser})}" class="btn btn-outline-secondary px-4">Cancelar</a>
                 <button type="submit" class="btn btn-primary px-5" onclick="return prepararPersonalidad()">Enviar Solicitud</button>
             </div>
         </form>
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     const seleccion = { d1: 5, d2: 5, d3: 5, d4: 5, d5: 5 };
 

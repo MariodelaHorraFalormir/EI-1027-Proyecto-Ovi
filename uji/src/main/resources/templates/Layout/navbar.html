@@ -113,6 +113,12 @@
               </li>
 
               <li>
+                  <a class="dropdown-item" th:href="@{/PaRequest/list}">
+                      Procesos PA Request
+                  </a>
+              </li>
+
+              <li>
                 <a class="dropdown-item" th:href="@{/Persona/list/todas}">
                   Personas registradas
                 </a>
@@ -127,6 +133,12 @@
               Mis solicitudes
             </a>
           </li>
+            <li class="nav-item" th:if="${not session.usuario.esAdminOvi()}">
+                <a class="nav-link text-white fw-semibold"
+                   th:href="@{/PaRequest/mis/{id}(id=${session.usuario.idPersona})}">
+                    Mis procesos
+                </a>
+            </li>
 
           <!-- Menú de cuenta -->
           <li class="nav-item dropdown">
@@ -173,6 +185,12 @@
                 </a>
               </li>
 
+                <li>
+                    <a class="dropdown-item"
+                       th:href="@{/PaRequest/mis/{id}(id=${session.usuario.idPersona})}">
+                        Mis procesos
+                    </a>
+                </li>
               <li>
                 <hr class="dropdown-divider">
               </li>

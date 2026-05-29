@@ -59,11 +59,11 @@ public class PersonaDao {
                 persona.getFechaAlta(),
                 persona.getFechaBaja(),
                 persona.getDni(),
-                persona.getRitmo(),
-                persona.getComunicacion(),
-                persona.getExpresividad(),
-                persona.getCaracter(),
-                persona.getNaturaleza(),
+                persona.getPersonalidad().getRitmo(),
+                persona.getPersonalidad().getComunicacion(),
+                persona.getPersonalidad().getExpresividad(),
+                persona.getPersonalidad().getCaracter(),
+                persona.getPersonalidad().getNaturaleza(),
                 persona.getIdPersona()
         );
     }

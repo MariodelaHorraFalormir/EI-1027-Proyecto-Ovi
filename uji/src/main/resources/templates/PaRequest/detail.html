@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalle del Proceso PA Request</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"/>
+    <style>
+        body { background: linear-gradient(135deg, #f4f7fb, #e9f0f8); min-height: 100vh; }
+        .detail-card { max-width: 950px; margin: 40px auto; background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); padding: 2rem; }
+        .section-title { font-size: 2rem; font-weight: 700; color: #1f3b5b; }
+        .section-subtitle { color: #6c757d; margin-bottom: 2rem; }
+        .data-label { font-weight: 600; color: #1f3b5b; margin-bottom: 0.25rem; }
+        .data-value { background: #f8f9fa; border-radius: 12px; padding: 0.8rem 1rem; min-height: 48px; }
+        .badge-estado { font-size: 0.95rem; padding: 0.5rem 0.8rem; border-radius: 999px; }
+        .block-card { background: #f8fafc; border: 1px solid #e9eef5; border-radius: 18px; padding: 1.5rem; margin-bottom: 1.5rem; }
+        .block-title { font-size: 1.1rem; font-weight: 600; color: #4a5568; margin-bottom: 1rem; border-bottom: 2px solid #edf2f7; padding-bottom: 0.5rem; }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{layout/navbar :: main-nav}"></div>
+
+<div class="container">
+    <div class="detail-card">
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <div>
+                <h1 class="section-title">Detalle del Proceso PA Request</h1>
+                <p class="section-subtitle mb-0">Información completa del proceso de asistencia personal</p>
+            </div>
+            <span class="badge badge-estado text-bg-secondary" th:text="'ID ' + ${paRequest.id}"></span>
+        </div>
+
+        <!-- Información general -->
+        <div class="block-card">
+            <div class="block-title">Información General</div>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="data-label">ID del proceso</div>
+                    <div class="data-value" th:text="${paRequest.id}"></div>
+                </div>
+                <div class="col-md-6">
+                    <div class="data-label">Usuario OVI</div>
+                    <div class="data-value" th:text="${paRequest.oviUser}"></div>
+                </div>
+                <div class="col-md-6">
+                    <div class="data-label">Estado</div>
+                    <div class="data-value">
+                        <span th:if="${paRequest.status != null}"
+                              th:text="${paRequest.status}"
+                              th:classappend="${
+                                  paRequest.status.toString() == 'En_espera' ? 'text-bg-warning' :
+                                  (paRequest.status.toString() == 'En_activo' ? 'text-bg-success' :
+                                  (paRequest.status.toString() == 'Finalizada' ? 'text-bg-secondary' :
+                                  'text-bg-danger'))
+                              }"
+                              class="badge badge-estado">
+                        </span>
+                        <span th:if="${paRequest.status == null}">-</span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="data-label">Tipo de asistencia</div>
+                    <div class="data-value" th:text="${paRequest.tipoAsistencia != null ? paRequest.tipoAsistencia : '-'}"></div>
+                </div>
+                <div class="col-md-6">
+                    <div class="data-label">Fecha de creación</div>
+                    <div class="data-value"
+                         th:text="${paRequest.fechaCreacion != null ? #temporals.format(paRequest.fechaCreacion, 'dd/MM/yyyy') : '-'}">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="data-label">Fecha de resolución</div>
+                    <div class="data-value"
+                         th:text="${paRequest.fechaResolucion != null ? #temporals.format(paRequest.fechaResolucion, 'dd/MM/yyyy') : '-'}">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="data-label">Fecha inicio servicio</div>
+                    <div class="data-value"
+                         th:text="${paRequest.fechaInicio != null ? #temporals.format(paRequest.fechaInicio, 'dd/MM/yyyy') : '-'}">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="data-label">Fecha fin servicio</div>
+                    <div class="data-value"
+                         th:text="${paRequest.fechaFin != null ? #temporals.format(paRequest.fechaFin, 'dd/MM/yyyy') : '-'}">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Preferencias -->
+        <div class="block-card">
+            <div class="block-title">Preferencias del Usuario</div>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="data-label">Género del asistente</div>
+                    <div class="data-value" th:text="${paRequest.generoAsistente != null ? paRequest.generoAsistente : '-'}"></div>
+                </div>
+                <div class="col-md-4">
+                    <div class="data-label">Disponibilidad horaria</div>
+                    <div class="data-value" th:text="${paRequest.disponibilidadHoraria != null ? paRequest.disponibilidadHoraria : '-'}"></div>
+                </div>
+                <div class="col-md-4">
+                    <div class="data-label">Zona geográfica</div>
+                    <div class="data-value" th:text="${paRequest.zonaGeografica != null ? paRequest.zonaGeografica : '-'}"></div>
+                </div>
+                <div class="col-12">
+                    <div class="data-label">Preferencias adicionales</div>
+                    <div class="data-value" th:text="${paRequest.preferencias != null ? paRequest.preferencias : '-'}"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4 d-flex gap-2">
+            <a th:href="@{/PaRequest/list}" class="btn btn-secondary">Volver al listado</a>
+            <a th:href="@{/PaRequest/update/{id}(id=${paRequest.id})}" class="btn btn-warning">Editar proceso</a>
+            <a th:href="@{/}" class="btn btn-outline-dark">Ir al inicio</a>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

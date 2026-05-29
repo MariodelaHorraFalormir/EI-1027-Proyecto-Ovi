@@ -311,6 +311,33 @@
             </div>
         </div>
 
+        <!-- PERSONALIDAD -->
+        <div class="block-card">
+            <div class="block-title">Personalidad</div>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="data-label">Ritmo</div>
+                    <div class="data-value" th:text="${personaFormulario.persona.personalidad.ritmo}"></div>
+                </div>
+                <div class="col-md-4">
+                    <div class="data-label">Comunicación</div>
+                    <div class="data-value" th:text="${personaFormulario.persona.personalidad.comunicacion}"></div>
+                </div>
+                <div class="col-md-4">
+                    <div class="data-label">Expresividad</div>
+                    <div class="data-value" th:text="${personaFormulario.persona.personalidad.expresividad}"></div>
+                </div>
+                <div class="col-md-4">
+                    <div class="data-label">Carácter</div>
+                    <div class="data-value" th:text="${personaFormulario.persona.personalidad.caracter}"></div>
+                </div>
+                <div class="col-md-4">
+                    <div class="data-label">Naturaleza</div>
+                    <div class="data-value" th:text="${personaFormulario.persona.personalidad.naturaleza}"></div>
+                </div>
+            </div>
+        </div>
+
         <!-- ACCIONES -->
         <div class="actions">
             <a th:if="${puedeEditarPersona}"

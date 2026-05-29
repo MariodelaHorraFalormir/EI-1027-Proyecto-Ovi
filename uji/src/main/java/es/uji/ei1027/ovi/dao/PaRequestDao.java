@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -27,9 +28,10 @@ public class PaRequestDao {
         int nextId = (maxId == null) ? 1 : maxId + 1;
 
         String sql = "INSERT INTO pa_request (id, status, fecha_creacion, fecha_resolucion, ovi_user, " +
-                "genero_asistente, disponibilidad_horaria, zona_geografica) " +
+                "genero_asistente, disponibilidad_horaria, zona_geografica, " +
+                "tipo_asistencia, fecha_inicio, fecha_fin) " +
                 "OVERRIDING SYSTEM VALUE " +
-                "VALUES (?, ?::status_pa_request_enum, ?, ?, ?, ?, ?, ?)";
+                "VALUES (?, ?::status_pa_request_enum, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         jdbcTemplate.update(
                 sql,
@@ -40,17 +42,36 @@ public class PaRequestDao {
                 paRequest.getOviUser(),
                 paRequest.getGeneroAsistente(),
                 paRequest.getDisponibilidadHoraria(),
-                paRequest.getZonaGeografica()
+                paRequest.getZonaGeografica(),
+                paRequest.getTipoAsistencia(),
+                paRequest.getFechaInicio() != null ? Date.valueOf(paRequest.getFechaInicio()) : null,
+                paRequest.getFechaFin() != null ? Date.valueOf(paRequest.getFechaFin()) : null
         );
     }
 
     public void updatePaRequest(PaRequest paRequest) {
-        jdbcTemplate.update(
-                "UPDATE pa_request SET status = ?::status_pa_request_enum, fecha_creacion = ?, fecha_resolucion = ?, ovi_user = ? WHERE id = ?",
+        String sql = "UPDATE pa_request SET " +
+                "status = ?::status_pa_request_enum, " +
+                "fecha_resolucion = ?, " +
+                "tipo_asistencia = ?, " +
+                "fecha_inicio = ?, " +
+                "fecha_fin = ?, " +
+                "genero_asistente = ?, " +
+                "disponibilidad_horaria = ?, " +
+                "zona_geografica = ?, " +
+                "preferencias = ? " +
+                "WHERE id = ?";
+
+        jdbcTemplate.update(sql,
                 paRequest.getStatus().getTexto(),
-                Date.valueOf(paRequest.getFechaCreacion()),
                 paRequest.getFechaResolucion() != null ? Date.valueOf(paRequest.getFechaResolucion()) : null,
-                paRequest.getOviUser(),
+                paRequest.getTipoAsistencia(),
+                paRequest.getFechaInicio() != null ? Date.valueOf(paRequest.getFechaInicio()) : null,
+                paRequest.getFechaFin() != null ? Date.valueOf(paRequest.getFechaFin()) : null,
+                paRequest.getGeneroAsistente(),
+                paRequest.getDisponibilidadHoraria(),
+                paRequest.getZonaGeografica(),
+                paRequest.getPreferencias(),
                 paRequest.getId()
         );
     }
@@ -78,5 +99,17 @@ public class PaRequestDao {
     public void cambiarEstadoPaRequest(int oviUser, StatusPaRequest statusPaRequest) {
         String sql = "UPDATE pa_request SET status = ?::status_pa_request_enum WHERE ovi_user = ?";
         jdbcTemplate.update(sql, statusPaRequest.getTexto(), oviUser);
+    }
+
+    public List<PaRequest> getPaRequestsByOviUser(int oviUser) {
+        try {
+            return jdbcTemplate.query(
+                    "SELECT * FROM pa_request WHERE ovi_user = ? ORDER BY id DESC",
+                    new PaRequestRowMapper(),
+                    oviUser
+            );
+        } catch (EmptyResultDataAccessException e) {
+            return new ArrayList<>();
+        }
     }
 }
