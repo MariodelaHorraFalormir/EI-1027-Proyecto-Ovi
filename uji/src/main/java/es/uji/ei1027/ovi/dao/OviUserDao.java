@@ -75,5 +75,9 @@ public class OviUserDao {
                 + "WHERE id = ?" ;
         jdbcTemplate.update(sql,estadoRol.getTexto(),personaSolicitante);
     }
+    public void delete(int idPersona) {
+        String sql = "DELETE FROM ovi_user WHERE id = ?";
+        jdbcTemplate.update(sql, idPersona);
+    }
 }
 

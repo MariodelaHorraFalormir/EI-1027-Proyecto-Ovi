@@ -27,7 +27,7 @@ public enum EstadoRol {
     public String getTexto() {
         switch (this) {
             case Pendiente:
-                return "Pendiento";
+                return "Pendiente";
             case Activo:
                 return "Activo";
             case Rechazado:

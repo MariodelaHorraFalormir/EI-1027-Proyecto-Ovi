@@ -91,7 +91,7 @@ public class PapPatiDao {
                 Integer.class,
                 idPersona
         );
-        return count != null;
+        return count != null && count > 0 ;
     }
     public void cambiarEstadoRol(int personaSolicitante, EstadoRol estadoRol) {
         String sql = "UPDATE pap_pati SET "
