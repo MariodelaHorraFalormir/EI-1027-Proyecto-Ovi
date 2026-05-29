@@ -20,6 +20,15 @@ public class PapPatiDao {
         jdbcTemplate = new JdbcTemplate(dataSource);
         this.especialidadesDao = especialidadesDao;
     }
+    public void crearRapidoActivo(int idPersona) {
+        String sql = "INSERT INTO pap_pati " +
+                "(id, disponibilidad, fecha_inicio_disponible, fecha_fin_disponible, experiencia, " +
+                "vehiculo_propio, carnet_conducir, url_cv, descripcion_perfil, centro_social_referencia, estado) " +
+                "VALUES (?, 'No disponible'::disponibilidad_enum, CURRENT_DATE, NULL, 0, " +
+                "FALSE, FALSE, NULL, NULL, NULL, 'Activo'::estado_rol_enum)";
+
+        jdbcTemplate.update(sql, idPersona);
+    }
 
     public PapPati getPapPati(int id) {
         try {

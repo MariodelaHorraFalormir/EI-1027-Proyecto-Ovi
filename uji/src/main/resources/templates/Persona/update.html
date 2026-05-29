@@ -395,6 +395,12 @@
                 <a th:href="@{/}" class="btn btn-outline-secondary">Ir al inicio</a>
             </div>
 
+            <a th:if="${esAdmin}"
+               th:href="@{/Rol/persona/{id}/gestionar(id=${personaFormulario.persona.idPersona})}"
+               class="btn btn-outline-primary">
+                Gestionar roles
+            </a>
+
         </form>
     </div>
 </div>

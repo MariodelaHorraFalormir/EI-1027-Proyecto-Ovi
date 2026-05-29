@@ -352,6 +352,12 @@
                 Volver al listado
             </a>
 
+            <a th:if="${esAdmin}"
+               th:href="@{/Rol/persona/{id}/gestionar(id=${personaFormulario.persona.idPersona})}"
+               class="btn btn-outline-primary">
+                Gestionar roles
+            </a>
+
             <a th:href="@{/}"
                class="btn btn-outline-secondary">
                 Ir al inicio

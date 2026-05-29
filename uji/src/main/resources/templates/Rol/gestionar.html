@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <title>Gestionar roles</title>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" />
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #f4f7fb, #e9f0f8);
+            min-height: 100vh;
+        }
+
+        .page-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            padding: 2rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1f3b5b;
+        }
+
+        .section-subtitle {
+            color: #334155;
+        }
+
+        .person-card {
+            background: linear-gradient(135deg, #1f4e79, #256b9f);
+            color: white;
+            border-radius: 18px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .person-card::after {
+            content: "";
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.12);
+            right: -50px;
+            top: -60px;
+        }
+
+        .person-name {
+            font-size: 1.35rem;
+            font-weight: 800;
+            margin-bottom: 0.25rem;
+        }
+
+        .person-meta {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        .stat-box {
+            background: rgba(255,255,255,0.16);
+            border: 1px solid rgba(255,255,255,0.22);
+            border-radius: 16px;
+            padding: 1rem;
+            min-width: 140px;
+            backdrop-filter: blur(6px);
+        }
+
+        .stat-number {
+            font-size: 1.7rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            margin-top: 0.25rem;
+        }
+
+        .roles-section {
+            margin-top: 1.5rem;
+        }
+
+        .roles-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .roles-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #1f3b5b;
+            margin-bottom: 0.15rem;
+        }
+
+        .roles-subtitle {
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+
+        .section-pill {
+            border-radius: 999px;
+            padding: 0.45rem 0.85rem;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .pill-assigned {
+            background: #e7f5ee;
+            color: #157347;
+        }
+
+        .pill-available {
+            background: #eaf2ff;
+            color: #1f4e79;
+        }
+
+        .roles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1rem;
+        }
+
+        .role-card {
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 1.15rem;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+        }
+
+        .role-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 28px rgba(15, 23, 42, 0.10);
+            border-color: #cbd5e1;
+        }
+
+        .role-card::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 6px;
+            height: 100%;
+            background: #64748b;
+        }
+
+        .role-admin::before {
+            background: #334155;
+        }
+
+        .role-ovi::before {
+            background: #1f4e79;
+        }
+
+        .role-pap::before {
+            background: #198754;
+        }
+
+        .role-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            align-items: start;
+            margin-bottom: 0.85rem;
+        }
+
+        .role-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 1.1rem;
+            background: #f1f5f9;
+            color: #334155;
+        }
+
+        .role-admin .role-icon {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .role-ovi .role-icon {
+            background: #eaf2ff;
+            color: #1f4e79;
+        }
+
+        .role-pap .role-icon {
+            background: #e7f5ee;
+            color: #157347;
+        }
+
+        .role-name {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #1f3b5b;
+            margin-bottom: 0.2rem;
+        }
+
+        .role-description {
+            color: #64748b;
+            font-size: 0.92rem;
+            min-height: 44px;
+        }
+
+        .role-status {
+            display: inline-block;
+            border-radius: 999px;
+            padding: 0.35rem 0.7rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .status-assigned {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-available {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .role-actions {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            border-radius: 12px;
+            font-weight: 700;
+        }
+
+        .btn-primary {
+            background-color: #1f4e79;
+            border-color: #1f4e79;
+        }
+
+        .btn-primary:hover {
+            background-color: #193f63;
+            border-color: #193f63;
+        }
+
+        .empty-box {
+            border: 1px dashed #cbd5e1;
+            background: #f8fafc;
+            border-radius: 18px;
+            padding: 1.25rem;
+            color: #64748b;
+        }
+
+        .actions-footer {
+            margin-top: 2rem;
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .danger-note {
+            color: #64748b;
+            font-size: 0.85rem;
+            align-self: center;
+        }
+
+        .alert {
+            border-radius: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div th:replace="~{layout/navbar :: main-nav}"></div>
+
+<main class="container-fluid mt-4 px-4">
+    <div class="page-card">
+
+        <!-- CABECERA -->
+        <div class="mb-4">
+            <h1 class="section-title">Gestionar roles</h1>
+            <p class="section-subtitle mb-0">
+                Administra los perfiles asociados a esta persona desde una vista rápida.
+            </p>
+        </div>
+
+        <!-- MENSAJES -->
+        <div th:if="${param.ok}" class="alert alert-success">
+            Operación realizada correctamente.
+        </div>
+
+        <div th:if="${param.error}" class="alert alert-danger">
+            No se ha podido realizar la operación solicitada.
+        </div>
+
+        <!-- PERSONA -->
+        <section class="person-card">
+            <div class="row g-3 align-items-center">
+                <div class="col-lg-8">
+                    <div class="person-name">
+                        <span th:text="${personaFormulario.persona.nombre}">Nombre</span>
+                        <span th:text="${personaFormulario.persona.apellidos}">Apellidos</span>
+                    </div>
+
+                    <div class="person-meta">
+                        <span th:text="${personaFormulario.persona.mail}">correo@ovi.es</span>
+                        <span> · ID </span>
+                        <span th:text="${personaFormulario.persona.idPersona}">1</span>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="d-flex gap-2 justify-content-lg-end flex-wrap">
+                        <div class="stat-box">
+                            <div class="stat-number" th:text="${#lists.size(rolesAsignados)}">0</div>
+                            <div class="stat-label">Roles asignados</div>
+                        </div>
+
+                        <div class="stat-box">
+                            <div class="stat-number" th:text="${#lists.size(rolesNoAsignados)}">0</div>
+                            <div class="stat-label">Roles disponibles</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ROLES ASIGNADOS -->
+        <section class="roles-section">
+            <div class="roles-header">
+                <div>
+                    <h2 class="roles-title">Roles que tiene</h2>
+                    <p class="roles-subtitle mb-0">
+                        Estos perfiles están actualmente asociados a la persona.
+                    </p>
+                </div>
+
+                <span class="section-pill pill-assigned">Asignados</span>
+            </div>
+
+            <div th:if="${#lists.isEmpty(rolesAsignados)}" class="empty-box">
+                Esta persona todavía no tiene ningún rol asignado.
+            </div>
+
+            <div th:if="${!#lists.isEmpty(rolesAsignados)}" class="roles-grid">
+
+                <article th:each="rol : ${rolesAsignados}"
+                         class="role-card"
+                         th:classappend="${rol.name() == 'Admin_ovi' ? ' role-admin' : (rol.name() == 'Ovi_user' ? ' role-ovi' : ' role-pap')}">
+
+                    <div class="role-top">
+                        <div>
+                            <div class="role-name" th:text="${rol.getTextoVisible()}">
+                                Nombre del rol
+                            </div>
+
+                            <div class="role-description" th:if="${rol.name() == 'Admin_ovi'}">
+                                Permite revisar solicitudes, gestionar personas y administrar la plataforma.
+                            </div>
+
+                            <div class="role-description" th:if="${rol.name() == 'Ovi_user'}">
+                                Perfil de Usuario OVI con sus datos de dependencia, diversidad funcional y proyecto de vida.
+                            </div>
+
+                            <div class="role-description" th:if="${rol.name() == 'Pap_pati'}">
+                                Perfil PAP/PATI con disponibilidad, experiencia, especialidades y datos profesionales.
+                            </div>
+                        </div>
+
+                        <div class="role-icon" th:if="${rol.name() == 'Admin_ovi'}">A</div>
+                        <div class="role-icon" th:if="${rol.name() == 'Ovi_user'}">O</div>
+                        <div class="role-icon" th:if="${rol.name() == 'Pap_pati'}">P</div>
+                    </div>
+
+                    <span class="role-status status-assigned">Rol activo en la persona</span>
+
+                    <div class="role-actions">
+
+                        <a th:if="${rol.name() == 'Ovi_user'}"
+                           th:href="@{/OviUser/details/{id}(id=${personaFormulario.persona.idPersona})}"
+                           class="btn btn-primary btn-sm">
+                            Ver perfil
+                        </a>
+
+                        <a th:if="${rol.name() == 'Pap_pati'}"
+                           th:href="@{/PapPati/details/{id}(id=${personaFormulario.persona.idPersona})}"
+                           class="btn btn-success btn-sm">
+                            Ver perfil
+                        </a>
+
+                        <form th:if="${!(rol.name() == 'Admin_ovi' and usuarioActual.idPersona == personaFormulario.persona.idPersona)}"
+                              th:action="@{/Rol/persona/{id}/borrar/{rol}(id=${personaFormulario.persona.idPersona}, rol=${rol.getTexto()})}"
+                              method="post"
+                              onsubmit="return confirm('¿Seguro que quieres borrar este rol? Esta acción eliminará el perfil asociado.');">
+
+                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                Borrar rol
+                            </button>
+                        </form>
+
+                        <span th:if="${rol.name() == 'Admin_ovi' and usuarioActual.idPersona == personaFormulario.persona.idPersona}"
+                              class="danger-note">
+                            No puedes quitarte tu propio rol de administrador.
+                        </span>
+
+                    </div>
+                </article>
+
+            </div>
+        </section>
+
+        <!-- ROLES DISPONIBLES -->
+        <section class="roles-section">
+            <div class="roles-header">
+                <div>
+                    <h2 class="roles-title">Roles que puede tener</h2>
+                    <p class="roles-subtitle mb-0">
+                        Puedes crear rápidamente cualquiera de estos perfiles si es necesario.
+                    </p>
+                </div>
+
+                <span class="section-pill pill-available">Disponibles</span>
+            </div>
+
+            <div th:if="${#lists.isEmpty(rolesNoAsignados)}" class="empty-box">
+                Esta persona ya tiene todos los roles disponibles.
+            </div>
+
+            <div th:if="${!#lists.isEmpty(rolesNoAsignados)}" class="roles-grid">
+
+                <article th:each="rol : ${rolesNoAsignados}"
+                         class="role-card"
+                         th:classappend="${rol.name() == 'Admin_ovi' ? ' role-admin' : (rol.name() == 'Ovi_user' ? ' role-ovi' : ' role-pap')}">
+
+                    <div class="role-top">
+                        <div>
+                            <div class="role-name" th:text="${rol.getTextoVisible()}">
+                                Nombre del rol
+                            </div>
+
+                            <div class="role-description" th:if="${rol.name() == 'Admin_ovi'}">
+                                Crea permisos administrativos para gestionar la plataforma OVI.
+                            </div>
+
+                            <div class="role-description" th:if="${rol.name() == 'Ovi_user'}">
+                                Crea un perfil básico de Usuario OVI. Después podrás editar sus datos específicos.
+                            </div>
+
+                            <div class="role-description" th:if="${rol.name() == 'Pap_pati'}">
+                                Crea un perfil básico de PAP/PATI. Después podrás completar experiencia y disponibilidad.
+                            </div>
+                        </div>
+
+                        <div class="role-icon" th:if="${rol.name() == 'Admin_ovi'}">A</div>
+                        <div class="role-icon" th:if="${rol.name() == 'Ovi_user'}">O</div>
+                        <div class="role-icon" th:if="${rol.name() == 'Pap_pati'}">P</div>
+                    </div>
+
+                    <span class="role-status status-available">Rol disponible</span>
+
+                    <div class="role-actions">
+                        <form th:action="@{/Rol/persona/{id}/crear/{rol}(id=${personaFormulario.persona.idPersona}, rol=${rol.getTexto()})}"
+                              method="post"
+                              onsubmit="return confirm('¿Quieres crear este rol para la persona seleccionada?');">
+
+                            <button type="submit" class="btn btn-outline-success btn-sm">
+                                Crear rol rápido
+                            </button>
+                        </form>
+                    </div>
+                </article>
+
+            </div>
+        </section>
+
+        <!-- ACCIONES -->
+        <div class="actions-footer">
+            <a th:href="@{/Persona/details/{id}(id=${personaFormulario.persona.idPersona})}"
+               class="btn btn-primary">
+                Volver al detalle
+            </a>
+
+            <a th:href="@{/Persona/list/todas}"
+               class="btn btn-secondary">
+                Volver al listado
+            </a>
+
+            <a th:href="@{/}"
+               class="btn btn-outline-secondary">
+                Ir al inicio
+            </a>
+        </div>
+
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
