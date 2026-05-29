@@ -167,11 +167,22 @@
                             Crea una solicitud de asistencia personal para que pueda ser revisada.
                         </p>
 
-                        <a th:if="${session.usuario != null}"
+                        <a th:if="${session.usuario != null
+           and session.usuario.rolesActivos != null
+           and session.usuario.rolesActivos.contains(T(es.uji.ei1027.ovi.modelo.Roles.RolUsuario).Ovi_user)}"
                            th:href="@{/PaRequest/create/{id}(id=${session.usuario.idPersona})}"
                            class="btn btn-warning btn-lg fw-bold rounded-pill w-100 text-dark">
                             Pedir PA Request
                         </a>
+
+                        <div th:if="${session.usuario != null
+                         and (session.usuario.rolesActivos == null
+                         or !session.usuario.rolesActivos.contains(T(es.uji.ei1027.ovi.modelo.Roles.RolUsuario).Ovi_user))}"
+                             class="alert alert-warning mb-0">
+
+                            Para pedir asistencia personal necesitas tener el rol
+                            <strong>Usuario OVI activo</strong>.
+                        </div>
 
                         <a th:if="${session.usuario == null}"
                            th:href="@{/login}"
