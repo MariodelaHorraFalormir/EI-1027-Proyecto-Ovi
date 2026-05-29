@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 
 public class SolicitudRowMapper implements RowMapper<Solicitud> {
     @Override
@@ -21,6 +22,15 @@ public class SolicitudRowMapper implements RowMapper<Solicitud> {
         if (rs.getDate("fecha_resolucion") != null) {
             solicitud.setFechaResolucion(rs.getDate("fecha_resolucion").toLocalDate());
         }
+        solicitud.setMensajeRevision(rs.getString("mensaje_revision"));
+
+        Timestamp fechaUltimaRevision = rs.getTimestamp("fecha_ultima_revision");
+        if (fechaUltimaRevision != null) {
+            solicitud.setFechaUltimaRevision(fechaUltimaRevision.toLocalDateTime());
+        }
+
+        int numeroRevisiones = rs.getInt("numero_revisiones");
+        solicitud.setNumeroRevisiones(rs.wasNull() ? 0 : numeroRevisiones);
         solicitud.setPersonaSolicitante(rs.getInt("persona_solicitante"));
         return  solicitud;
     }

@@ -191,6 +191,21 @@ public class SolicitudesDao {
             return new ArrayList<>();
         }
     }
+    public int solicitarRevision(int idSolicitud, String mensajeRevision) {
+        String sql = """
+        UPDATE solicitud
+        SET estado = 'Pendiente'::estado_solicitud_enum,
+            fecha_resolucion = NULL,
+            tecnico_revisor = NULL,
+            mensaje_revision = ?,
+            fecha_ultima_revision = CURRENT_TIMESTAMP,
+            numero_revisiones = numero_revisiones + 1
+        WHERE id = ?
+          AND estado = 'Rechazada'::estado_solicitud_enum
+    """;
+
+        return jdbcTemplate.update(sql, mensajeRevision, idSolicitud);
+    }
 
 
 

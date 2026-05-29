@@ -81,7 +81,10 @@ public class SolicitudController {
         model.addAttribute("solicitud", solicitud);
         model.addAttribute("esAdmin", esAdmin);
         model.addAttribute("puedeEditarSolicitud", esAdmin);
-
+        model.addAttribute(
+                "puedeSolicitarRevision",
+                solicitudesService.puedeSolicitarRevision(usuario, solicitud)
+        );
         return "Solicitudes/detail";
     }
     @RequestMapping(value ="/update/{id}" ,method = RequestMethod.GET)
@@ -187,6 +190,32 @@ public class SolicitudController {
         model.addAttribute("tituloListado", "Mis solicitudes");
 
         return "Solicitudes/mis";
+    }
+
+    @PostMapping("/solicitarRevision/{id}")
+    public String solicitarRevision(@PathVariable int id,
+                                    @RequestParam(required = false) String mensajeRevision,
+                                    HttpSession session) {
+
+        String url = "/Solicitudes/detail/" + id;
+
+        UsuarioSesion usuario = sesionService.getUsuario(session);
+
+        if (usuario == null) {
+            return sesionService.redirigirALogin(session, url);
+        }
+
+        try {
+            solicitudesService.solicitarRevision(id, usuario, mensajeRevision);
+        } catch (IllegalArgumentException e) {
+            return "redirect:/Solicitudes/detail/" + id + "?error=revisionNoPermitida";
+        } catch (IllegalStateException e) {
+            return "redirect:/Solicitudes/detail/" + id + "?error=revisionNoValida";
+        } catch (Exception e) {
+            return "redirect:/Solicitudes/detail/" + id + "?error=revisionNoSolicitada";
+        }
+
+        return "redirect:/Solicitudes/detail/" + id + "?ok=revisionSolicitada";
     }
 
 }

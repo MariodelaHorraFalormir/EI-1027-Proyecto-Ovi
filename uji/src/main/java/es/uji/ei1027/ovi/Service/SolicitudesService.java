@@ -222,4 +222,79 @@ public class SolicitudesService {
     public boolean puedeGestionarSolicitudes(UsuarioSesion usuario) {
         return usuario != null && usuario.esAdminOvi();
     }
+    @Transactional
+    public void solicitarRevision(int idSolicitud, UsuarioSesion usuario, String mensajeRevision) {
+
+        if (usuario == null) {
+            throw new IllegalArgumentException("No hay usuario en sesión");
+        }
+
+        Solicitud solicitud = solicitudesDao.getSolicitudById(idSolicitud);
+
+        if (solicitud == null) {
+            throw new IllegalArgumentException("No existe la solicitud con id " + idSolicitud);
+        }
+
+        boolean esSolicitante = solicitud.getPersonaSolicitante() == usuario.getIdPersona();
+        boolean esAdmin = puedeGestionarSolicitudes(usuario);
+
+        if (!esSolicitante && !esAdmin) {
+            throw new IllegalArgumentException("No puedes solicitar revisión de esta solicitud");
+        }
+
+        if (solicitud.getEstadoSolicitud() != EstadoSolicitud.Rechazada) {
+            throw new IllegalStateException("Solo se puede solicitar revisión de solicitudes rechazadas");
+        }
+
+        if (mensajeRevision == null || mensajeRevision.isBlank()) {
+            if (esAdmin) {
+                mensajeRevision = "Un administrador ha reabierto la solicitud para una nueva revisión.";
+            } else {
+                mensajeRevision = "El usuario solicita una nueva revisión tras realizar los cambios.";
+            }
+        }
+
+        int filasActualizadas = solicitudesDao.solicitarRevision(idSolicitud, mensajeRevision);
+
+        if (filasActualizadas == 0) {
+            throw new IllegalStateException("No se ha podido solicitar la revisión");
+        }
+
+        aplicarRevision(solicitud);
+    }
+    private void aplicarRevision(Solicitud solicitud) {
+
+        switch (solicitud.getTipoSolicitud()) {
+
+            case Ovi_user -> oviUserDao.cambiarEstadoRol(
+                    solicitud.getPersonaSolicitante(),
+                    EstadoRol.Pendiente
+            );
+
+            case Pap_pati -> papPatiDao.cambiarEstadoRol(
+                    solicitud.getPersonaSolicitante(),
+                    EstadoRol.Pendiente
+            );
+
+            case Pa_request -> paRequestDao.cambiarEstadoPaRequest(
+                    solicitud.getPersonaSolicitante(),
+                    StatusPaRequest.En_espera
+            );
+
+            default -> {
+                // Otros tipos no modifican roles/procesos todavía
+            }
+        }
+    }
+    public boolean puedeSolicitarRevision(UsuarioSesion usuario, Solicitud solicitud) {
+        if (usuario == null || solicitud == null) {
+            return false;
+        }
+
+        boolean esSolicitante = solicitud.getPersonaSolicitante() == usuario.getIdPersona();
+        boolean esAdmin = puedeGestionarSolicitudes(usuario);
+
+        return solicitud.getEstadoSolicitud() == EstadoSolicitud.Rechazada
+                && (esSolicitante || esAdmin);
+    }
 }
