@@ -79,5 +79,12 @@ public class OviUserDao {
         String sql = "DELETE FROM ovi_user WHERE id = ?";
         jdbcTemplate.update(sql, idPersona);
     }
+    public void crearRapidoActivo(int idPersona) {
+        String sql = "INSERT INTO ovi_user " +
+                "(id, grado_diversidad_funcional, grado_dependencia, estado, url_proyecto_de_vida, centro_social_referencia) " +
+                "VALUES (?, 0, NULL, 'Activo'::estado_rol_enum, NULL, NULL)";
+
+        jdbcTemplate.update(sql, idPersona);
+    }
 }
 
