@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Simulación de Correo</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"/>
+</head>
+<body class="bg-light">
+
+<div th:replace="~{layout/navbar :: main-nav}"></div>
+
+<div class="container mt-5">
+  <div class="card shadow-sm border-0 mx-auto" style="max-width: 600px;">
+    <div class="card-header bg-success text-white fw-bold">
+      ✉️ Simulación de Envío de Correo
+    </div>
+    <div class="card-body">
+      <div class="mb-3 border-bottom pb-2">
+        <strong>De:</strong> sistema@ovi.uji.es (Técnico OVI)
+      </div>
+      <div class="mb-3 border-bottom pb-2">
+        <strong>Para:</strong> <span th:text="${para}">usuario@correo.com</span>
+      </div>
+      <div class="mb-3 border-bottom pb-2">
+        <strong>Asunto:</strong> <span th:text="${asunto}">Asunto del mensaje</span>
+      </div>
+      <div class="mb-4">
+        <strong>Mensaje:</strong>
+        <p class="mt-2 p-3 bg-light border rounded" th:text="${cuerpo}">Cuerpo del mensaje...</p>
+      </div>
+
+      <div class="text-center">
+        <a th:href="${volverUrl}" class="btn btn-primary px-4">Volver al Panel de Gestión</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -25,7 +25,7 @@
             border-radius: 12px;
         }
         .tabla-procesos {
-            min-width: 900px;
+            min-width: 1000px; /* Un poco más de espacio para la nueva columna */
             margin-bottom: 0;
         }
         .tabla-procesos thead th {
@@ -48,13 +48,13 @@
 
 <div th:replace="~{layout/navbar :: main-nav}"></div>
 
-<main class="container-fluid mt-4 px-4">
+<main class="container-fluid mt-4 px-4 mb-5">
     <div class="page-card">
 
         <div class="mb-4">
             <h1 class="section-title">Mis Procesos de Asistencia Personal</h1>
             <p class="section-subtitle mb-0">
-                Aquí puedes consultar el estado de tus solicitudes de asistente personal.
+                Aquí puedes consultar el estado de tus solicitudes y buscar candidatos para las que estén activas.
             </p>
         </div>
 
@@ -75,6 +75,7 @@
                     <th class="no-wrap">Fecha inicio</th>
                     <th class="no-wrap">Fecha fin</th>
                     <th class="no-wrap">Fecha creación</th>
+                    <th class="no-wrap text-center">Acciones</th> <!-- NUEVA COLUMNA -->
                 </tr>
                 </thead>
                 <tbody>
@@ -97,14 +98,22 @@
                     <td th:text="${paRequest.generoAsistente != null ? paRequest.generoAsistente : '-'}"></td>
                     <td th:text="${paRequest.disponibilidadHoraria != null ? paRequest.disponibilidadHoraria : '-'}"></td>
                     <td th:text="${paRequest.zonaGeografica != null ? paRequest.zonaGeografica : '-'}"></td>
-                    <td class="no-wrap"
-                        th:text="${paRequest.fechaInicio != null ? #temporals.format(paRequest.fechaInicio, 'dd/MM/yyyy') : '-'}">
-                    </td>
-                    <td class="no-wrap"
-                        th:text="${paRequest.fechaFin != null ? #temporals.format(paRequest.fechaFin, 'dd/MM/yyyy') : '-'}">
-                    </td>
-                    <td class="no-wrap"
-                        th:text="${paRequest.fechaCreacion != null ? #temporals.format(paRequest.fechaCreacion, 'dd/MM/yyyy') : '-'}">
+                    <td class="no-wrap" th:text="${paRequest.fechaInicio != null ? #temporals.format(paRequest.fechaInicio, 'dd/MM/yyyy') : '-'}"></td>
+                    <td class="no-wrap" th:text="${paRequest.fechaFin != null ? #temporals.format(paRequest.fechaFin, 'dd/MM/yyyy') : '-'}"></td>
+                    <td class="no-wrap" th:text="${paRequest.fechaCreacion != null ? #temporals.format(paRequest.fechaCreacion, 'dd/MM/yyyy') : '-'}"></td>
+
+                    <!-- EL BOTÓN MÁGICO DE BÚSQUEDA DE CANDIDATOS -->
+                    <td class="align-middle text-center no-wrap">
+                        <a th:if="${paRequest.status != null and paRequest.status.toString() == 'En_activo'}"
+                           th:href="@{/PaRequest/candidatos/{id}(id=${paRequest.id})}"
+                           class="btn btn-sm btn-success fw-bold shadow-sm rounded-pill px-3">
+                            🔍 Buscar Candidato
+                        </a>
+
+                        <span th:unless="${paRequest.status != null and paRequest.status.toString() == 'En_activo'}"
+                              class="text-muted small">
+                           En espera de resolución
+                        </span>
                     </td>
                 </tr>
                 </tbody>
@@ -116,36 +125,21 @@
             <nav>
                 <ul class="pagination">
                     <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                        <a class="page-link"
-                           th:href="@{/PaRequest/mis/{id}(id=${idUsuario}, page=${currentPage - 1})}">
-                            Anterior
-                        </a>
+                        <a class="page-link" th:href="@{/PaRequest/mis/{id}(id=${idUsuario}, page=${currentPage - 1})}">Anterior</a>
                     </li>
-                    <li class="page-item"
-                        th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
-                        th:classappend="${i == currentPage} ? 'active'">
-                        <a class="page-link"
-                           th:href="@{/PaRequest/mis/{id}(id=${idUsuario}, page=${i})}"
-                           th:text="${i + 1}">
-                        </a>
+                    <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}" th:classappend="${i == currentPage} ? 'active'">
+                        <a class="page-link" th:href="@{/PaRequest/mis/{id}(id=${idUsuario}, page=${i})}" th:text="${i + 1}"></a>
                     </li>
                     <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
-                        <a class="page-link"
-                           th:href="@{/PaRequest/mis/{id}(id=${idUsuario}, page=${currentPage + 1})}">
-                            Siguiente
-                        </a>
+                        <a class="page-link" th:href="@{/PaRequest/mis/{id}(id=${idUsuario}, page=${currentPage + 1})}">Siguiente</a>
                     </li>
                 </ul>
             </nav>
         </div>
 
         <div class="mt-3 d-flex gap-2 flex-wrap">
-            <a th:href="@{/PaRequest/create/{id}(id=${idUsuario})}" class="btn btn-primary">
-                Nueva solicitud de asistencia
-            </a>
-            <a th:href="@{/}" class="btn btn-secondary">
-                Volver al inicio
-            </a>
+            <a th:href="@{/PaRequest/create/{id}(id=${idUsuario})}" class="btn btn-primary fw-bold px-4">Nueva solicitud de asistencia</a>
+            <a th:href="@{/}" class="btn btn-secondary fw-bold px-4">Volver al inicio</a>
         </div>
 
     </div>

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/PaRequest")
@@ -24,6 +25,9 @@ public class PaRequestController {
 
     private SolicitudesDao solicitudesDao;
     private PaRequestDao paRequestDao;
+
+    @Autowired
+    private es.uji.ei1027.ovi.dao.PapPatiDao PapPatiDao;
 
     @Autowired
     public void setSolicitudDao(SolicitudesDao solicitudDao) {
@@ -161,5 +165,62 @@ public class PaRequestController {
         paRequest.setId(id);
         paRequestDao.updatePaRequest(paRequest);
         return "redirect:/PaRequest/detail/" + id;
+    }
+
+// --- MÉTODOS PARA EL TÉCNICO: ACEPTAR Y RECHAZAR ---
+
+    @GetMapping("/accept/{id}")
+    public String aceptarPeticion(@PathVariable int id, Model model, HttpSession session) {
+        if (session.getAttribute("usuario") == null) return "redirect:/login";
+
+        // 1. Buscamos la petición y la actualizamos
+        PaRequest paRequest = paRequestDao.getPaRequestById(id);
+        if (paRequest != null) {
+            // CORREÇÃO: Usamos "En_activo" porque é o que existe no StatusPaRequest
+            paRequest.setStatus(StatusPaRequest.En_activo);
+            paRequestDao.updatePaRequest(paRequest);
+        }
+
+        // 2. Preparamos los datos para la pantalla del correo falso
+        model.addAttribute("para", "Usuario solicitante (ID: " + paRequest.getOviUser() + ")");
+        model.addAttribute("asunto", "✅ Tu Petición de Asistencia ha sido ACEPTADA");
+        model.addAttribute("cuerpo", "Hola, te informamos de que el Técnico OVI ha revisado y aceptado tu petición de asistencia con número #" + id + ". Ya puedes acceder al sistema para ver los candidatos propuestos.");
+        model.addAttribute("volverUrl", "/PaRequest/list");
+
+        return "correo/simulacion";
+    }
+
+    @GetMapping("/reject/{id}")
+    public String rechazarPeticion(@PathVariable int id, Model model, HttpSession session) {
+        if (session.getAttribute("usuario") == null) return "redirect:/login";
+
+        PaRequest paRequest = paRequestDao.getPaRequestById(id);
+        if (paRequest != null) {
+            // CORREÇÃO: Usamos "Finalizada" para simular que foi rejeitada e encerrada
+            paRequest.setStatus(StatusPaRequest.Finalizada);
+            paRequestDao.updatePaRequest(paRequest);
+        }
+
+        model.addAttribute("para", "Usuario solicitante (ID: " + paRequest.getOviUser() + ")");
+        model.addAttribute("asunto", "❌ Tu Petición de Asistencia ha sido RECHAZADA");
+        model.addAttribute("cuerpo", "Hola, lamentamos informarte de que tu petición #" + id + " ha sido rechazada tras la revisión del técnico. Ponte en contacto con la oficina para más detalles.");
+        model.addAttribute("volverUrl", "/PaRequest/list");
+
+        return "correo/simulacion";
+    }
+
+    @GetMapping("/candidatos/{idSolicitud}")
+    public String verCandidatos(@PathVariable int idSolicitud, Model model, HttpSession session) {
+        if (session.getAttribute("usuario") == null) {
+            return "redirect:/login";
+        }
+
+        // Obtenemos la lista de candidatos usando el método que acabas de crear
+        List<Map<String, Object>> candidatos = PapPatiDao.getCandidatosDisponibles();
+
+        model.addAttribute("candidatos", candidatos);
+        model.addAttribute("idSolicitud", idSolicitud);
+
+        return "PaRequest/candidatos"; // Nos lleva a la vista HTML
     }
 }

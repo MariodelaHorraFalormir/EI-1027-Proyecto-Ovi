@@ -9,6 +9,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.util.List;
+import java.util.Map;
+
 @Repository
 public class PapPatiDao {
 
@@ -107,6 +110,14 @@ public class PapPatiDao {
                 + "estado = ?::estado_rol_enum "
                 + "WHERE id = ?" ;
         jdbcTemplate.update(sql,estadoRol.getTexto(),personaSolicitante);
+    }
+
+    // Metodo para obtener los candidatos activos y mostrarlos al usuario OVI
+    public List<Map<String, Object>> getCandidatosDisponibles() {
+        String sql = "SELECT p.nombre, p.apellidos, pp.id AS id_candidato, pp.experiencia, pp.disponibilidad " +
+                "FROM persona p JOIN pap_pati pp ON p.id = pp.id " +
+                "WHERE pp.estado = 'Activo'::estado_rol_enum";
+        return jdbcTemplate.queryForList(sql);
     }
 
 }

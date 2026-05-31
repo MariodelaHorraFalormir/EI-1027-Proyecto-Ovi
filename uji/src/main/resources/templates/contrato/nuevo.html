@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Formalizar Contrato</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"/>
+</head>
+<body class="bg-light">
+
+<div th:replace="~{layout/navbar :: main-nav}"></div>
+
+<div class="container mt-5">
+  <div class="card shadow-sm border-0 mx-auto" style="max-width: 600px; border-radius: 15px;">
+    <div class="card-header bg-success text-white fw-bold text-center" style="border-radius: 15px 15px 0 0;">
+      🤝 Formalizar Acuerdo de Asistencia
+    </div>
+    <div class="card-body p-4">
+      <p class="text-muted text-center mb-4">Introduce las fechas acordadas en el chat para registrar el contrato en el sistema OVI.</p>
+
+      <form th:action="@{/contrato/guardar}" method="post">
+        <!-- Datos ocultos que pasamos al controlador -->
+        <input type="hidden" name="idSolicitud" th:value="${idSolicitud}">
+        <input type="hidden" name="idCandidato" th:value="${idCandidato}">
+        <input type="hidden" name="idUsuarioOvi" th:value="${idUsuarioOvi}">
+
+        <div class="mb-3">
+          <label class="form-label fw-bold">Fecha de Inicio *</label>
+          <input type="date" name="fechaInicio" class="form-control" required>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label fw-bold">Fecha de Fin (Opcional)</label>
+          <input type="date" name="fechaFin" class="form-control">
+          <div class="form-text">Déjalo en blanco si el contrato es indefinido.</div>
+        </div>
+
+        <div class="d-grid gap-2">
+          <button type="submit" class="btn btn-success fw-bold py-2">Registrar Contrato</button>
+          <a href="javascript:history.back()" class="btn btn-outline-secondary">Cancelar y volver al chat</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

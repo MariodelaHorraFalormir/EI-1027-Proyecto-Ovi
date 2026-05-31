@@ -42,11 +42,6 @@
             Servicios
           </a>
         </li>
-          <li class="nav-item">
-          <a class="nav-link text-white fw-semibold" th:href="@{/correccion.html}">
-              Corrección
-          </a>
-      </li>
 
       </ul>
 
@@ -75,60 +70,23 @@
         <!-- Usuario logueado -->
         <th:block th:if="${session.usuario != null}">
 
-          <!-- Menú de gestión solo para Admin OVI -->
+          <!-- Menú de gestión para Admin OVI -->
           <li class="nav-item dropdown" th:if="${session.usuario.esAdminOvi()}">
-
-            <a class="nav-link dropdown-toggle text-warning fw-bold"
-               href="#"
-               id="gestionDropdown"
-               role="button"
-               data-bs-toggle="dropdown"
-               aria-expanded="false">
-              Gestión OVI
+            <a class="nav-link dropdown-toggle text-warning fw-bold" href="#" id="gestionDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              🔧 Gestión OVI
             </a>
-
             <ul class="dropdown-menu shadow" aria-labelledby="gestionDropdown">
 
-              <li>
-                <a class="dropdown-item" th:href="@{/Solicitudes/list/todas}">
-                  Todas las solicitudes
-                </a>
-              </li>
+              <!-- SECCIÓN URGENTE -->
+              <li><h6 class="dropdown-header">Acción requerida</h6></li>
+              <li><a class="dropdown-item" th:href="@{/Solicitudes/list/Pendientes}">🔴 Solicitudes Pendientes</a></li>
 
-              <li>
-                <a class="dropdown-item" th:href="@{/Solicitudes/list/ovi-users}">
-                  Solicitudes OVI User
-                </a>
-              </li>
+              <li><hr class="dropdown-divider"></li>
 
-              <li>
-                <a class="dropdown-item" th:href="@{/Solicitudes/list/pap-patis}">
-                  Solicitudes PAP/PATI
-                </a>
-              </li>
-
-              <li>
-                <a class="dropdown-item" th:href="@{/Solicitudes/list/pa-requests}">
-                  Solicitudes PA Request
-                </a>
-              </li>
-
-              <li>
-                <hr class="dropdown-divider">
-              </li>
-
-              <li>
-                  <a class="dropdown-item" th:href="@{/PaRequest/list}">
-                      Procesos PA Request
-                  </a>
-              </li>
-
-              <li>
-                <a class="dropdown-item" th:href="@{/Persona/list/todas}">
-                  Personas registradas
-                </a>
-              </li>
-
+              <!-- SECCIÓN ADMINISTRATIVA -->
+              <li><h6 class="dropdown-header">Gestión global</h6></li>
+              <li><a class="dropdown-item" th:href="@{/Solicitudes/list/todas}">📋 Histórico de Solicitudes</a></li>
+              <li><a class="dropdown-item" th:href="@{/Persona/list/todas}">👤 Gestión de Personas</a></li>
             </ul>
           </li>
 

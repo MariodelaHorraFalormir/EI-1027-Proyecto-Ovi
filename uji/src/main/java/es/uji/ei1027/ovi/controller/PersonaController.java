@@ -133,16 +133,22 @@ public class PersonaController {
     @PostMapping("/registro")
     public String procesarRegistro(
             @ModelAttribute("persona") Persona persona,
+            @RequestParam("rol") String rol, // <--- Capturamos el nuevo parámetro
             BindingResult bindingResult,
             Model model) {
+
         PersonaValidator validator = new PersonaValidator();
         validator.validate(persona, bindingResult);
         if (bindingResult.hasErrors()) {
+            // Si hay errores, devolvemos el formulario con el error
             return "Persona/registro";
         }
 
         try {
-            authService.registrarPersona(persona);
+            // Pasamos el rol al metodo de registro
+            // Asegúrate de que tu authService.registrarPersona(persona, rol) acepte el parámetro
+            authService.registrarPersona(persona, rol);
+
             return "redirect:/login";
         } catch (IllegalArgumentException e) {
             model.addAttribute("errorMail", e.getMessage());

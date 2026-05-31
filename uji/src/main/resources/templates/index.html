@@ -26,7 +26,7 @@
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.08);
             padding: 4rem 3rem;
-            max-width: 900px;
+            max-width: 1000px; /* Un poco más ancho para que quepan bien las tarjetas */
             text-align: center;
         }
         .hero-title {
@@ -37,10 +37,17 @@
         }
         .hero-subtitle {
             font-size: 1.25rem;
-            /* CORRECCIÓN WAVE: Color oscurecido para superar el ratio de contraste de 4.5:1 */
             color: #334155;
             margin-bottom: 2.5rem;
             line-height: 1.6;
+        }
+        .dashboard-card {
+            border-radius: 12px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
         }
     </style>
 </head>
@@ -58,26 +65,77 @@
                 Conectamos necesidades con soluciones para garantizar la igualdad de oportunidades.
             </p>
 
+            <!-- Si NO hay sesión iniciada -->
             <div th:if="${session.usuario == null}" class="d-flex justify-content-center gap-3 flex-wrap">
                 <a th:href="@{/login}" class="btn btn-primary btn-lg px-5 py-3 fw-bold rounded-pill shadow-sm">Iniciar Sesión</a>
                 <a th:href="@{/Persona/registro}" class="btn btn-outline-primary btn-lg px-5 py-3 fw-bold rounded-pill">Crear Cuenta</a>
             </div>
 
-            <div th:if="${session.usuario != null}" class="d-flex justify-content-center gap-3 flex-wrap">
+            <!-- Si SÍ hay sesión iniciada -->
+            <div th:if="${session.usuario != null}">
 
-                <a th:if="${session.usuario != null and !session.usuario.esAdminOvi()}"
-                   th:href="@{/Persona/details/{id}(id=${session.usuario.idPersona})}"
-                   class="btn btn-success btn-lg px-5 py-3 fw-bold rounded-pill shadow-sm">
-                    Ir a mi perfil
-                </a>
+                <!-- Vista para el TÉCNICO / ADMIN -->
+                <div th:if="${session.usuario.esAdminOvi()}" class="d-flex justify-content-center gap-3 flex-wrap">
+                    <a th:href="@{/Solicitudes/list/todas}" class="btn btn-warning btn-lg px-5 py-3 fw-bold rounded-pill shadow-sm text-dark">
+                        📋 Gestión de Solicitudes
+                    </a>
+                    <a th:href="@{/admin/estadisticas}" class="btn btn-info btn-lg px-5 py-3 fw-bold rounded-pill shadow-sm text-white">
+                        📊 Ver Estadísticas
+                    </a>
+                </div>
 
-                <a th:if="${session.usuario != null and session.usuario.esAdminOvi()}"
-                   th:href="@{/Solicitudes/list/todas}"
-                   class="btn btn-warning btn-lg px-5 py-3 fw-bold rounded-pill shadow-sm text-dark">
-                    Ir al Panel de Gestión
-                </a>
+                <!-- Vista de DASHBOARD para USUARIOS NORMALES -->
+                <div th:if="${!session.usuario.esAdminOvi()}" class="row g-4 text-center mt-2">
+                    <!-- Opción 1: Procesos -->
+                    <div class="col-md-3">
+                        <div class="card h-100 border-primary shadow-sm dashboard-card">
+                            <div class="card-body py-4">
+                                <h1 class="mb-3">📋</h1>
+                                <h5 class="fw-bold text-primary">Mis Procesos</h5>
+                                <p class="text-muted small">Gestiona tus asistencias personales y busca candidatos.</p>
+                                <!-- Apunta a la vista de abajo -->
+                                <a th:href="@{/PaRequest/mis/{id}(id=${session.usuario.idPersona})}" class="btn btn-outline-primary w-100 rounded-pill fw-bold">Ver procesos</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Opción 2: Chats -->
+                    <div class="col-md-3">
+                        <div class="card h-100 border-success shadow-sm dashboard-card">
+                            <div class="card-body py-4">
+                                <h1 class="mb-3">💬</h1>
+                                <h5 class="fw-bold text-success">Mis Chats</h5>
+                                <p class="text-muted small">Habla con los cuidadores y cierra acuerdos de asistencia.</p>
+                                <a th:href="@{/chat/mis-conversaciones}" class="btn btn-outline-success w-100 rounded-pill fw-bold">Abrir mensajes</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Opción 3: Perfil -->
+                    <div class="col-md-3">
+                        <div class="card h-100 border-secondary shadow-sm dashboard-card">
+                            <div class="card-body py-4">
+                                <h1 class="mb-3">👤</h1>
+                                <h5 class="fw-bold text-secondary">Mi Perfil</h5>
+                                <p class="text-muted small">Actualiza tus datos personales y gestiona tus preferencias.</p>
+                                <a th:href="@{/Persona/details/{id}(id=${session.usuario.idPersona})}" class="btn btn-outline-secondary w-100 rounded-pill fw-bold">Ir a mi perfil</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="card h-100 border-info shadow-sm dashboard-card">
+                            <div class="card-body py-4">
+                                <h1 class="mb-3">🤝</h1>
+                                <h5 class="fw-bold text-info">Mis Contratos</h5>
+                                <p class="text-muted small">Consulta tus acuerdos de asistencia activos y finalizados.</p>
+                                <a th:href="@{/contrato/mis-contratos}" class="btn btn-outline-info w-100 rounded-pill fw-bold">Ver contratos</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
-
         </div>
     </div>
 </div>

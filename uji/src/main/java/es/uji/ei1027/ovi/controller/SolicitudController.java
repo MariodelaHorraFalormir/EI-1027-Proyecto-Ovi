@@ -124,40 +124,57 @@ public class SolicitudController {
         return "redirect:/Solicitudes/list/todas";
     }
     @PostMapping("/aprobarRapido/{id}")
-    public String  aprobarRapido(Model model, @PathVariable int id , HttpSession session){
+    public String aprobarRapido(Model model, @PathVariable int id , HttpSession session){
         String url = "/Solicitudes/aprobarRapido/" + id;
-
         UsuarioSesion usuario = sesionService.getUsuario(session);
 
         if (usuario == null) {
             return sesionService.redirigirALogin(session, url);
         }
-
         if (!solicitudesService.puedeGestionarSolicitudes(usuario)) {
             return "redirect:/";
         }
-        solicitudesService.puedeGestionarSolicitudes(usuario);
+
+        // 1. Aprueba la solicitud en base de datos
         solicitudesService.aprobarRapido(id,usuario);
 
-        return "redirect:/Solicitudes/list/todas";
+        // 2. Buscamos la solicitud para saber a quién enviarle el correo
+        Solicitud solicitud = solicitudDao.getSolicitudById(id);
+
+        // 3. Preparamos el correo simulado
+        model.addAttribute("para", "Usuario solicitante (ID: " + solicitud.getPersonaSolicitante() + ")");
+        model.addAttribute("asunto", "✅ Tu Solicitud OVI ha sido APROBADA");
+        model.addAttribute("cuerpo", "Hola, te informamos de que el Técnico OVI ha revisado y aprobado tu solicitud general con número #" + id + ". Ya puedes continuar con el proceso en la plataforma.");
+        model.addAttribute("volverUrl", "/Solicitudes/list/todas");
+
+        return "correo/simulacion";
     }
-    //esta en estado de pruebas la idea es que redirija a una  pagina donde te permita hem poner el motivo de la resolucion
+
+
     @PostMapping("/rechazarRapido/{id}")
-    public String  rechazarRapido(Model model,@PathVariable int id , HttpSession session){
-        //aqui cojera el metodo para mandarte a la pagina de lo de añadir motivo de rechazo
+    public String rechazarRapido(Model model,@PathVariable int id , HttpSession session){
         UsuarioSesion usuario = sesionService.getUsuario(session);
 
         if (usuario == null) {
             sesionService.guardarNextUrl(session, "/Solicitudes/list/todas");
             return "redirect:/login";
         }
-
         if (!solicitudesService.puedeGestionarSolicitudes(usuario)) {
             return "redirect:/";
         }
 
+        // 1. Rechaza la solicitud en base de datos
         solicitudesService.rechazarRapido(id, usuario);
-        return "redirect:/Solicitudes/list/todas";
+
+        Solicitud solicitud = solicitudDao.getSolicitudById(id);
+
+        // 2. Preparamos el correo simulado
+        model.addAttribute("para", "Usuario solicitante (ID: " + solicitud.getPersonaSolicitante() + ")");
+        model.addAttribute("asunto", "❌ Tu Solicitud OVI ha sido RECHAZADA");
+        model.addAttribute("cuerpo", "Hola, lamentamos informarte de que tu solicitud #" + id + " ha sido denegada. Por favor, revisa tus datos o ponte en contacto con la oficina.");
+        model.addAttribute("volverUrl", "/Solicitudes/list/todas");
+
+        return "correo/simulacion";
     }
     @RequestMapping("/delete/{id}")
     public String processDelete(@PathVariable int id , HttpSession session) {

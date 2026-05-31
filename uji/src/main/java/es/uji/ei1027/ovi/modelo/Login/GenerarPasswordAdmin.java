@@ -1,4 +1,4 @@
-package es.uji.ei1027.ovi;
+package es.uji.ei1027.ovi.modelo.Login;
 
 import org.jasypt.util.password.BasicPasswordEncryptor;
 import org.springframework.boot.CommandLineRunner;
