@@ -1,7 +1,5 @@
 package es.uji.ei1027.ovi.Service;
 
-import es.uji.ei1027.ovi.dao.OviUserDao;
-import es.uji.ei1027.ovi.dao.PapPatiDao;
 import es.uji.ei1027.ovi.dao.PersonaDao;
 import es.uji.ei1027.ovi.modelo.Login.UsuarioSesion;
 import es.uji.ei1027.ovi.modelo.Persona.Persona;
@@ -18,8 +16,6 @@ public class AuthService {
 
     private PersonaDao personaDao;
     private PersonaService personaService;
-    private OviUserDao oviUserDao;
-    private PapPatiDao papPatiDao;
 
     @Autowired
     public void setPersonaDao(PersonaDao personaDao) {
@@ -29,16 +25,6 @@ public class AuthService {
     @Autowired
     public void setPersonaService(PersonaService personaService) {
         this.personaService = personaService;
-    }
-
-    @Autowired
-    public void setOviUserDao(OviUserDao oviUserDao) {
-        this.oviUserDao = oviUserDao;
-    }
-
-    @Autowired
-    public void setPapPatiDao(PapPatiDao papPatiDao) {
-        this.papPatiDao = papPatiDao;
     }
 
     public UsuarioSesion autenticar(String mail, String contrasena) {
@@ -86,23 +72,18 @@ public class AuthService {
     }
 
     @Transactional
-    public void registrarPersona(Persona persona, String rol) {
+    public void registrarPersona(Persona persona) {
         if (personaDao.existeMail(persona.getMail())) {
             throw new IllegalArgumentException("Ya existe una persona registrada con ese correo.");
         }
 
         BasicPasswordEncryptor passwordEncryptor = new BasicPasswordEncryptor();
-        persona.setContrasena(passwordEncryptor.encryptPassword(persona.getContrasena()));
+        String contrasenaCifrada = passwordEncryptor.encryptPassword(persona.getContrasena());
+
+        persona.setContrasena(contrasenaCifrada);
         persona.setFechaAlta(LocalDate.now());
+        persona.setFechaBaja(null);
 
-        // 1. Guardamos la persona y obtenemos el ID generado
-        int idPersona = personaDao.addPersonaYDevolverId(persona);
-
-        // 2. Creamos la entrada en la tabla específica usando las INSTANCIAS (minúscula)
-        if ("OVI_USER".equals(rol)) {
-            oviUserDao.crearRapidoActivo(idPersona);
-        } else if ("PAP_PATI".equals(rol)) {
-            papPatiDao.crearRapidoActivo(idPersona);
-        }
+        personaDao.addPersonaYDevolverId(persona);
     }
 }
