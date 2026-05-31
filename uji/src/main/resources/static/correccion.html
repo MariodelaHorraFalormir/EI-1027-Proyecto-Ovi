@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <title>Guía de corrección - OVI UJI</title>
+    <meta charset="UTF-8" />
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" />
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #f4f7fb, #e9f0f8);
+            min-height: 100vh;
+        }
+
+        .navbar-custom {
+            background: #0d6efd;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+        }
+
+        .page-card {
+            background: white;
+            border-radius: 22px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            padding: 2rem;
+        }
+
+        .section-title {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #1f3b5b;
+        }
+
+        .section-subtitle {
+            color: #334155;
+            font-size: 1.05rem;
+        }
+
+        .author-banner {
+            border-radius: 18px;
+            padding: 1.25rem;
+            background: linear-gradient(135deg, #1f4e79, #256b9f);
+            color: white;
+        }
+
+        .info-banner {
+            border-radius: 18px;
+            padding: 1.25rem;
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            color: #7c2d12;
+        }
+
+        .terminal-card {
+            background: #0f172a;
+            color: #e2e8f0;
+            border-radius: 18px;
+            padding: 1.5rem;
+            font-family: Consolas, Monaco, monospace;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+        }
+
+        .terminal-title {
+            color: #93c5fd;
+            font-weight: 800;
+        }
+
+        .terminal-ok {
+            color: #86efac;
+            font-weight: 800;
+        }
+
+        .terminal-warning {
+            color: #fde68a;
+            font-weight: 800;
+        }
+
+        .story-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 18px;
+            padding: 1.25rem;
+            background: #ffffff;
+            height: 100%;
+            transition: transform 0.18s ease, box-shadow 0.18s ease;
+        }
+
+        .story-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 28px rgba(15, 23, 42, 0.10);
+        }
+
+        .story-number {
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #eaf2ff;
+            color: #1f4e79;
+            font-weight: 900;
+            margin-bottom: 0.85rem;
+        }
+
+        .story-title {
+            color: #1f3b5b;
+            font-weight: 850;
+            font-size: 1.15rem;
+        }
+
+        .story-meta {
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+
+        .credential-box {
+            border-radius: 14px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 0.95rem;
+            margin-top: 1rem;
+        }
+
+        .credential-label {
+            color: #64748b;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .credential-value {
+            color: #0f172a;
+            font-weight: 800;
+            font-family: Consolas, Monaco, monospace;
+        }
+
+        .task-list {
+            margin-top: 1rem;
+            padding-left: 1.1rem;
+            color: #334155;
+        }
+
+        .task-list li {
+            margin-bottom: 0.45rem;
+        }
+
+        .badge-role {
+            border-radius: 999px;
+            padding: 0.4rem 0.75rem;
+            font-weight: 800;
+        }
+
+        .badge-admin {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-user {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-flow {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-pa {
+            background: #ede9fe;
+            color: #5b21b6;
+        }
+
+        .badge-chat {
+            background: #cffafe;
+            color: #155e75;
+        }
+
+        .quick-link-card {
+            border-radius: 18px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 1rem;
+        }
+
+        .quick-link-title {
+            font-weight: 800;
+            color: #1f3b5b;
+        }
+
+        .actions-footer {
+            margin-top: 2rem;
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            border-radius: 12px;
+            font-weight: 700;
+        }
+
+        .btn-primary {
+            background-color: #1f4e79;
+            border-color: #1f4e79;
+        }
+
+        .btn-primary:hover {
+            background-color: #193f63;
+            border-color: #193f63;
+        }
+    </style>
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-custom" data-bs-theme="dark">
+    <div class="container">
+        <a class="navbar-brand fw-bold text-white" href="/">
+            <span style="font-size: 1.5rem;">OVI</span>
+            <span class="fw-light">UJI</span>
+        </a>
+
+        <button class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarCorreccion"
+                aria-controls="navbarCorreccion"
+                aria-expanded="false"
+                aria-label="Desplegar menú">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarCorreccion">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                <li class="nav-item">
+                    <a class="nav-link text-white fw-semibold" href="/">
+                        Inicio
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link text-white fw-semibold" href="/servicios">
+                        Servicios
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link text-warning fw-bold" href="/correccion.html">
+                        Corrección
+                    </a>
+                </li>
+
+            </ul>
+
+            <div class="d-flex gap-2">
+                <a href="/login" class="btn btn-light fw-bold rounded-pill px-4" style="color: #003366;">
+                    Iniciar sesión
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<main class="container-fluid mt-4 px-4 mb-5">
+    <div class="page-card">
+
+        <div class="mb-4">
+            <h1 class="section-title">Guía de corrección</h1>
+            <p class="section-subtitle mb-0">
+                Página preparada para facilitar la revisión de la aplicación OVI.
+                Aquí se recogen algunos casos base que esperamos que faciliten la corrección.
+            </p>
+        </div>
+
+        <section class="author-banner mb-4">
+            <h2 class="h5 fw-bold mb-2">Trabajo realizado por</h2>
+            <p class="mb-0">
+                Víctor Alemany · Adrián Font · Mario de la Horra
+            </p>
+        </section>
+
+        <section class="info-banner mb-4">
+            <h2 class="h5 fw-bold mb-2">Nota importante para la corrección</h2>
+            <p class="mb-2">
+                Los siguientes casos son ejemplos base que pueden probarse para revisar las funcionalidades principales
+                de la aplicación.
+            </p>
+            <p class="mb-0">
+                Si se desea crear casos propios con otros usuarios, puede hacerse sin problema. Para ello, basta con
+                crear un usuario, actualizar su contraseña para poder acceder con él y, si se necesitan permisos de
+                revisión, asignarle el rol de administrador OVI.
+            </p>
+        </section>
+
+        <section class="terminal-card mb-4">
+            <div>=================================</div>
+            <div class="terminal-title">CREDENCIALES DE REFERENCIA</div>
+            <div>Admin OVI: <span class="terminal-ok">admin1@ovi.es</span></div>
+            <div>Password: <span class="terminal-warning">admin123</span></div>
+            <div>=================================</div>
+
+            <br>
+
+            <div>=================================</div>
+            <div class="terminal-title">USUARIO DE REFERENCIA</div>
+            <div>Usuario: <span class="terminal-ok">joel.user@ovi.es</span></div>
+            <div>Password: <span class="terminal-warning">user123</span></div>
+            <div>=================================</div>
+        </section>
+
+        <section class="mb-4">
+            <div class="mb-3">
+                <h2 class="section-title fs-3">Accesos rápidos</h2>
+                <p class="section-subtitle mb-0">
+                    Enlaces útiles para comenzar las pruebas.
+                </p>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="quick-link-card h-100">
+                        <div class="quick-link-title mb-2">Login</div>
+                        <p class="text-muted mb-3">
+                            Acceso a la plataforma.
+                        </p>
+                        <a href="/login" class="btn btn-primary btn-sm">Ir al login</a>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="quick-link-card h-100">
+                        <div class="quick-link-title mb-2">Servicios</div>
+                        <p class="text-muted mb-3">
+                            Zona desde la que el usuario puede iniciar solicitudes.
+                        </p>
+                        <a href="/servicios" class="btn btn-secondary btn-sm">Ver servicios</a>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="quick-link-card h-100">
+                        <div class="quick-link-title mb-2">Inicio</div>
+                        <p class="text-muted mb-3">
+                            Página principal de la aplicación.
+                        </p>
+                        <a href="/" class="btn btn-outline-secondary btn-sm">Volver al inicio</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-4">
+            <div class="mb-3">
+                <h2 class="section-title fs-3">Casos base de prueba</h2>
+                <p class="section-subtitle mb-0">
+                    Estos casos no son los únicos posibles. Sirven como recorrido recomendado para comprobar las
+                    funcionalidades principales de la aplicación.
+                </p>
+            </div>
+
+            <div class="row g-4">
+
+                <div class="col-lg-6">
+                    <article class="story-card">
+                        <div class="story-number">1</div>
+
+                        <div class="d-flex justify-content-between align-items-start gap-2 flex-wrap">
+                            <div>
+                                <h3 class="story-title">Crear un usuario</h3>
+                                <p class="story-meta mb-0">
+                                    Comprobar el registro de una nueva persona en el sistema.
+                                </p>
+                            </div>
+
+                            <span class="badge-role badge-user">Usuario</span>
+                        </div>
+
+                        <ul class="task-list">
+                            <li>Ir a la página de registro.</li>
+                            <li>Crear un nuevo usuario con sus datos personales.</li>
+                            <li>Comprobar que el usuario puede iniciar sesión.</li>
+                            <li>Acceder a su perfil para verificar que los datos se han guardado correctamente.</li>
+                        </ul>
+                    </article>
+                </div>
+
+                <div class="col-lg-6">
+                    <article class="story-card">
+                        <div class="story-number">2</div>
+
+                        <div class="d-flex justify-content-between align-items-start gap-2 flex-wrap">
+                            <div>
+                                <h3 class="story-title">Obtener y gestionar roles</h3>
+                                <p class="story-meta mb-0">
+                                    Comprobar la asignación de roles a una persona registrada.
+                                </p>
+                            </div>
+
+                            <span class="badge-role badge-admin">Admin OVI</span>
+                        </div>
+
+                        <div class="credential-box">
+                            <div class="credential-label">Usuario recomendado</div>
+                            <div class="credential-value">admin1@ovi.es</div>
+
+                            <div class="credential-label mt-2">Contraseña</div>
+                            <div class="credential-value">admin123</div>
+                        </div>
+
+                        <ul class="task-list">
+                            <li>Entrar como administrador.</li>
+                            <li>Ir a <strong>Gestión OVI &gt; Personas registradas</strong>.</li>
+                            <li>Abrir el detalle de una persona.</li>
+                            <li>Pulsar <strong>Gestionar roles</strong>.</li>
+                            <li>Asignar un rol disponible, por ejemplo <strong>Ovi User</strong> o <strong>PAP/PATI</strong>.</li>
+                            <li>Comprobar que el usuario obtiene los permisos correspondientes.</li>
+                        </ul>
+                    </article>
+                </div>
+
+                <div class="col-lg-6">
+                    <article class="story-card">
+                        <div class="story-number">3</div>
+
+                        <div class="d-flex justify-content-between align-items-start gap-2 flex-wrap">
+                            <div>
+                                <h3 class="story-title">Aprobar solicitudes</h3>
+                                <p class="story-meta mb-0">
+                                    Comprobar el flujo administrativo de revisión.
+                                </p>
+                            </div>
+
+                            <span class="badge-role badge-admin">Admin OVI</span>
+                        </div>
+
+                        <div class="credential-box">
+                            <div class="credential-label">Usuario recomendado</div>
+                            <div class="credential-value">admin1@ovi.es</div>
+
+                            <div class="credential-label mt-2">Contraseña</div>
+                            <div class="credential-value">admin123</div>
+                        </div>
+
+                        <ul class="task-list">
+                            <li>Iniciar sesión como administrador.</li>
+                            <li>Acceder a <strong>Gestión OVI &gt; Todas las solicitudes</strong>.</li>
+                            <li>Abrir una solicitud pendiente.</li>
+                            <li>Revisar sus datos.</li>
+                            <li>Aprobar la solicitud.</li>
+                            <li>Comprobar que el estado cambia a <strong>Aprobada</strong>.</li>
+                        </ul>
+                    </article>
+                </div>
+
+                <div class="col-lg-6">
+                    <article class="story-card">
+                        <div class="story-number">4</div>
+
+                        <div class="d-flex justify-content-between align-items-start gap-2 flex-wrap">
+                            <div>
+                                <h3 class="story-title">Solicitar revisión de una solicitud rechazada</h3>
+                                <p class="story-meta mb-0">
+                                    Comprobar que el usuario puede pedir una segunda revisión.
+                                </p>
+                            </div>
+
+                            <span class="badge-role badge-flow">Flujo usuario</span>
+                        </div>
+
+                        <div class="credential-box">
+                            <div class="credential-label">Usuario recomendado</div>
+                            <div class="credential-value">joel.user@ovi.es</div>
+
+                            <div class="credential-label mt-2">Contraseña</div>
+                            <div class="credential-value">user123</div>
+                        </div>
+
+                        <ul class="task-list">
+                            <li>Iniciar sesión como usuario.</li>
+                            <li>Entrar en <strong>Mis solicitudes</strong>.</li>
+                            <li>Abrir una solicitud rechazada.</li>
+                            <li>Pulsar la opción de <strong>Solicitar revisión</strong>.</li>
+                            <li>Comprobar que se genera una nueva petición o que cambia el estado correspondiente.</li>
+                        </ul>
+                    </article>
+                </div>
+
+                <div class="col-lg-6">
+                    <article class="story-card">
+                        <div class="story-number">5</div>
+
+                        <div class="d-flex justify-content-between align-items-start gap-2 flex-wrap">
+                            <div>
+                                <h3 class="story-title">Editar los datos de un perfil</h3>
+                                <p class="story-meta mb-0">
+                                    Comprobar la modificación de datos personales.
+                                </p>
+                            </div>
+
+                            <span class="badge-role badge-user">Usuario</span>
+                        </div>
+
+                        <div class="credential-box">
+                            <div class="credential-label">Usuario recomendado</div>
+                            <div class="credential-value">joel.user@ovi.es</div>
+
+                            <div class="credential-label mt-2">Contraseña</div>
+                            <div class="credential-value">user123</div>
+                        </div>
+
+                        <ul class="task-list">
+                            <li>Iniciar sesión como usuario.</li>
+                            <li>Entrar en <strong>Mi perfil</strong>.</li>
+                            <li>Pulsar la opción de editar datos.</li>
+                            <li>Modificar algún campo del perfil.</li>
+                            <li>Guardar los cambios.</li>
+                            <li>Comprobar que los nuevos datos aparecen correctamente.</li>
+                        </ul>
+                    </article>
+                </div>
+
+                <div class="col-lg-6">
+                    <article class="story-card">
+                        <div class="story-number">6</div>
+
+                        <div class="d-flex justify-content-between align-items-start gap-2 flex-wrap">
+                            <div>
+                                <h3 class="story-title">Realizar una PA Request</h3>
+                                <p class="story-meta mb-0">
+                                    Comprobar que un OVI User puede solicitar asistencia personal.
+                                </p>
+                            </div>
+
+                            <span class="badge-role badge-pa">PA Request</span>
+                        </div>
+
+                        <ul class="task-list">
+                            <li>Iniciar sesión con un usuario que tenga rol <strong>Ovi User</strong>.</li>
+                            <li>Ir a <strong>Servicios</strong>.</li>
+                            <li>Seleccionar la opción para solicitar asistencia personal.</li>
+                            <li>Completar el formulario de <strong>PA Request</strong>.</li>
+                            <li>Enviar la solicitud.</li>
+                            <li>Comprobar que aparece en <strong>Mis solicitudes</strong> o <strong>Mis procesos</strong>.</li>
+                        </ul>
+                    </article>
+                </div>
+
+                <div class="col-lg-6">
+                    <article class="story-card">
+                        <div class="story-number">7</div>
+
+                        <div class="d-flex justify-content-between align-items-start gap-2 flex-wrap">
+                            <div>
+                                <h3 class="story-title">Aprobar una PA Request</h3>
+                                <p class="story-meta mb-0">
+                                    Comprobar el flujo de aprobación de una solicitud de asistencia personal.
+                                </p>
+                            </div>
+
+                            <span class="badge-role badge-admin">Admin OVI</span>
+                        </div>
+
+                        <div class="credential-box">
+                            <div class="credential-label">Usuario recomendado</div>
+                            <div class="credential-value">admin1@ovi.es</div>
+
+                            <div class="credential-label mt-2">Contraseña</div>
+                            <div class="credential-value">admin123</div>
+                        </div>
+
+                        <ul class="task-list">
+                            <li>Iniciar sesión como administrador.</li>
+                            <li>Entrar en <strong>Gestión OVI &gt; Todas las solicitudes</strong>.</li>
+                            <li>Abrir una solicitud de tipo <strong>PA Request</strong>.</li>
+                            <li>Revisar los datos introducidos por el usuario.</li>
+                            <li>Aprobar la solicitud.</li>
+                            <li>Comprobar que el proceso queda disponible para su seguimiento.</li>
+                        </ul>
+                    </article>
+                </div>
+
+                <div class="col-lg-6">
+                    <article class="story-card">
+                        <div class="story-number">8</div>
+
+                        <div class="d-flex justify-content-between align-items-start gap-2 flex-wrap">
+                            <div>
+                                <h3 class="story-title">Hablar por el chat</h3>
+                                <p class="story-meta mb-0">
+                                    Comprobar la comunicación asociada a un proceso.
+                                </p>
+                            </div>
+
+                            <span class="badge-role badge-chat">Chat</span>
+                        </div>
+
+                        <ul class="task-list">
+                            <li>Iniciar sesión con un usuario que tenga un proceso asociado.</li>
+                            <li>Entrar en <strong>Mis procesos</strong>.</li>
+                            <li>Abrir el detalle de un proceso.</li>
+                            <li>Acceder al chat asociado.</li>
+                            <li>Enviar un mensaje.</li>
+                            <li>Comprobar que el mensaje aparece correctamente en la conversación.</li>
+                        </ul>
+                    </article>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="info-banner mb-4">
+            <h2 class="h5 fw-bold mb-2">Recordatorio final</h2>
+            <p class="mb-0">
+                Estos son algunos casos base que esperamos que faciliten la corrección.
+                Recuerde que puede recrearlos con otros usuarios si lo considera necesario,
+                actualizando la contraseña del usuario para poder acceder con él y asignándole
+                permisos de administrador cuando necesite probar funciones de gestión.
+            </p>
+        </section>
+
+        <div class="actions-footer">
+            <a href="/login" class="btn btn-primary">
+                Ir al login
+            </a>
+
+            <a href="/servicios" class="btn btn-secondary">
+                Ver servicios
+            </a>
+
+            <a href="/" class="btn btn-outline-secondary">
+                Volver al inicio
+            </a>
+        </div>
+
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

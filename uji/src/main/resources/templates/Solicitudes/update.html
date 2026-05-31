@@ -57,6 +57,11 @@
 </head>
 <body>
 
+
+<div th:replace="~{layout/navbar :: main-nav}"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
 <div class="container">
     <div class="detail-card">
 
@@ -78,7 +83,7 @@
                 <div class="col-md-6">
                     <label class="data-label" for="idSolicitud">ID de la solicitud</label>
                     <input type="number" id="idSolicitud" class="form-control"
-                           th:field="*{idSolicitud}">
+                           th:field="*{idSolicitud}" readonly>
                 </div>
 
                 <div class="col-md-6">
@@ -151,7 +156,7 @@
 
             <div class="mt-4 d-flex gap-2">
                 <button type="submit" class="btn btn-primary">Guardar cambios</button>
-                <a th:href="@{/Solicitudes/listId}" class="btn btn-secondary">Volver al listado</a>
+                <a th:href="@{/Solicitudes/todas}" class="btn btn-secondary">Volver al listado</a>
                 <a th:href="@{/}" class="btn btn-outline-dark">Ir al inicio</a>
             </div>
         </form>

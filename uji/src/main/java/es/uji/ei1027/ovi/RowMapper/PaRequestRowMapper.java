@@ -19,7 +19,6 @@ public class PaRequestRowMapper implements RowMapper<PaRequest> {
         if (rs.getDate("fecha_resolucion") != null)
             paRequest.setFechaResolucion(rs.getDate("fecha_resolucion").toLocalDate());
 
-        // Mapeo de nuevos campos
         if (rs.getDate("fecha_inicio") != null)
             paRequest.setFechaInicio(rs.getDate("fecha_inicio").toLocalDate());
         if (rs.getDate("fecha_fin") != null)
@@ -28,6 +27,10 @@ public class PaRequestRowMapper implements RowMapper<PaRequest> {
         paRequest.setTipoAsistencia(rs.getString("tipo_asistencia"));
         paRequest.setPreferencias(rs.getString("preferencias"));
         paRequest.setOviUser(rs.getInt("ovi_user"));
+
+        paRequest.setGeneroAsistente(rs.getString("genero_asistente"));
+        paRequest.setDisponibilidadHoraria(rs.getString("disponibilidad_horaria"));
+        paRequest.setZonaGeografica(rs.getString("zona_geografica"));
 
         return paRequest;
     }

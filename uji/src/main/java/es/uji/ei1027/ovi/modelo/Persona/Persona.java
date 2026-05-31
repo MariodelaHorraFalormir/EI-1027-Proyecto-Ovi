@@ -14,6 +14,9 @@ public class Persona {
     private String pais;
     private String dni;
     private String contrasena;
+
+    private Personalidad personalidad = new Personalidad();
+
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     private LocalDate fechaNacimiento;
     @DateTimeFormat(pattern = "dd-MM-yyyy")
@@ -118,7 +121,6 @@ public class Persona {
         this.idPersona = idPersona;
     }
 
-
-
-
+    public Personalidad getPersonalidad() { return personalidad; }
+    public void setPersonalidad(Personalidad personalidad) { this.personalidad = personalidad; }
 }

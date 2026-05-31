@@ -29,9 +29,9 @@ public enum EstadoRol {
             case Pendiente:
                 return "Pendiente";
             case Activo:
-                return "Aprobada";
+                return "Activo";
             case Rechazado:
-                return "Rechazada";
+                return "Rechazado";
             default:
                 throw new IllegalStateException("Valor no esperado: " + this);
         }

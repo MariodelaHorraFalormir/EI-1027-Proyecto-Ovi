@@ -141,6 +141,10 @@
 </head>
 <body>
 
+<div th:replace="~{layout/navbar :: main-nav}"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
 <div class="container">
     <div class="edit-card">
 
@@ -152,10 +156,6 @@
                 </p>
             </div>
 
-            <span class="role-badge"
-                  th:text="'OviUser ID ' + ${diversidadFuncional.oviUserId}">
-                OviUser ID 1
-            </span>
         </div>
 
         <form th:object="${diversidadFuncional}"
@@ -210,7 +210,7 @@
                     Guardar diversidad funcional
                 </button>
 
-                <a th:href="@{/OviUser/listaID/{id}(id=*{oviUserId})}"
+                <a th:href="@{/DiversidadFuncional/listaID/{id}(id=*{oviUserId})}"
                    class="btn btn-secondary">
                     Volver
                 </a>

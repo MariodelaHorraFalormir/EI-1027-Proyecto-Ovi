@@ -25,6 +25,9 @@ import java.time.LocalDate;
         private String preferencias;
 
         private int oviUser;
+        private String generoAsistente;
+        private String disponibilidadHoraria;
+        private String zonaGeografica;
 
         public LocalDate getFechaInicio() { return fechaInicio; }
         public void setFechaInicio(LocalDate fechaInicio) { this.fechaInicio = fechaInicio; }
@@ -84,5 +87,14 @@ import java.time.LocalDate;
         public void setOviUser(int oviUser) {
             this.oviUser = oviUser;
         }
+
+        public String getGeneroAsistente() { return generoAsistente; }
+        public void setGeneroAsistente(String generoAsistente) { this.generoAsistente = generoAsistente; }
+
+        public String getDisponibilidadHoraria() { return disponibilidadHoraria; }
+        public void setDisponibilidadHoraria(String disponibilidadHoraria) { this.disponibilidadHoraria = disponibilidadHoraria; }
+
+        public String getZonaGeografica() { return zonaGeografica; }
+        public void setZonaGeografica(String zonaGeografica) { this.zonaGeografica = zonaGeografica; }
     }
 

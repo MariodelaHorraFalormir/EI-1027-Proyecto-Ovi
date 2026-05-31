@@ -1,0 +1,108 @@
+package es.uji.ei1027.ovi.Service;
+
+import es.uji.ei1027.ovi.dao.OviUserDao;
+import es.uji.ei1027.ovi.dao.PapPatiDao;
+import es.uji.ei1027.ovi.dao.PersonaDao;
+import es.uji.ei1027.ovi.modelo.Login.UsuarioSesion;
+import es.uji.ei1027.ovi.modelo.Persona.Persona;
+import es.uji.ei1027.ovi.modelo.Persona.PersonaFormulario;
+import org.jasypt.util.password.BasicPasswordEncryptor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+
+@Service
+public class AuthService {
+
+    private PersonaDao personaDao;
+    private PersonaService personaService;
+    private OviUserDao oviUserDao;
+    private PapPatiDao papPatiDao;
+
+    @Autowired
+    public void setPersonaDao(PersonaDao personaDao) {
+        this.personaDao = personaDao;
+    }
+
+    @Autowired
+    public void setPersonaService(PersonaService personaService) {
+        this.personaService = personaService;
+    }
+
+    @Autowired
+    public void setOviUserDao(OviUserDao oviUserDao) {
+        this.oviUserDao = oviUserDao;
+    }
+
+    @Autowired
+    public void setPapPatiDao(PapPatiDao papPatiDao) {
+        this.papPatiDao = papPatiDao;
+    }
+
+    public UsuarioSesion autenticar(String mail, String contrasena) {
+        if (mail == null || contrasena == null) {
+            return null;
+        }
+
+        Persona persona = personaDao.getPersonaByMail(mail.trim());
+
+        if (persona == null) {
+            return null;
+        }
+
+        BasicPasswordEncryptor passwordEncryptor = new BasicPasswordEncryptor();
+
+        if (!passwordEncryptor.checkPassword(contrasena, persona.getContrasena())) {
+            return null;
+        }
+
+        return crearUsuarioSesion(persona);
+    }
+
+    private UsuarioSesion crearUsuarioSesion(Persona persona) {
+        PersonaFormulario formulario =
+                personaService.getPersonaFormulario(persona.getIdPersona());
+
+        UsuarioSesion usuarioSesion = new UsuarioSesion();
+
+        usuarioSesion.setIdPersona(persona.getIdPersona());
+        usuarioSesion.setMail(persona.getMail());
+        usuarioSesion.setNombre(persona.getNombre());
+
+        usuarioSesion.setRolesActivos(formulario.getRolesActivos());
+        usuarioSesion.setRolesExistentes(formulario.getRolesExistentes());
+
+        if (formulario.getOviUser() != null) {
+            usuarioSesion.setEstadoOviUser(formulario.getOviUser().getEstado());
+        }
+
+        if (formulario.getPapPati() != null) {
+            usuarioSesion.setEstadoPapPati(formulario.getPapPati().getEstadoRol());
+        }
+
+        return usuarioSesion;
+    }
+
+    @Transactional
+    public void registrarPersona(Persona persona, String rol) {
+        if (personaDao.existeMail(persona.getMail())) {
+            throw new IllegalArgumentException("Ya existe una persona registrada con ese correo.");
+        }
+
+        BasicPasswordEncryptor passwordEncryptor = new BasicPasswordEncryptor();
+        persona.setContrasena(passwordEncryptor.encryptPassword(persona.getContrasena()));
+        persona.setFechaAlta(LocalDate.now());
+
+        // 1. Guardamos la persona y obtenemos el ID generado
+        int idPersona = personaDao.addPersonaYDevolverId(persona);
+
+        // 2. Creamos la entrada en la tabla específica usando las INSTANCIAS (minúscula)
+        if ("OVI_USER".equals(rol)) {
+            oviUserDao.crearRapidoActivo(idPersona);
+        } else if ("PAP_PATI".equals(rol)) {
+            papPatiDao.crearRapidoActivo(idPersona);
+        }
+    }
+}

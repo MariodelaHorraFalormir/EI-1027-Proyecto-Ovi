@@ -45,6 +45,11 @@
     </style>
 </head>
 <body>
+
+<div th:replace="~{layout/navbar :: main-nav}"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
 <main class="container-fluid mt-4 px-4">
     <h1>Diversidades Funcionales por Usuario</h1>
 
@@ -64,7 +69,7 @@
                 <td th:text="${diversidad.tipo}"></td>
 
                 <td class="no-wrap">
-                    <a th:href="@{/templates/DiversidadFuncional/update/{id}(id=${diversidad.idDiversidadFuncional})}"
+                    <a th:href="@{/DiversidadFuncional/update/{idDiversidad}(idDiversidad=${diversidad.idDiversidadFuncional})}"
                        class="btn btn-warning btn-sm">
                         Editar
                     </a>

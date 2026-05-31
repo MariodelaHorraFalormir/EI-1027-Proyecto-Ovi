@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat OVI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"/>
+    <style>
+        body {
+            background-color: #f4f7fb;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            height: 70vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-header {
+            background: #003366; /* Azul oscuro corporativo */
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 15px 15px 0 0;
+        }
+        .chat-messages {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background-image: url('https://www.transparenttextures.com/patterns/cubes.png'); /* Fondo sutil */
+        }
+        .msg-bubble {
+            max-width: 75%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            position: relative;
+            word-wrap: break-word;
+        }
+        .msg-mine {
+            background-color: #d1e7dd; /* Verde claro estilo WhatsApp */
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+        }
+        .msg-theirs {
+            background-color: #ffffff;
+            border: 1px solid #dee2e6;
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+        }
+        .chat-input {
+            padding: 1rem;
+            border-top: 1px solid #eee;
+            background: #fafafa;
+            border-radius: 0 0 15px 15px;
+        }
+        .date-text {
+            font-size: 0.70rem;
+            color: #6c757d;
+            margin-top: 4px;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{layout/navbar :: main-nav}"></div>
+
+<div class="container flex-grow-1">
+    <div class="chat-container">
+        <!-- Cabecera del chat -->
+        <div class="chat-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold">Conversación (Solicitud #<span th:text="${idSolicitud}"></span>)</h5>
+
+            <div>
+                <!-- Botón para formalizar el contrato -->
+                <a th:href="@{/contrato/nuevo/{idSol}/{idCand}(idSol=${idSolicitud}, idCand=${idReceptor})}"
+                   class="btn btn-sm btn-success fw-bold me-2 shadow-sm">
+                    🤝 Formalizar Contrato
+                </a>
+                <a th:href="@{/}" class="btn btn-sm btn-light fw-bold text-primary">Volver</a>
+            </div>
+        </div>
+
+        <div class="chat-messages" id="chatBox">
+            <div th:if="${conversacion.empty}" class="text-center text-muted mt-5">
+                <p>No hay mensajes todavía. ¡Escribe el primero para iniciar el contacto!</p>
+            </div>
+
+            <div th:each="msg : ${conversacion}"
+                 class="msg-bubble shadow-sm"
+                 th:classappend="${msg.idEmisor == miId} ? 'msg-mine' : 'msg-theirs'">
+                <div th:text="${msg.contenido}">Texto del mensaje...</div>
+                <div class="date-text" th:text="${msg.fechaEnvio}">Fecha</div>
+            </div>
+        </div>
+
+        <div class="chat-input">
+            <form th:action="@{/chat/enviar}" method="post" class="d-flex gap-2">
+                <input type="hidden" name="idSolicitud" th:value="${idSolicitud}">
+                <input type="hidden" name="idReceptor" th:value="${idReceptor}">
+                <input type="text" name="contenido" class="form-control border-secondary rounded-pill px-3" placeholder="Escribe tu mensaje aquí..." required autocomplete="off">
+                <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">Enviar</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Este pequeño script hace que el chat baje automáticamente al último mensaje al cargar la página
+    var chatBox = document.getElementById("chatBox");
+    if(chatBox) {
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+</script>
+</body>
+</html>

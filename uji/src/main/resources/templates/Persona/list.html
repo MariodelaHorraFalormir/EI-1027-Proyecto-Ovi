@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <title>Gestionar Personas</title>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" />
+
+    <!-- Pongo aqui el estilo temporalmente para poder trabajar con ello  -->
+    <style>
+        body {
+            background: #f4f7fb;
+        }
+
+        .page-card {
+            background: white;
+            border-radius: 18px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 28px rgba(0,0,0,0.06);
+        }
+
+        .tabla-wrapper {
+            overflow-x: auto;
+            overflow-y: auto;
+            max-height: 70vh;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .tabla-personas {
+            min-width: 1400px;
+            margin-bottom: 0;
+        }
+
+        .tabla-personas thead th {
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 2;
+        }
+
+        .no-wrap {
+            white-space: nowrap;
+        }
+
+        .col-mail {
+            min-width: 220px;
+        }
+
+        .col-direccion {
+            min-width: 180px;
+        }
+
+        .col-apellidos {
+            min-width: 170px;
+        }
+
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .actions-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- Navbar común -->
+<div th:replace="~{layout/navbar :: main-nav}"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+<main class="container-fluid mt-4 px-4">
+    <div class="page-card">
+
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+            <div>
+                <h1 class="mb-1"
+                    th:text="${tituloListado != null ? tituloListado : 'Personas registradas por ID'}">
+                    Personas registradas por ID
+                </h1>
+                <p class="text-muted mb-0">
+                    Gestiona personas registradas, consulta detalles y filtra por tipo de usuario.
+                </p>
+            </div>
+
+            <div class="actions-bar">
+                <a th:href="@{/Persona/registro}" class="btn btn-success">
+                    Añadir nueva persona
+                </a>
+                <a href="/" class="btn btn-secondary">
+                    Tornar
+                </a>
+            </div>
+        </div>
+
+        <!-- Botones de filtrado -->
+        <div class="filter-bar">
+            <a th:href="@{/Persona/list/todas}"
+               class="btn btn-outline-primary">
+                Todas las personas
+            </a>
+
+            <a th:href="@{/Persona/list/ovi-users}"
+               class="btn btn-outline-info">
+                Usuarios OVI
+            </a>
+
+            <a th:href="@{/Persona/list/pap-patis}"
+               class="btn btn-outline-warning">
+                PAP/PATI
+            </a>
+
+            <a th:href="@{/Persona/list/admins}"
+               class="btn btn-outline-dark">
+                Administradores OVI
+            </a>
+        </div>
+
+        <div class="tabla-wrapper mt-3">
+            <table class="table table-striped table-hover align-middle tabla-personas">
+                <thead>
+                <tr>
+                    <th class="no-wrap col-mail">Mail</th>
+                    <th class="no-wrap">Nombre</th>
+                    <th class="no-wrap col-apellidos">Apellidos</th>
+                    <th class="no-wrap">Edad</th>
+                    <th class="no-wrap">Género</th>
+                    <th class="no-wrap col-direccion">Dirección</th>
+                    <th class="no-wrap">País</th>
+                    <th class="no-wrap">Teléfono</th>
+                    <th class="no-wrap">Fecha Alta</th>
+                    <th class="no-wrap">Fecha Baja</th>
+                    <th class="no-wrap">Detalles</th>
+                    <th class="no-wrap">Editar</th>
+                    <th class="no-wrap">Borrar</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="persona : ${personasOrderId}">
+                    <td th:text="${persona.mail}"></td>
+                    <td th:text="${persona.nombre}"></td>
+                    <td th:text="${persona.apellidos}"></td>
+                    <td th:text="${persona.edad}"></td>
+                    <td th:text="${persona.genero}"></td>
+                    <td th:text="${persona.direccion}"></td>
+                    <td th:text="${persona.pais}"></td>
+                    <td class="no-wrap" th:text="${persona.telefono}"></td>
+
+                    <td class="no-wrap"
+                        th:text="${persona.fechaAlta != null ? #temporals.format(persona.fechaAlta, 'dd/MM/yyyy') : '-'}">
+                    </td>
+
+                    <td class="no-wrap"
+                        th:text="${persona.fechaBaja != null ? #temporals.format(persona.fechaBaja, 'dd/MM/yyyy') : '-'}">
+                    </td>
+
+                    <td class="no-wrap">
+                        <a th:href="@{/Persona/details/{id}(id=${persona.idPersona})}"
+                           class="btn btn-info btn-sm">
+                            Detalles
+                        </a>
+                    </td>
+
+                    <td class="no-wrap">
+                        <a th:href="@{/Persona/update/{id}(id=${persona.idPersona})}"
+                           class="btn btn-warning btn-sm">
+                            Editar
+                        </a>
+                    </td>
+
+                    <td class="no-wrap">
+                        <a th:href="@{/Persona/delete/{id}(id=${persona.idPersona})}"
+                           class="btn btn-danger btn-sm">
+                            Borrar
+                        </a>
+                    </td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(personasOrderId)}">
+                    <td colspan="13" class="text-center text-muted py-4">
+                        No hay personas para mostrar en este listado.
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</main>
+</body>
+</html>

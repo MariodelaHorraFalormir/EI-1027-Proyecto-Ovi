@@ -1,6 +1,7 @@
 package es.uji.ei1027.ovi.dao;
 
 import es.uji.ei1027.ovi.RowMapper.PersonaRowMapper;
+import es.uji.ei1027.ovi.modelo.Persona.Genero;
 import es.uji.ei1027.ovi.modelo.Persona.Persona;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -43,23 +44,30 @@ public class PersonaDao {
 
     public void updatePersona(Persona persona) {
         jdbcTemplate.update(
-                "UPDATE persona SET nombre = ?, apellidos = ?, mail = ?, genero = ?::genero_enum, telefono = ?, direccion = ?, fecha_nacimiento = ?, fecha_alta = ?, fecha_baja = ? ,contrasena = ? , dni = ?  WHERE id = ?",
+                "UPDATE persona SET nombre = ?, apellidos = ?, mail = ?, genero = ?::genero_enum, " +
+                        "telefono = ?, direccion = ?, pais = ?, fecha_nacimiento = ?, fecha_alta = ?, " +
+                        "fecha_baja = ?, dni = ?, ritmo = ?, comunicacion = ?, expresividad = ?, " +
+                        "caracter = ?, naturaleza = ? WHERE id = ?",
                 persona.getNombre(),
                 persona.getApellidos(),
                 persona.getMail(),
                 persona.getGenero().getTexto(),
                 persona.getTelefono(),
                 persona.getDireccion(),
+                persona.getPais(),
                 persona.getFechaNacimiento(),
                 persona.getFechaAlta(),
                 persona.getFechaBaja(),
-                persona.getContrasena(),
                 persona.getDni(),
+                persona.getPersonalidad().getRitmo(),
+                persona.getPersonalidad().getComunicacion(),
+                persona.getPersonalidad().getExpresividad(),
+                persona.getPersonalidad().getCaracter(),
+                persona.getPersonalidad().getNaturaleza(),
                 persona.getIdPersona()
-
         );
-
     }
+
     public int addPersonaYDevolverId(Persona persona) {
         return jdbcTemplate.queryForObject(
                 "INSERT INTO persona (nombre, apellidos, mail, telefono, direccion, genero, pais, fecha_nacimiento, fecha_alta, fecha_baja,contrasena,dni) " +
@@ -100,5 +108,62 @@ public class PersonaDao {
             return null;
         }
     }
+    public Persona getPersonaByMail(String mail) {
+        try {
+            return jdbcTemplate.queryForObject(
+                    "SELECT * FROM persona WHERE mail = ?",
+                    new PersonaRowMapper(),
+                    mail
+            );
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
 
+    public List<Persona> getPersonasOviUsers() {
+        return jdbcTemplate.query(
+                "SELECT p.* " +
+                        "FROM persona p " +
+                        "JOIN ovi_user ou ON p.id = ou.id " +
+                        "ORDER BY p.id",
+                new PersonaRowMapper()
+        );
+    }
+    public List<Persona> getPersonasPapPati() {
+        return jdbcTemplate.query(
+                "SELECT p.* " +
+                        "FROM persona p " +
+                        "JOIN pap_pati pp ON p.id = pp.id " +
+                        "ORDER BY p.id",
+                new PersonaRowMapper()
+        );
+    }
+    public List<Persona> getPersonasAdminOvi() {
+        return jdbcTemplate.query(
+                "SELECT p.* " +
+                        "FROM persona p " +
+                        "JOIN admin_ovi ao ON p.id = ao.id " +
+                        "ORDER BY p.id",
+                new PersonaRowMapper()
+        );
+    }
+    public void updatePass(String pass , int id){
+        String sql = "UPDATE persona SET contrasena = ? WHERE id = ?";
+        jdbcTemplate.update(sql , pass , id );
+    }
+
+    public Genero getGeneroById(int id) {
+        try {
+            String generoTexto = jdbcTemplate.queryForObject(
+                    "SELECT genero FROM persona WHERE id = ?",
+                    String.class,
+                    id
+            );
+
+            return Genero.fromString(generoTexto);
+
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
 }

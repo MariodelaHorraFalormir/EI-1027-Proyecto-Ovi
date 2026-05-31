@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mis Conversaciones</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"/>
+    <style>
+        body { background-color: #f4f7fb; }
+        .chat-list-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-left: 5px solid #0d6efd;
+        }
+        .chat-list-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1) !important;
+        }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{layout/navbar :: main-nav}"></div>
+
+<div class="container mt-5" style="max-width: 800px;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-dark mb-0">💬 Mis Conversaciones Activas</h2>
+        <a th:href="@{/}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">Volver al Inicio</a>
+    </div>
+
+    <div class="list-group shadow-sm" style="border-radius: 15px; overflow: hidden;">
+
+        <div th:if="${chats.empty}" class="p-5 text-center bg-white border-0">
+            <h1 class="text-muted mb-3">📭</h1>
+            <h5 class="text-secondary fw-bold">No tienes ninguna conversación activa</h5>
+            <p class="text-muted">Cuando inicies un contacto para una asistencia, aparecerá aquí.</p>
+        </div>
+
+        <a th:each="chat : ${chats}"
+           th:href="@{/chat/{idSol}/{idCont}(idSol=${chat.id_solicitud}, idCont=${chat.id_contacto})}"
+           class="list-group-item list-group-item-action p-4 border-bottom chat-list-card bg-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="mb-1 fw-bold text-primary">Chat de la Solicitud #<span th:text="${chat.id_solicitud}"></span></h5>
+                    <small class="text-muted">Haz clic para abrir la conversación y continuar negociando</small>
+                </div>
+                <span class="badge bg-primary rounded-pill px-3 py-2 shadow-sm">Abrir Chat 👉</span>
+            </div>
+        </a>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

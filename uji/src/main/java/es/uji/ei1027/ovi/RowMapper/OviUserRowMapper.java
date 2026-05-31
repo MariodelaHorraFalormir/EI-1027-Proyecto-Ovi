@@ -12,22 +12,19 @@ import java.util.List;
 
 
 public class OviUserRowMapper implements RowMapper<OviUser> {
-    private final DiversidadFuncionalDao diversidadFuncionalDao;
 
-    public OviUserRowMapper(DiversidadFuncionalDao diversidadFuncionalDao) {
-        this.diversidadFuncionalDao = diversidadFuncionalDao;
-    }
+
+
     @Override
     public OviUser mapRow(ResultSet rs, int rowNum) throws SQLException {
         OviUser oviUser = new OviUser();
-        oviUser.setIdOviUser(rs.getInt("idOviUser"));
+        oviUser.setIdOviUser(rs.getInt("id"));
         oviUser.setCentroSocialReferencia(rs.getString("centro_social_referencia"));
         oviUser.setUrlProyectoDeVida(rs.getString("url_proyecto_de_vida"));
-        oviUser.setGradoDependencia(rs.getInt("grado_dependencia"));
+        oviUser.setGradoDiversidadFuncional(rs.getInt("grado_diversidad_funcional"));
         oviUser.setEstado(EstadoRol.fromString(rs.getString("estado")));
         oviUser.setGradoDependencia(rs.getObject("grado_dependencia", Integer.class));
         //Aqui tengo que ser capaz de Cargar las diversidades funcionales
-        List<DiversidadFuncional>  diversidadFuncionals =  diversidadFuncionalDao.obtenerDiverdadesPorId(oviUser.getIdOviUser());
         return oviUser;
     }
 }

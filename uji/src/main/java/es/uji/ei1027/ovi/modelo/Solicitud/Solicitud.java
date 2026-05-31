@@ -3,6 +3,7 @@ package es.uji.ei1027.ovi.modelo.Solicitud;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Solicitud {
     private int idSolicitud;
@@ -17,6 +18,9 @@ public class Solicitud {
     private LocalDate fechaCreacion;
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     private LocalDate fechaResolucion;
+    private String mensajeRevision;
+    private LocalDateTime fechaUltimaRevision;
+    private Integer numeroRevisiones;
 
     public CategoriaSolicitud getCategoriaSolicitud() {
         return categoriaSolicitud;
@@ -93,5 +97,28 @@ public class Solicitud {
     }
     public EstadoSolicitud getEstadoSolicitud() {
         return estadoSolicitud;
+    }
+    public String getMensajeRevision() {
+        return mensajeRevision;
+    }
+
+    public void setMensajeRevision(String mensajeRevision) {
+        this.mensajeRevision = mensajeRevision;
+    }
+
+    public LocalDateTime getFechaUltimaRevision() {
+        return fechaUltimaRevision;
+    }
+
+    public void setFechaUltimaRevision(LocalDateTime fechaUltimaRevision) {
+        this.fechaUltimaRevision = fechaUltimaRevision;
+    }
+
+    public Integer getNumeroRevisiones() {
+        return numeroRevisiones;
+    }
+
+    public void setNumeroRevisiones(Integer numeroRevisiones) {
+        this.numeroRevisiones = numeroRevisiones;
     }
 }

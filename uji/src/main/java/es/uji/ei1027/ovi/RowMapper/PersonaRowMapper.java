@@ -2,6 +2,7 @@ package es.uji.ei1027.ovi.RowMapper;
 
 import es.uji.ei1027.ovi.modelo.Persona.Genero;
 import es.uji.ei1027.ovi.modelo.Persona.Persona;
+import es.uji.ei1027.ovi.modelo.Persona.Personalidad;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.Date;
@@ -34,10 +35,14 @@ public class PersonaRowMapper implements RowMapper<Persona> {
         fecha = convFechas(fechaNacimiento,rs);
         persona.setFechaNacimiento(fecha);
 
-
-
-
-
+        Personalidad personalidad = new Personalidad();
+        personalidad.setIdPersona(rs.getInt("id"));
+        personalidad.setRitmo(rs.getInt("ritmo"));
+        personalidad.setComunicacion(rs.getInt("comunicacion"));
+        personalidad.setExpresividad(rs.getInt("expresividad"));
+        personalidad.setCaracter(rs.getInt("caracter"));
+        personalidad.setNaturaleza(rs.getInt("naturaleza"));
+        persona.setPersonalidad(personalidad);
 
         return persona;
 

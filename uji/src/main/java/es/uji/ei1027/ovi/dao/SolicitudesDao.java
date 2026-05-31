@@ -3,8 +3,10 @@ package es.uji.ei1027.ovi.dao;
 import es.uji.ei1027.ovi.RowMapper.PersonaRowMapper;
 import es.uji.ei1027.ovi.RowMapper.SolicitudRowMapper;
 import es.uji.ei1027.ovi.modelo.Persona.Persona;
+import es.uji.ei1027.ovi.modelo.Solicitud.CategoriaSolicitud;
 import es.uji.ei1027.ovi.modelo.Solicitud.EstadoSolicitud;
 import es.uji.ei1027.ovi.modelo.Solicitud.Solicitud;
+import es.uji.ei1027.ovi.modelo.Solicitud.TipoSolicitud;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -31,6 +33,25 @@ public class SolicitudesDao {
                     "SELECT * FROM solicitud ORDER BY id ASC ",
                     new SolicitudRowMapper()
             );
+        } catch (EmptyResultDataAccessException e) {
+            return new ArrayList<>();
+        }
+    }
+    public List<Solicitud> getSolicitudesPorPersona(int idPersona) {
+        try {
+            String sql = """
+            SELECT *
+            FROM solicitud
+            WHERE persona_solicitante = ?
+            ORDER BY id DESC
+        """;
+
+            return jdbcTemplate.query(
+                    sql,
+                    new SolicitudRowMapper(),
+                    idPersona
+            );
+
         } catch (EmptyResultDataAccessException e) {
             return new ArrayList<>();
         }
@@ -80,34 +101,112 @@ public class SolicitudesDao {
                 solicitud.getFechaCreacion(),
                 solicitud.getFechaResolucion(),
                 solicitud.getMensajeSolicitud(),
-                1,
+                solicitud.getTecnicoRevisor(),
                 solicitud.getMotivoResolucion(),
                 idOriginal
         );
     }
-    public void aprobarRapido(int idOriginal) {
+    public void aprobarRapido(int idOriginal , int idTecnicoRevisor ) {
 
         String sql = "" +
                 "UPDATE solicitud " +
-                "SET estado = ?::estado_solicitud_enum,tecnico_revisor = ?, fecha_resolucion = ?" +
+                "SET estado = ?::estado_solicitud_enum,tecnico_revisor = ?, fecha_resolucion = CURRENT_TIMESTAMP" +
                 " WHERE id = ?";
-        jdbcTemplate.update(sql, EstadoSolicitud.Aprobada.toString(),1, LocalDateTime.now(), idOriginal);
+        jdbcTemplate.update(sql, EstadoSolicitud.Aprobada.toString(),idTecnicoRevisor, idOriginal);
 
 
     }
-    public void rechazarRapido (int idOriginal) {
+    public void rechazarRapido (int idOriginal,int idTecnicoRevisor) {
 
         String sql = "" +
                 "UPDATE solicitud " +
-                "SET estado = ?::estado_solicitud_enum,tecnico_revisor = ?, fecha_resolucion = ? ,motivo_resolucion =? " +
+                "SET estado = ?::estado_solicitud_enum,tecnico_revisor = ?, fecha_resolucion = CURRENT_TIMESTAMP ,motivo_resolucion =? " +
                 " WHERE id = ?";
-        jdbcTemplate.update(sql, EstadoSolicitud.Rechazada.toString(),1, LocalDateTime.now(),"Rechazo Rapido", idOriginal);
+        jdbcTemplate.update(sql, EstadoSolicitud.Rechazada.toString(),idTecnicoRevisor, "Rechazo Rapido", idOriginal);
 
 
     }
     public void deleteSolicitud(int id) {
         jdbcTemplate.update("DELETE FROM solicitud WHERE id = ? ", id );
     }
+    public Solicitud getSolicitudRolMasReciente(int idPersona, TipoSolicitud tipoSolicitud) {
+        try {
+            String sql = """
+            SELECT *
+            FROM solicitud
+            WHERE persona_solicitante = ?
+              AND categoria = ?::categoria_solicitud_enum
+              AND detalle = ?::detalle_solicitud_enum
+            ORDER BY id DESC
+            LIMIT 1
+        """;
+
+            return jdbcTemplate.queryForObject(
+                    sql,
+                    new SolicitudRowMapper(),
+                    idPersona,
+                    CategoriaSolicitud.Rol.getTexto(),
+                    tipoSolicitud.getTexto()
+            );
+
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+    public List<Solicitud> getSolicitudesPorTipo(TipoSolicitud tipoSolicitud) {
+        try {
+            String sql = """
+            SELECT *
+            FROM solicitud
+            WHERE detalle = ?::detalle_solicitud_enum
+            ORDER BY id DESC
+        """;
+
+            return jdbcTemplate.query(
+                    sql,
+                    new SolicitudRowMapper(),
+                    tipoSolicitud.getTexto()
+            );
+
+        } catch (EmptyResultDataAccessException e) {
+            return new ArrayList<>();
+        }
+    }
+    public List<Solicitud> getSolicitudesPendientes() {
+        try {
+            String sql = """
+            SELECT *
+            FROM solicitud
+            WHERE estado = ?::estado_solicitud_enum
+            ORDER BY fecha_creacion ASC, id ASC
+        """;
+
+            return jdbcTemplate.query(
+                    sql,
+                    new SolicitudRowMapper(),
+                    EstadoSolicitud.Pendiente.getTexto()
+            );
+
+        } catch (EmptyResultDataAccessException e) {
+            return new ArrayList<>();
+        }
+    }
+    public int solicitarRevision(int idSolicitud, String mensajeRevision) {
+        String sql = """
+        UPDATE solicitud
+        SET estado = 'Pendiente'::estado_solicitud_enum,
+            fecha_resolucion = NULL,
+            tecnico_revisor = NULL,
+            mensaje_revision = ?,
+            fecha_ultima_revision = CURRENT_TIMESTAMP,
+            numero_revisiones = numero_revisiones + 1
+        WHERE id = ?
+          AND estado = 'Rechazada'::estado_solicitud_enum
+    """;
+
+        return jdbcTemplate.update(sql, mensajeRevision, idSolicitud);
+    }
+
 
 
 }
