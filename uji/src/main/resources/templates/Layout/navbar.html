@@ -2,202 +2,169 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
 
-<!-- Estilos para hacer funcionar el navbar sin JavaScript -->
-<style>
-  /* ===== Truco checkbox para el menú móvil (sin JS) ===== */
-  .nav-toggle-checkbox { display: none; }
-
-  /* En escritorio: contenido siempre visible */
-  .nav-content {
-    display: flex;
-    flex: 1 1 auto;
-    align-items: center;
-    gap: 1rem;
-  }
-  .navbar-toggler { display: none; }
-
-  /* En móvil: el contenido se oculta y se muestra al marcar el checkbox */
-  @media (max-width: 991.98px) {
-    .navbar-toggler {
-      display: inline-block;
-      cursor: pointer;
-      background: transparent;
-      border: 1px solid rgba(255,255,255,0.5);
-      padding: 0.25rem 0.75rem;
-      border-radius: 0.375rem;
-      color: white;
-    }
-    .nav-content {
-      display: none;
-      width: 100%;
-      flex-direction: column;
-      align-items: stretch;
-      margin-top: 0.75rem;
-    }
-    .nav-toggle-checkbox:checked ~ .container .nav-content {
-      display: flex;
-    }
-  }
-
-  /* ===== Dropdowns usando <details>/<summary> ===== */
-  .nav-dropdown { position: relative; list-style: none; }
-  .nav-dropdown > summary {
-    list-style: none;
-    cursor: pointer;
-    user-select: none;
-  }
-  .nav-dropdown > summary::-webkit-details-marker { display: none; }
-  .nav-dropdown > summary::marker { display: none; }
-
-  .nav-dropdown[open] > .dropdown-menu {
-    display: block;
-    position: absolute;
-    right: 0;
-    top: 100%;
-    background: #fff;
-    min-width: 12rem;
-    padding: 0.5rem 0;
-    margin: 0.5rem 0 0 0;
-    list-style: none;
-    border-radius: 0.5rem;
-    box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15);
-    z-index: 1000;
-  }
-  .nav-dropdown .dropdown-item {
-    display: block;
-    padding: 0.375rem 1rem;
-    color: #212529;
-    text-decoration: none;
-  }
-  .nav-dropdown .dropdown-item:hover {
-    background-color: #f1f5f9;
-  }
-  .nav-dropdown .dropdown-header {
-    padding: 0.375rem 1rem;
-    color: #6c757d;
-    font-size: 0.85rem;
-    margin: 0;
-  }
-  .nav-dropdown .dropdown-divider {
-    margin: 0.4rem 0;
-    border: 0;
-    border-top: 1px solid #e9ecef;
-  }
-
-  @media (max-width: 991.98px) {
-    .nav-dropdown[open] > .dropdown-menu {
-      position: static;
-      box-shadow: none;
-      margin: 0;
-    }
-  }
-</style>
-
 <nav th:fragment="main-nav"
-     class="navbar bg-primary shadow-sm py-2"
+     class="navbar navbar-expand-lg bg-primary shadow-sm"
+     data-bs-theme="dark"
      aria-label="Menú principal de navegación">
 
-  <!-- Checkbox oculto que controla el menú móvil -->
-  <input type="checkbox" id="navToggle" class="nav-toggle-checkbox">
-
-  <div class="container d-flex flex-wrap align-items-center">
+  <div class="container">
 
     <!-- Marca / Inicio -->
-    <a class="navbar-brand fw-bold text-white me-3" th:href="@{/}">
+    <a class="navbar-brand fw-bold text-white" th:href="@{/}">
       <span style="font-size: 1.5rem;">OVI</span>
       <span class="fw-light">UJI</span>
     </a>
 
-    <!-- Botón hamburguesa (solo móvil) -->
-    <label for="navToggle" class="navbar-toggler ms-auto" aria-label="Abrir/Cerrar menú">
-      ☰
-    </label>
+    <!-- Botón responsive -->
+    <button class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarContent"
+            aria-controls="navbarContent"
+            aria-expanded="false"
+            aria-label="Desplegar menú de navegación">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-    <!-- Contenido principal del navbar -->
-    <div class="nav-content">
+    <div class="collapse navbar-collapse" id="navbarContent">
 
       <!-- Enlaces generales -->
-      <ul class="navbar-nav d-flex flex-row gap-3 mb-0 me-auto" style="list-style:none; padding:0;">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
         <li class="nav-item">
-          <a class="nav-link text-white fw-semibold" th:href="@{/}">Inicio</a>
+          <a class="nav-link text-white fw-semibold" th:href="@{/}">
+            Inicio
+          </a>
         </li>
+
         <li class="nav-item">
-          <a class="nav-link text-white fw-semibold" th:href="@{/servicios}">Servicios</a>
+          <a class="nav-link text-white fw-semibold" th:href="@{/servicios}">
+            Servicios
+          </a>
         </li>
+
       </ul>
 
       <!-- Zona derecha -->
-      <ul class="navbar-nav d-flex flex-row align-items-center gap-2 mb-0" style="list-style:none; padding:0;">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
 
         <!-- Usuario NO logueado -->
         <th:block th:if="${session.usuario == null}">
+
           <li class="nav-item">
-            <a class="nav-link text-white fw-semibold" th:href="@{/Persona/registro}">Registrarse</a>
+            <a class="nav-link text-white fw-semibold" th:href="@{/Persona/registro}">
+              Registrarse
+            </a>
           </li>
+
           <li class="nav-item">
             <a class="btn btn-light fw-bold rounded-pill px-4"
                style="color: #003366;"
-               th:href="@{/login}">Iniciar sesión</a>
+               th:href="@{/login}">
+              Iniciar sesión
+            </a>
           </li>
+
         </th:block>
 
         <!-- Usuario logueado -->
         <th:block th:if="${session.usuario != null}">
 
           <!-- Menú de gestión para Admin OVI -->
-          <li class="nav-item" th:if="${session.usuario.esAdminOvi()}">
-            <details class="nav-dropdown">
-              <summary class="nav-link text-warning fw-bold">
-                🔧 Gestión OVI ▾
-              </summary>
-              <ul class="dropdown-menu">
-                <li><h6 class="dropdown-header">Acción requerida</h6></li>
-                <li><a class="dropdown-item" th:href="@{/Solicitudes/list/Pendientes}">🔴 Solicitudes Pendientes</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><h6 class="dropdown-header">Gestión global</h6></li>
-                <li><a class="dropdown-item" th:href="@{/Solicitudes/list/todas}">📋 Histórico de Solicitudes</a></li>
-                <li><a class="dropdown-item" th:href="@{/Persona/list/todas}">👤 Gestión de Personas</a></li>
-              </ul>
-            </details>
+          <li class="nav-item dropdown" th:if="${session.usuario.esAdminOvi()}">
+            <a class="nav-link dropdown-toggle text-warning fw-bold" href="#" id="gestionDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              🔧 Gestión OVI
+            </a>
+            <ul class="dropdown-menu shadow" aria-labelledby="gestionDropdown">
+
+              <!-- SECCIÓN URGENTE -->
+              <li><h6 class="dropdown-header">Acción requerida</h6></li>
+              <li><a class="dropdown-item" th:href="@{/Solicitudes/list/Pendientes}">🔴 Solicitudes Pendientes</a></li>
+
+              <li><hr class="dropdown-divider"></li>
+
+              <!-- SECCIÓN ADMINISTRATIVA -->
+              <li><h6 class="dropdown-header">Gestión global</h6></li>
+              <li><a class="dropdown-item" th:href="@{/Solicitudes/list/todas}">📋 Histórico de Solicitudes</a></li>
+              <li><a class="dropdown-item" th:href="@{/Persona/list/todas}">👤 Gestión de Personas</a></li>
+            </ul>
           </li>
 
           <!-- Acceso rápido para usuario normal -->
           <li class="nav-item" th:if="${not session.usuario.esAdminOvi()}">
-            <a class="nav-link text-white fw-semibold" th:href="@{/Solicitudes/mis}">Mis solicitudes</a>
+            <a class="nav-link text-white fw-semibold" th:href="@{/Solicitudes/mis}">
+              Mis solicitudes
+            </a>
           </li>
-          <li class="nav-item" th:if="${not session.usuario.esAdminOvi()}">
-            <a class="nav-link text-white fw-semibold"
-               th:href="@{/PaRequest/mis/{id}(id=${session.usuario.idPersona})}">Mis procesos</a>
-          </li>
+            <li class="nav-item" th:if="${not session.usuario.esAdminOvi()}">
+                <a class="nav-link text-white fw-semibold"
+                   th:href="@{/PaRequest/mis/{id}(id=${session.usuario.idPersona})}">
+                    Mis procesos
+                </a>
+            </li>
 
           <!-- Menú de cuenta -->
-          <li class="nav-item">
-            <details class="nav-dropdown">
-              <summary class="nav-link bg-white text-primary rounded-pill px-3 py-1 fw-bold">
-                <span th:text="${session.usuario.nombre}">Usuario</span> ▾
-              </summary>
-              <ul class="dropdown-menu">
-                <li><span class="dropdown-item-text small text-muted px-3">Sesión iniciada como</span></li>
-                <li><span class="dropdown-item-text fw-bold px-3"
-                          th:text="${session.usuario.esAdminOvi() ? 'Admin OVI' : 'Usuario'}">Usuario</span></li>
-                <li><hr class="dropdown-divider"></li>
+          <li class="nav-item dropdown">
+
+            <a class="nav-link dropdown-toggle bg-white text-primary rounded-pill px-3 py-1 fw-bold"
+               href="#"
+               id="userDropdown"
+               role="button"
+               data-bs-toggle="dropdown"
+               aria-expanded="false">
+              <span th:text="${session.usuario.nombre}">Usuario</span>
+            </a>
+
+            <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
+
+              <li>
+                <span class="dropdown-item-text small text-muted">
+                  Sesión iniciada como
+                </span>
+              </li>
+
+              <li>
+                <span class="dropdown-item-text fw-bold"
+                      th:text="${session.usuario.esAdminOvi() ? 'Admin OVI' : 'Usuario'}">
+                  Usuario
+                </span>
+              </li>
+
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+
+              <li>
+                <a class="dropdown-item"
+                   th:href="@{/Persona/details/{id}(id=${session.usuario.idPersona})}">
+                  Mi perfil
+                </a>
+              </li>
+
+              <li>
+                <a class="dropdown-item"
+                   th:href="@{/Solicitudes/mis}">
+                  Mis solicitudes
+                </a>
+              </li>
+
                 <li>
-                  <a class="dropdown-item"
-                     th:href="@{/Persona/details/{id}(id=${session.usuario.idPersona})}">Mi perfil</a>
+                    <a class="dropdown-item"
+                       th:href="@{/PaRequest/mis/{id}(id=${session.usuario.idPersona})}">
+                        Mis procesos
+                    </a>
                 </li>
-                <li>
-                  <a class="dropdown-item" th:href="@{/Solicitudes/mis}">Mis solicitudes</a>
-                </li>
-                <li>
-                  <a class="dropdown-item"
-                     th:href="@{/PaRequest/mis/{id}(id=${session.usuario.idPersona})}">Mis procesos</a>
-                </li>
-                <li><hr class="dropdown-divider"></li>
-                <li>
-                  <a class="dropdown-item text-danger fw-bold" th:href="@{/logout}">Cerrar sesión</a>
-                </li>
-              </ul>
-            </details>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+
+              <li>
+                <a class="dropdown-item text-danger fw-bold" th:href="@{/logout}">
+                  Cerrar sesión
+                </a>
+              </li>
+
+            </ul>
           </li>
 
         </th:block>

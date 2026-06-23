@@ -188,7 +188,7 @@ public class SolicitudesService {
             case "ovi-users" -> solicitudesDao.getSolicitudesPorTipo(TipoSolicitud.Ovi_user);
             case "pap-patis" -> solicitudesDao.getSolicitudesPorTipo(TipoSolicitud.Pap_pati);
             case "pa-requests" -> solicitudesDao.getSolicitudesPorTipo(TipoSolicitud.Pa_request);
-            case "pendientes" -> solicitudesDao.getSolicitudesPendientes();
+                case "pendientes" -> solicitudesDao.getSolicitudesPendientes();
             default -> throw new IllegalArgumentException("Tipo de listado de solicitudes no válido: " + tipo);
         };
     }

@@ -147,6 +147,11 @@
 </head>
 <body>
 
+<!-- Navbar común -->
+<div th:replace="~{layout/navbar :: main-nav}"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
 <div class="container">
     <div class="edit-card">
 
@@ -237,21 +242,6 @@
                 </div>
             </div>
 
-            <!-- SELECCIÓN DE ROL -->
-            <div class="block-card">
-                <div class="block-title">Tipo de perfil</div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <label class="data-label" for="rol">¿Cómo quieres registrarte?</label>
-                        <select id="rol" name="rol" class="form-select" required>
-                            <option value="" disabled selected>Selecciona tu tipo de perfil...</option>
-                            <option value="OVI_USER">Persona solicitante (OVI)</option>
-                            <option value="PAP_PATI">Asistente Personal (PAP/PATI)</option>
-                        </select>
-                        <div class="form-text mt-2">Esta selección determinará las funciones a las que tendrás acceso.</div>
-                    </div>
-                </div>
-            </div>
 
             <!-- TEST DE PERSONALIDAD -->
             <div class="block-card">
