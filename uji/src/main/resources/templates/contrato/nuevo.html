@@ -36,7 +36,8 @@
 
         <div class="d-grid gap-2">
           <button type="submit" class="btn btn-success fw-bold py-2">Registrar Contrato</button>
-          <a href="javascript:history.back()" class="btn btn-outline-secondary">Cancelar y volver al chat</a>
+          <a th:href="@{/chat/{idSol}/{idCand}(idSol=${idSolicitud}, idCand=${idCandidato})}"
+             class="btn btn-outline-secondary">Cancelar y volver al chat</a>
         </div>
       </form>
     </div>
