@@ -6,7 +6,7 @@ import java.util.List;
 
 public class OviUser {
     private int idOviUser;
-    private int gradoDiversidadFuncional;
+    private  Integer gradoDiversidadFuncional;
     private Integer gradoDependencia;
     private EstadoRol estado;
     private String urlProyectoDeVida;
@@ -23,11 +23,11 @@ public class OviUser {
         this.idOviUser = idOviUser;
     }
 
-    public int getGradoDiversidadFuncional() {
+    public Integer getGradoDiversidadFuncional() {
         return gradoDiversidadFuncional;
     }
 
-    public void setGradoDiversidadFuncional(int gradoDiversidadFuncional) {
+    public void setGradoDiversidadFuncional(Integer gradoDiversidadFuncional) {
         this.gradoDiversidadFuncional = gradoDiversidadFuncional;
     }
 

@@ -156,6 +156,7 @@
             font-size: 0.92rem;
             color: #6c757d;
         }
+
         .status-readonly-box {
             background-color: white;
             border: 1px solid #d8e0ea;
@@ -224,6 +225,7 @@
                     Modifica los datos asociados al rol de usuario OVI
                 </p>
             </div>
+
             <!-- ESTADO DEL ROL: SOLO LECTURA -->
             <div class="d-flex flex-column align-items-md-end gap-2">
                 <div th:switch="${oviUser.estado != null ? oviUser.estado.name() : 'SinEstado'}">
@@ -232,20 +234,24 @@
                           class="status-badge status-activo">
                         Rol activo
                     </span>
-                            <span th:case="'Pendiente'"
-                                  class="status-badge status-pendiente">
+
+                    <span th:case="'Pendiente'"
+                          class="status-badge status-pendiente">
                         Rol pendiente
                     </span>
-                            <span th:case="'Rechazado'"
-                                  class="status-badge status-rechazado">
+
+                    <span th:case="'Rechazado'"
+                          class="status-badge status-rechazado">
                         Rol rechazado
                     </span>
-                            <span th:case="*"
-                                  class="status-badge status-sin-estado">
+
+                    <span th:case="*"
+                          class="status-badge status-sin-estado">
                         Sin estado
                     </span>
-                        </div>
-                        <span class="status-help-text">
+                </div>
+
+                <span class="status-help-text">
                     Solo lectura
                 </span>
             </div>
@@ -276,9 +282,16 @@
                                th:field="*{gradoDiversidadFuncional}"
                                min="0"
                                max="100"
+                               required
                                placeholder="Ej. 45">
+
+                        <div class="text-danger mt-1"
+                             th:if="${#fields.hasErrors('gradoDiversidadFuncional')}"
+                             th:errors="*{gradoDiversidadFuncional}">
+                        </div>
+
                         <div class="text-muted-small mt-2">
-                            Introduce un valor entre 0 y 100.
+                            Introduce un valor obligatorio entre 0 y 100.
                         </div>
                     </div>
 
@@ -292,9 +305,16 @@
                                th:field="*{gradoDependencia}"
                                min="1"
                                max="3"
+                               required
                                placeholder="Ej. 2">
+
+                        <div class="text-danger mt-1"
+                             th:if="${#fields.hasErrors('gradoDependencia')}"
+                             th:errors="*{gradoDependencia}">
+                        </div>
+
                         <div class="text-muted-small mt-2">
-                            Puede estar vacío si no aplica.
+                            Introduce un valor obligatorio entre 1 y 3.
                         </div>
                     </div>
 
@@ -306,7 +326,14 @@
                                id="centroSocialReferencia"
                                class="form-control"
                                th:field="*{centroSocialReferencia}"
+                               maxlength="100"
+                               required
                                placeholder="Nombre del centro social">
+
+                        <div class="text-danger mt-1"
+                             th:if="${#fields.hasErrors('centroSocialReferencia')}"
+                             th:errors="*{centroSocialReferencia}">
+                        </div>
                     </div>
 
                     <div class="col-md-6">
@@ -317,7 +344,14 @@
                                id="urlProyectoDeVida"
                                class="form-control"
                                th:field="*{urlProyectoDeVida}"
+                               maxlength="255"
+                               required
                                placeholder="https://...">
+
+                        <div class="text-danger mt-1"
+                             th:if="${#fields.hasErrors('urlProyectoDeVida')}"
+                             th:errors="*{urlProyectoDeVida}">
+                        </div>
                     </div>
 
                 </div>
