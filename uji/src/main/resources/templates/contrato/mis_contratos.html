@@ -28,9 +28,7 @@
           <thead class="table-light">
           <tr>
             <th>Ref. Contrato</th>
-            <th>Solicitud (AP)</th>
-            <th>Tipo asistencia</th>
-            <th>Con</th>
+            <th>Nº Solicitud</th>
             <th>Fecha Inicio</th>
             <th>Fecha Fin</th>
             <th>Estado</th>
@@ -39,33 +37,14 @@
           <tbody>
           <tr th:each="c : ${contratos}">
             <td class="fw-bold text-primary">#<span th:text="${c.id}"></span></td>
-            <td>
-              <a th:href="@{/Solicitudes/detail/{id}(id=${c.idSolicitud})}"
-                 class="text-decoration-none">
-                Solicitud #<span th:text="${c.idSolicitud}"></span>
-              </a>
-            </td>
-            <td>
-              <span th:text="${tipoAsistenciaPorSolicitud != null and tipoAsistenciaPorSolicitud.containsKey(c.idSolicitud)
-                              ? tipoAsistenciaPorSolicitud.get(c.idSolicitud)
-                              : '—'}">—</span>
-            </td>
-            <td>
-              <th:block th:with="idOtra=${c.idUsuarioOvi == miId ? c.idPapPati : c.idUsuarioOvi}">
-                <span th:text="${nombresPersona != null and nombresPersona.containsKey(idOtra)
-                                ? nombresPersona.get(idOtra)
-                                : 'Persona #' + idOtra}">—</span>
-                <small class="text-muted d-block"
-                       th:text="${c.idUsuarioOvi == miId ? '(PAP/PATI)' : '(Usuario OVI)'}"></small>
-              </th:block>
-            </td>
+            <td>Solicitud #<span th:text="${c.idSolicitud}"></span></td>
             <td th:text="${c.fechaInicio}"></td>
             <td th:text="${c.fechaFin != null ? c.fechaFin : 'Indefinido'}"></td>
             <td>
-              <span class="badge rounded-pill px-3 py-2"
-                    th:text="${c.estado}"
-                    th:classappend="${c.estado == 'Activo' ? 'bg-success' : 'bg-secondary'}">
-              </span>
+                                <span class="badge rounded-pill px-3 py-2"
+                                      th:text="${c.estado}"
+                                      th:classappend="${c.estado == 'Activo' ? 'bg-success' : 'bg-secondary'}">
+                                </span>
             </td>
           </tr>
           </tbody>

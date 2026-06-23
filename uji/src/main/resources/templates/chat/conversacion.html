@@ -23,7 +23,7 @@
             flex-direction: column;
         }
         .chat-header {
-            background: #003366;
+            background: #003366; /* Azul oscuro corporativo */
             color: white;
             padding: 1rem 1.5rem;
             border-radius: 15px 15px 0 0;
@@ -33,9 +33,9 @@
             padding: 1.5rem;
             overflow-y: auto;
             display: flex;
-            flex-direction: column-reverse; /* Truco CSS: el scroll ancla visualmente abajo sin necesidad de JS */
+            flex-direction: column;
             gap: 12px;
-            background-image: url('https://www.transparenttextures.com/patterns/cubes.png');
+            background-image: url('https://www.transparenttextures.com/patterns/cubes.png'); /* Fondo sutil */
         }
         .msg-bubble {
             max-width: 75%;
@@ -45,7 +45,7 @@
             word-wrap: break-word;
         }
         .msg-mine {
-            background-color: #d1e7dd;
+            background-color: #d1e7dd; /* Verde claro estilo WhatsApp */
             align-self: flex-end;
             border-bottom-right-radius: 2px;
         }
@@ -75,31 +75,17 @@
 
 <div class="container flex-grow-1">
     <div class="chat-container">
-        <!-- Cabecera del chat con info contextual: a qué solicitud/AP se refiere y con quién hablamos -->
-        <div class="chat-header">
-            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
-                <div>
-                    <h5 class="mb-1 fw-bold">
-                        Conversación · Solicitud #<span th:text="${idSolicitud}"></span>
-                    </h5>
-                    <div class="small" style="opacity:0.85;">
-                        <span th:if="${nombreOtraPersona != null}">
-                            Hablando con <strong th:text="${nombreOtraPersona}">Otro</strong>
-                        </span>
-                        <span th:if="${tipoAsistencia != null}" class="ms-2">
-                            · Asistencia: <strong th:text="${tipoAsistencia}">Tipo</strong>
-                        </span>
-                    </div>
-                </div>
+        <!-- Cabecera del chat -->
+        <div class="chat-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold">Conversación (Solicitud #<span th:text="${idSolicitud}"></span>)</h5>
 
-                <div>
-                    <!-- Botón para formalizar el contrato -->
-                    <a th:href="@{/contrato/nuevo/{idSol}/{idCand}(idSol=${idSolicitud}, idCand=${idReceptor})}"
-                       class="btn btn-sm btn-success fw-bold me-2 shadow-sm">
-                        🤝 Formalizar Contrato
-                    </a>
-                    <a th:href="@{/}" class="btn btn-sm btn-light fw-bold text-primary">Volver</a>
-                </div>
+            <div>
+                <!-- Botón para formalizar el contrato -->
+                <a th:href="@{/contrato/nuevo/{idSol}/{idCand}(idSol=${idSolicitud}, idCand=${idReceptor})}"
+                   class="btn btn-sm btn-success fw-bold me-2 shadow-sm">
+                    🤝 Formalizar Contrato
+                </a>
+                <a th:href="@{/}" class="btn btn-sm btn-light fw-bold text-primary">Volver</a>
             </div>
         </div>
 
@@ -127,5 +113,12 @@
     </div>
 </div>
 
+<script>
+    // Este pequeño script hace que el chat baje automáticamente al último mensaje al cargar la página
+    var chatBox = document.getElementById("chatBox");
+    if(chatBox) {
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+</script>
 </body>
 </html>

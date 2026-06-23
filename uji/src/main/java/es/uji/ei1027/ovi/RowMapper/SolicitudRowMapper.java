@@ -32,9 +32,8 @@ public class SolicitudRowMapper implements RowMapper<Solicitud> {
         int numeroRevisiones = rs.getInt("numero_revisiones");
         solicitud.setNumeroRevisiones(rs.wasNull() ? 0 : numeroRevisiones);
         solicitud.setPersonaSolicitante(rs.getInt("persona_solicitante"));
-        // BUG FIX: faltaba leer motivo_resolucion -> al recargar el form quedaba vacío
-        // y parecía que no se había guardado, aunque sí se guardaba en BD.
-        solicitud.setMotivoResolucion(rs.getString("motivo_resolucion"));
-        return solicitud;
+        return  solicitud;
     }
+
+
 }
