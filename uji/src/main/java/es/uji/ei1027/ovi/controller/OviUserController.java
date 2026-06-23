@@ -4,6 +4,7 @@ import es.uji.ei1027.ovi.Service.OviUserService;
 import es.uji.ei1027.ovi.Service.PersonaService;
 import es.uji.ei1027.ovi.Service.SesionService;
 import es.uji.ei1027.ovi.Service.SolicitudesService;
+import es.uji.ei1027.ovi.Validadores.OviUserValidator;
 import es.uji.ei1027.ovi.dao.OviUserDao;
 import es.uji.ei1027.ovi.dao.DiversidadFuncionalDao;
 import es.uji.ei1027.ovi.dao.PersonaDao;
@@ -106,28 +107,49 @@ public class OviUserController {
 
     @PostMapping("/create/{id}")
     public String procesarRegistro(
-            @ModelAttribute("oviUser") OviUser oviUser,@ModelAttribute("solicitud") Solicitud solicitud ,
+            @ModelAttribute("oviUser") OviUser oviUser,
             BindingResult bindingResult,
-            Model model , @PathVariable int id , HttpSession session) {
-        String url = "/OviUser/create/"+id;
+            @ModelAttribute("solicitud") Solicitud solicitud,
+            Model model,
+            @PathVariable int id,
+            HttpSession session) {
+
+        String url = "/OviUser/create/" + id;
 
         if (!sesionService.hayUsuarioLogueado(session)) {
-            return   sesionService.redirigirALogin(session,url);
+            return sesionService.redirigirALogin(session, url);
         }
+
         if (oviUserDao.getOviUser(id) != null) {
             return "redirect:/OviUser/solicitud";
         }
+
         UsuarioSesion usuario = (UsuarioSesion) session.getAttribute("usuario");
         int idPersona = sesionService.getUsuario(session).getIdPersona();
-        if (!personaService.esAdminOvi(usuario) && idPersona != id){
+
+        if (!personaService.esAdminOvi(usuario) && idPersona != id) {
             return "redirect:/";
         }
+
+        // Muy importante: aseguramos el id correcto
+        oviUser.setIdOviUser(id);
+
+        // Conectamos el validator
+        OviUserValidator oviUserValidator = new OviUserValidator();
+        oviUserValidator.validate(oviUser, bindingResult);
+
         if (bindingResult.hasErrors()) {
+            model.addAttribute("oviUser", oviUser);
+            model.addAttribute("solicitud", solicitud);
             return "OviUser/create";
         }
+
         try {
-            oviUserService.creaOviUser(oviUser,solicitud);
-        }catch (Exception e){
+            oviUserService.creaOviUser(oviUser, solicitud);
+        } catch (Exception e) {
+            model.addAttribute("oviUser", oviUser);
+            model.addAttribute("solicitud", solicitud);
+            model.addAttribute("error", "No se ha podido crear el rol OviUser");
             return "OviUser/create";
         }
 
@@ -163,8 +185,13 @@ public class OviUserController {
 
     }
     @PostMapping(value = "/update/{id}")
-    public String procesarActualizarPapPati(@PathVariable int id,
-            @ModelAttribute("oviUser") OviUser oviUser , HttpSession session) {
+    public String procesarActualizarPapPati(
+            @PathVariable int id,
+            @ModelAttribute("oviUser") OviUser oviUser,
+            BindingResult bindingResult,
+            Model model,
+            HttpSession session) {
+
         String url = "/OviUser/update/" + id;
 
         if (!sesionService.hayUsuarioLogueado(session)) {
@@ -177,7 +204,30 @@ public class OviUserController {
         if (!personaService.esAdminOvi(usuario) && idPersona != id) {
             return "redirect:/";
         }
-        oviUserService.actualizarOviUser(id,oviUser);
+
+        OviUser oviUserExistente = oviUserService.getOviUser(id);
+
+        if (oviUserExistente == null) {
+            return "redirect:/";
+        }
+
+        // Muy importante: aseguramos el id correcto
+        oviUser.setIdOviUser(id);
+
+        // Conectamos el validator
+        OviUserValidator oviUserValidator = new OviUserValidator();
+        oviUserValidator.validate(oviUser, bindingResult);
+
+        if (bindingResult.hasErrors()) {
+            List<String> diversidades = oviUserService.getDiversidadesTexto(id);
+
+            model.addAttribute("oviUser", oviUser);
+            model.addAttribute("diversidades", diversidades);
+
+            return "OviUser/update";
+        }
+
+        oviUserService.actualizarOviUser(id, oviUser);
 
         return "redirect:/OviUser/details/" + id;
     }
