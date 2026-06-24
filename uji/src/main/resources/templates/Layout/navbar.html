@@ -7,215 +7,172 @@
      data-bs-theme="dark"
      aria-label="Menú principal de navegación">
 
-    <div class="container">
+  <div class="container">
 
-        <!-- Marca / Inicio -->
-        <a class="navbar-brand fw-bold text-white" th:href="@{/}">
-            <span style="font-size: 1.5rem;">OVI</span>
-            <span class="fw-light">UJI</span>
-        </a>
+    <!-- Marca / Inicio -->
+    <a class="navbar-brand fw-bold text-white" th:href="@{/}">
+      <span style="font-size: 1.5rem;">OVI</span>
+      <span class="fw-light">UJI</span>
+    </a>
 
-        <!-- Botón responsive -->
-        <button class="navbar-toggler"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#navbarContent"
-                aria-controls="navbarContent"
-                aria-expanded="false"
-                aria-label="Desplegar menú de navegación">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+    <!-- Botón responsive -->
+    <button class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarContent"
+            aria-controls="navbarContent"
+            aria-expanded="false"
+            aria-label="Desplegar menú de navegación">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-        <div class="collapse navbar-collapse" id="navbarContent">
+    <div class="collapse navbar-collapse" id="navbarContent">
 
-            <!-- Enlaces generales -->
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+      <!-- Enlaces generales -->
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
-                <li class="nav-item">
-                    <a class="nav-link text-white fw-semibold" th:href="@{/}">
-                        Inicio
-                    </a>
-                </li>
+        <li class="nav-item">
+          <a class="nav-link text-white fw-semibold" th:href="@{/}">
+            Inicio
+          </a>
+        </li>
 
-                <li class="nav-item">
-                    <a class="nav-link text-white fw-semibold" th:href="@{/servicios}">
-                        Servicios
-                    </a>
-                </li>
+        <li class="nav-item">
+          <a class="nav-link text-white fw-semibold" th:href="@{/servicios}">
+            Servicios
+          </a>
+        </li>
 
-                <!-- Enlace a la página estática de corrección -->
-                <li class="nav-item">
-                    <a class="nav-link text-warning fw-bold" th:href="@{/correccion.html}">
-                        Corrección
-                    </a>
-                </li>
+      </ul>
 
+      <!-- Zona derecha -->
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+
+        <!-- Usuario NO logueado -->
+        <th:block th:if="${session.usuario == null}">
+
+          <li class="nav-item">
+            <a class="nav-link text-white fw-semibold" th:href="@{/Persona/registro}">
+              Registrarse
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="btn btn-light fw-bold rounded-pill px-4"
+               style="color: #003366;"
+               th:href="@{/login}">
+              Iniciar sesión
+            </a>
+          </li>
+
+        </th:block>
+
+        <!-- Usuario logueado -->
+        <th:block th:if="${session.usuario != null}">
+
+          <!-- Menú de gestión para Admin OVI -->
+          <li class="nav-item dropdown" th:if="${session.usuario.esAdminOvi()}">
+            <a class="nav-link dropdown-toggle text-warning fw-bold" href="#" id="gestionDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              🔧 Gestión OVI
+            </a>
+            <ul class="dropdown-menu shadow" aria-labelledby="gestionDropdown">
+
+              <!-- SECCIÓN URGENTE -->
+              <li><h6 class="dropdown-header">Acción requerida</h6></li>
+              <li><a class="dropdown-item" th:href="@{/Solicitudes/list/Pendientes}">🔴 Solicitudes Pendientes</a></li>
+
+              <li><hr class="dropdown-divider"></li>
+
+              <!-- SECCIÓN ADMINISTRATIVA -->
+              <li><h6 class="dropdown-header">Gestión global</h6></li>
+              <li><a class="dropdown-item" th:href="@{/Solicitudes/list/todas}">📋 Histórico de Solicitudes</a></li>
+              <li><a class="dropdown-item" th:href="@{/Persona/list/todas}">👤 Gestión de Personas</a></li>
             </ul>
+          </li>
 
-            <!-- Zona derecha -->
-            <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+          <!-- Acceso rápido para usuario normal -->
+          <li class="nav-item" th:if="${not session.usuario.esAdminOvi()}">
+            <a class="nav-link text-white fw-semibold" th:href="@{/Solicitudes/mis}">
+              Mis solicitudes
+            </a>
+          </li>
+            <li class="nav-item" th:if="${not session.usuario.esAdminOvi()}">
+                <a class="nav-link text-white fw-semibold"
+                   th:href="@{/PaRequest/mis/{id}(id=${session.usuario.idPersona})}">
+                    Mis procesos
+                </a>
+            </li>
 
-                <!-- Usuario NO logueado -->
-                <th:block th:if="${session.usuario == null}">
+          <!-- Menú de cuenta -->
+          <li class="nav-item dropdown">
 
-                    <li class="nav-item">
-                        <a class="nav-link text-white fw-semibold" th:href="@{/Persona/registro}">
-                            Registrarse
-                        </a>
-                    </li>
+            <a class="nav-link dropdown-toggle bg-white text-primary rounded-pill px-3 py-1 fw-bold"
+               href="#"
+               id="userDropdown"
+               role="button"
+               data-bs-toggle="dropdown"
+               aria-expanded="false">
+              <span th:text="${session.usuario.nombre}">Usuario</span>
+            </a>
 
-                    <li class="nav-item">
-                        <a class="btn btn-light fw-bold rounded-pill px-4"
-                           style="color: #003366;"
-                           th:href="@{/login}">
-                            Iniciar sesión
-                        </a>
-                    </li>
+            <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
 
-                </th:block>
-
-                <!-- Usuario logueado -->
-                <th:block th:if="${session.usuario != null}">
-
-                    <!-- Menú de gestión para Admin OVI -->
-                    <li class="nav-item dropdown" th:if="${session.usuario.esAdminOvi()}">
-
-                        <a class="nav-link dropdown-toggle text-warning fw-bold"
-                           href="#"
-                           id="gestionDropdown"
-                           role="button"
-                           data-bs-toggle="dropdown"
-                           aria-expanded="false">
-                            🔧 Gestión OVI
-                        </a>
-
-                        <ul class="dropdown-menu shadow" aria-labelledby="gestionDropdown">
-
-                            <li>
-                                <h6 class="dropdown-header">Acción requerida</h6>
-                            </li>
-
-                            <li>
-                                <a class="dropdown-item" th:href="@{/Solicitudes/list/pendientes}">
-                                    🔴 Solicitudes Pendientes
-                                </a>
-                            </li>
-
-                            <li>
-                                <a class="dropdown-item" th:href="@{/PaRequest/list}">
-                                    Gestión de procesos
-                                </a>
-                            </li>
-
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-
-                            <li>
-                                <h6 class="dropdown-header">Gestión global</h6>
-                            </li>
-
-                            <li>
-                                <a class="dropdown-item" th:href="@{/Solicitudes/list/todas}">
-                                    📋 Histórico de Solicitudes
-                                </a>
-                            </li>
-
-                            <li>
-                                <a class="dropdown-item" th:href="@{/Persona/list/todas}">
-                                    👤 Gestión de Personas
-                                </a>
-                            </li>
-
-                        </ul>
-                    </li>
-
-                    <!-- Acceso rápido para usuario normal -->
-                    <li class="nav-item" th:if="${not session.usuario.esAdminOvi()}">
-                        <a class="nav-link text-white fw-semibold" th:href="@{/Solicitudes/mis}">
-                            Mis solicitudes
-                        </a>
-                    </li>
-
-                    <li class="nav-item" th:if="${not session.usuario.esAdminOvi()}">
-                        <a class="nav-link text-white fw-semibold"
-                           th:href="@{/PaRequest/mis/{id}(id=${session.usuario.idPersona})}">
-                            Mis procesos
-                        </a>
-                    </li>
-
-                    <!-- Menú de cuenta -->
-                    <li class="nav-item dropdown">
-
-                        <a class="nav-link dropdown-toggle bg-white text-primary rounded-pill px-3 py-1 fw-bold"
-                           href="#"
-                           id="userDropdown"
-                           role="button"
-                           data-bs-toggle="dropdown"
-                           aria-expanded="false">
-                            <span th:text="${session.usuario.nombre}">Usuario</span>
-                        </a>
-
-                        <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
-
-                            <li>
+              <li>
                 <span class="dropdown-item-text small text-muted">
                   Sesión iniciada como
                 </span>
-                            </li>
+              </li>
 
-                            <li>
+              <li>
                 <span class="dropdown-item-text fw-bold"
                       th:text="${session.usuario.esAdminOvi() ? 'Admin OVI' : 'Usuario'}">
                   Usuario
                 </span>
-                            </li>
+              </li>
 
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
 
-                            <li>
-                                <a class="dropdown-item"
-                                   th:href="@{/Persona/details/{id}(id=${session.usuario.idPersona})}">
-                                    Mi perfil
-                                </a>
-                            </li>
+              <li>
+                <a class="dropdown-item"
+                   th:href="@{/Persona/details/{id}(id=${session.usuario.idPersona})}">
+                  Mi perfil
+                </a>
+              </li>
 
-                            <li>
-                                <a class="dropdown-item" th:href="@{/Solicitudes/mis}">
-                                    Mis solicitudes
-                                </a>
-                            </li>
+              <li>
+                <a class="dropdown-item"
+                   th:href="@{/Solicitudes/mis}">
+                  Mis solicitudes
+                </a>
+              </li>
 
-                            <li>
-                                <a class="dropdown-item"
-                                   th:href="@{/PaRequest/mis/{id}(id=${session.usuario.idPersona})}">
-                                    Mis procesos
-                                </a>
-                            </li>
+                <li>
+                    <a class="dropdown-item"
+                       th:href="@{/PaRequest/mis/{id}(id=${session.usuario.idPersona})}">
+                        Mis procesos
+                    </a>
+                </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
 
-
-
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-
-                            <li>
-                                <a class="dropdown-item text-danger fw-bold" th:href="@{/logout}">
-                                    Cerrar sesión
-                                </a>
-                            </li>
-
-                        </ul>
-                    </li>
-
-                </th:block>
+              <li>
+                <a class="dropdown-item text-danger fw-bold" th:href="@{/logout}">
+                  Cerrar sesión
+                </a>
+              </li>
 
             </ul>
+          </li>
 
-        </div>
+        </th:block>
+
+      </ul>
+
     </div>
+  </div>
 </nav>
 
 </body>

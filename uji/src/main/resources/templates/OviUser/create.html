@@ -171,7 +171,7 @@
               method="post"
               th:action="@{/OviUser/create/{id}(id=${oviUser.idOviUser})}">
 
-            <!-- ocultos -->
+            <!-- OCULTOS -->
             <input type="hidden" th:field="*{idOviUser}">
             <input type="hidden" name="personaSolicitante" th:value="${solicitud.personaSolicitante}">
             <input type="hidden" name="categoriaSolicitud" th:value="${solicitud.categoriaSolicitud}">
@@ -186,6 +186,7 @@
                 </div>
 
                 <div class="row g-4">
+
                     <div class="col-md-6">
                         <label class="data-label" for="gradoDiversidadFuncional">
                             Grado de diversidad funcional
@@ -196,17 +197,40 @@
                                th:field="*{gradoDiversidadFuncional}"
                                min="0"
                                max="100"
+                               required
                                placeholder="Ej. 45">
+
+                        <div class="text-danger mt-1"
+                             th:if="${#fields.hasErrors('gradoDiversidadFuncional')}"
+                             th:errors="*{gradoDiversidadFuncional}">
+                        </div>
+
                         <div class="text-muted-small mt-2">
-                            Introduce un valor entre 0 y 100.
+                            Introduce un valor obligatorio entre 0 y 100.
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Grado de dependencia</label>
-                        <input type="number" class="form-control"
+                    <div class="col-md-6">
+                        <label class="data-label" for="gradoDependencia">
+                            Grado de dependencia
+                        </label>
+                        <input type="number"
+                               id="gradoDependencia"
+                               class="form-control"
                                th:field="*{gradoDependencia}"
-                               min="1" max="3">
+                               min="1"
+                               max="3"
+                               required
+                               placeholder="Ej. 2">
+
+                        <div class="text-danger mt-1"
+                             th:if="${#fields.hasErrors('gradoDependencia')}"
+                             th:errors="*{gradoDependencia}">
+                        </div>
+
+                        <div class="text-muted-small mt-2">
+                            Introduce un valor obligatorio entre 1 y 3.
+                        </div>
                     </div>
 
                     <div class="col-md-6">
@@ -217,7 +241,14 @@
                                id="centroSocialReferencia"
                                class="form-control"
                                th:field="*{centroSocialReferencia}"
+                               maxlength="100"
+                               required
                                placeholder="Nombre del centro social">
+
+                        <div class="text-danger mt-1"
+                             th:if="${#fields.hasErrors('centroSocialReferencia')}"
+                             th:errors="*{centroSocialReferencia}">
+                        </div>
                     </div>
 
                     <div class="col-md-6">
@@ -228,8 +259,16 @@
                                id="urlProyectoDeVida"
                                class="form-control"
                                th:field="*{urlProyectoDeVida}"
+                               maxlength="255"
+                               required
                                placeholder="https://...">
+
+                        <div class="text-danger mt-1"
+                             th:if="${#fields.hasErrors('urlProyectoDeVida')}"
+                             th:errors="*{urlProyectoDeVida}">
+                        </div>
                     </div>
+
                 </div>
             </div>
 
@@ -249,7 +288,14 @@
                                   name="mensajeSolicitud"
                                   class="form-control"
                                   placeholder="Explica brevemente por qué solicitas este rol..."
-                                  th:text="${solicitud.mensajeSolicitud}"></textarea>
+                                  required
+                                  maxlength="1000"
+                                  th:text="${solicitud.mensajeSolicitud}">
+                        </textarea>
+
+                        <div class="text-muted-small mt-2">
+                            Campo obligatorio. Máximo 1000 caracteres.
+                        </div>
                     </div>
                 </div>
             </div>
