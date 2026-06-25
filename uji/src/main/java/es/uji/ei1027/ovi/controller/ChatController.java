@@ -41,12 +41,12 @@ public class ChatController {
         // Recuperamos los mensajes
         List<Mensaje> conversacion = mensajeDao.getMensajesPorSolicitud(idSolicitud);
 
-        // CORRECCIÓN: Recuperamos el contexto de la AP para mostrarlo en la cabecera
+// CORRECCIÓN: Recuperamos el contexto de la AP para mostrarlo en la cabecera
         PaRequest paRequest = paRequestDao.getPaRequestById(idSolicitud);
 
         // Le pasamos el texto del tipo de asistencia a la vista
         String tipoAsistenciaStr = (paRequest != null && paRequest.getTipoAsistencia() != null)
-                ? paRequest.getTipoAsistencia().getTexto()
+                ? paRequest.getTipoAsistencia() // <--- ELIMINADO EL .getTexto()
                 : "Asistencia General";
 
         model.addAttribute("conversacion", conversacion);
