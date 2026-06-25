@@ -92,8 +92,22 @@
         .actions {
             margin-top: 2rem;
             display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .action-group {
+            display: flex;
             gap: 0.75rem;
             flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .invalid-feedback {
+            font-size: 0.88rem;
+            font-weight: 600;
         }
 
         .btn {
@@ -156,9 +170,14 @@
             </span>
         </div>
 
-        <form th:object="${personaFormulario}" method="post" th:action="@{/Persona/update}">
+        <form th:object="${personaFormulario}" method="post" th:action="@{/Persona/update}" novalidate>
 
             <input type="hidden" th:field="*{persona.idPersona}" />
+
+            <div class="alert alert-danger"
+                 th:if="${#fields.hasAnyErrors()}">
+                Revisa los campos marcados antes de guardar los cambios.
+            </div>
 
             <!-- DATOS PERSONALES -->
             <div class="block-card">
@@ -171,8 +190,13 @@
                                id="nombre"
                                class="form-control"
                                th:field="*{persona.nombre}"
+                               th:errorclass="is-invalid"
                                placeholder="Introduce el nombre"
                                required>
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('persona.nombre')}"
+                             th:errors="*{persona.nombre}">
+                        </div>
                     </div>
 
                     <div class="col-md-6">
@@ -181,8 +205,13 @@
                                id="apellidos"
                                class="form-control"
                                th:field="*{persona.apellidos}"
+                               th:errorclass="is-invalid"
                                placeholder="Introduce los apellidos"
                                required>
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('persona.apellidos')}"
+                             th:errors="*{persona.apellidos}">
+                        </div>
                     </div>
 
                     <div class="col-md-6">
@@ -191,8 +220,13 @@
                                id="mail"
                                class="form-control"
                                th:field="*{persona.mail}"
+                               th:errorclass="is-invalid"
                                placeholder="correo@ejemplo.com"
                                required>
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('persona.mail')}"
+                             th:errors="*{persona.mail}">
+                        </div>
                     </div>
 
                     <div class="col-md-6">
@@ -201,8 +235,13 @@
                                id="telefono"
                                class="form-control"
                                th:field="*{persona.telefono}"
+                               th:errorclass="is-invalid"
                                placeholder="600123123"
                                required>
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('persona.telefono')}"
+                             th:errors="*{persona.telefono}">
+                        </div>
                     </div>
 
                     <div class="col-md-4">
@@ -211,9 +250,14 @@
                                id="dni"
                                class="form-control"
                                th:field="*{persona.dni}"
+                               th:errorclass="is-invalid"
                                th:readonly="${!esAdmin}"
                                placeholder="12345678A"
                                required>
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('persona.dni')}"
+                             th:errors="*{persona.dni}">
+                        </div>
                     </div>
 
                     <div class="col-md-4">
@@ -222,8 +266,13 @@
                                id="pais"
                                class="form-control"
                                th:field="*{persona.pais}"
+                               th:errorclass="is-invalid"
                                placeholder="España"
                                required>
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('persona.pais')}"
+                             th:errors="*{persona.pais}">
+                        </div>
                     </div>
 
                     <div class="col-md-4">
@@ -236,6 +285,7 @@
                         <select id="genero"
                                 class="form-select"
                                 th:field="*{persona.genero}"
+                                th:errorclass="is-invalid"
                                 th:disabled="${!esAdmin}"
                                 required>
                             <option value="">Selecciona una opción</option>
@@ -243,6 +293,10 @@
                             <option value="Mujer">Mujer</option>
                             <option value="Otro">Otro</option>
                         </select>
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('persona.genero')}"
+                             th:errors="*{persona.genero}">
+                        </div>
                     </div>
 
                     <div class="col-md-8">
@@ -251,8 +305,13 @@
                                id="direccion"
                                class="form-control"
                                th:field="*{persona.direccion}"
+                               th:errorclass="is-invalid"
                                placeholder="Calle, número, piso..."
                                required>
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('persona.direccion')}"
+                             th:errors="*{persona.direccion}">
+                        </div>
                     </div>
 
                     <div class="col-md-4">
@@ -261,9 +320,15 @@
                                id="fechaNacimiento"
                                name="persona.fechaNacimiento"
                                class="form-control"
+                               th:classappend="${#fields.hasErrors('persona.fechaNacimiento')} ? ' is-invalid' : ''"
                                th:readonly="${!esAdmin}"
                                th:value="${personaFormulario.persona.fechaNacimiento != null ? #temporals.format(personaFormulario.persona.fechaNacimiento, 'yyyy-MM-dd') : ''}"
                                required>
+
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('persona.fechaNacimiento')}"
+                             th:errors="*{persona.fechaNacimiento}">
+                        </div>
                     </div>
 
                     <div class="col-md-6">
@@ -272,9 +337,15 @@
                                id="fechaAlta"
                                name="persona.fechaAlta"
                                class="form-control"
+                               th:classappend="${#fields.hasErrors('persona.fechaAlta')} ? ' is-invalid' : ''"
                                th:readonly="${!esAdmin}"
                                th:value="${personaFormulario.persona.fechaAlta != null ? #temporals.format(personaFormulario.persona.fechaAlta, 'yyyy-MM-dd') : ''}"
                                required>
+
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('persona.fechaAlta')}"
+                             th:errors="*{persona.fechaAlta}">
+                        </div>
                     </div>
 
                     <div class="col-md-6">
@@ -283,8 +354,14 @@
                                id="fechaBaja"
                                name="persona.fechaBaja"
                                class="form-control"
+                               th:classappend="${#fields.hasErrors('persona.fechaBaja')} ? ' is-invalid' : ''"
                                th:readonly="${!esAdmin}"
                                th:value="${personaFormulario.persona.fechaBaja != null ? #temporals.format(personaFormulario.persona.fechaBaja, 'yyyy-MM-dd') : ''}">
+
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('persona.fechaBaja')}"
+                             th:errors="*{persona.fechaBaja}">
+                        </div>
 
                         <div class="text-muted-small mt-2">
                             Déjalo vacío si la persona sigue activa
@@ -307,7 +384,12 @@
                                id="nuevaContrasena"
                                class="form-control"
                                th:field="*{nuevaContrasena}"
+                               th:errorclass="is-invalid"
                                placeholder="Dejar vacío para mantener la contraseña actual">
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('nuevaContrasena')}"
+                             th:errors="*{nuevaContrasena}">
+                        </div>
                     </div>
 
                     <div class="col-md-6 d-flex align-items-end">
@@ -329,11 +411,16 @@
                                id="ritmo"
                                class="form-control"
                                th:field="*{persona.personalidad.ritmo}"
+                               th:errorclass="is-invalid"
                                min="1"
                                max="10"
                                step="1"
                                placeholder="1-10"
                                required>
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('persona.personalidad.ritmo')}"
+                             th:errors="*{persona.personalidad.ritmo}">
+                        </div>
                     </div>
 
                     <div class="col-md-4">
@@ -342,11 +429,16 @@
                                id="comunicacion"
                                class="form-control"
                                th:field="*{persona.personalidad.comunicacion}"
+                               th:errorclass="is-invalid"
                                min="1"
                                max="10"
                                step="1"
                                placeholder="1-10"
                                required>
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('persona.personalidad.comunicacion')}"
+                             th:errors="*{persona.personalidad.comunicacion}">
+                        </div>
                     </div>
 
                     <div class="col-md-4">
@@ -355,11 +447,16 @@
                                id="expresividad"
                                class="form-control"
                                th:field="*{persona.personalidad.expresividad}"
+                               th:errorclass="is-invalid"
                                min="1"
                                max="10"
                                step="1"
                                placeholder="1-10"
                                required>
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('persona.personalidad.expresividad')}"
+                             th:errors="*{persona.personalidad.expresividad}">
+                        </div>
                     </div>
 
                     <div class="col-md-4">
@@ -368,11 +465,16 @@
                                id="caracter"
                                class="form-control"
                                th:field="*{persona.personalidad.caracter}"
+                               th:errorclass="is-invalid"
                                min="1"
                                max="10"
                                step="1"
                                placeholder="1-10"
                                required>
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('persona.personalidad.caracter')}"
+                             th:errors="*{persona.personalidad.caracter}">
+                        </div>
                     </div>
 
                     <div class="col-md-4">
@@ -381,11 +483,16 @@
                                id="naturaleza"
                                class="form-control"
                                th:field="*{persona.personalidad.naturaleza}"
+                               th:errorclass="is-invalid"
                                min="1"
                                max="10"
                                step="1"
                                placeholder="1-10"
                                required>
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('persona.personalidad.naturaleza')}"
+                             th:errors="*{persona.personalidad.naturaleza}">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -432,32 +539,35 @@
             </div>
 
             <div class="actions">
-                <button type="submit" class="btn btn-primary">
-                    Guardar cambios
-                </button>
+                <div class="action-group">
+                    <button type="submit" class="btn btn-primary">
+                        Guardar cambios
+                    </button>
 
-                <a th:if="${esAdmin}"
-                   th:href="@{/Persona/list/todas}"
-                   class="btn btn-secondary">
-                    Volver al listado
-                </a>
+                    <a th:if="${esAdmin}"
+                       th:href="@{/Persona/list/todas}"
+                       class="btn btn-secondary">
+                        Volver al listado
+                    </a>
 
-                <a th:if="${!esAdmin}"
-                   th:href="@{/Persona/details/{id}(id=${personaFormulario.persona.idPersona})}"
-                   class="btn btn-secondary">
-                    Volver a mi perfil
-                </a>
+                    <a th:if="${!esAdmin}"
+                       th:href="@{/Persona/details/{id}(id=${personaFormulario.persona.idPersona})}"
+                       class="btn btn-secondary">
+                        Volver a mi perfil
+                    </a>
 
-                <a th:href="@{/}" class="btn btn-outline-secondary">
-                    Ir al inicio
-                </a>
+                    <a th:href="@{/}" class="btn btn-outline-secondary">
+                        Ir al inicio
+                    </a>
+                </div>
+
+                <div class="action-group" th:if="${esAdmin}">
+                    <a th:href="@{/Rol/persona/{id}/gestionar(id=${personaFormulario.persona.idPersona})}"
+                       class="btn btn-outline-primary">
+                        Gestionar roles
+                    </a>
+                </div>
             </div>
-
-            <a th:if="${esAdmin}"
-               th:href="@{/Rol/persona/{id}/gestionar(id=${personaFormulario.persona.idPersona})}"
-               class="btn btn-outline-primary">
-                Gestionar roles
-            </a>
 
         </form>
     </div>
