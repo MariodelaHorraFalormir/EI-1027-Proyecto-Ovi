@@ -4,6 +4,7 @@ import es.uji.ei1027.ovi.Service.AuthService;
 import es.uji.ei1027.ovi.Service.PersonaService;
 import es.uji.ei1027.ovi.Service.SesionService;
 import es.uji.ei1027.ovi.Validadores.PersonaValidator;
+import es.uji.ei1027.ovi.dao.PersonaDao;
 import es.uji.ei1027.ovi.modelo.Login.UsuarioSesion;
 import es.uji.ei1027.ovi.modelo.Persona.Persona;
 import es.uji.ei1027.ovi.modelo.Persona.PersonaFormulario;
@@ -23,6 +24,7 @@ public class PersonaController {
     private PersonaService personaService;
     private AuthService authService;
     private SesionService sesionService;
+    private PersonaDao personaDao;
 
     @Autowired
     public void setPersonaService(PersonaService personaService) {
@@ -145,7 +147,7 @@ public class PersonaController {
             BindingResult bindingResult,
             Model model) {
 
-        PersonaValidator validator = new PersonaValidator();
+        PersonaValidator validator = new PersonaValidator(personaDao);
         validator.validate(persona, bindingResult);
 
         if (bindingResult.hasErrors()) {
@@ -180,5 +182,10 @@ public class PersonaController {
         model.addAttribute("puedeVerBloqueRoles", personaService.puedeVerBloqueRoles(usuario, formulario));
         model.addAttribute("puedeVerBotonOviUser", personaService.puedeVerBotonOviUser(usuario, formulario));
         model.addAttribute("puedeVerBotonPapPati", personaService.puedeVerBotonPapPati(usuario, formulario));
+    }
+
+    @Autowired
+    public void setPersonaDao(PersonaDao personaDao) {
+        this.personaDao = personaDao;
     }
 }

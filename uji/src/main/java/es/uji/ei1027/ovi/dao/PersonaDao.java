@@ -97,6 +97,16 @@ public class PersonaDao {
         );
         return count != null && count > 0;
     }
+
+    public boolean existeDni(String dni) {
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM persona WHERE dni = ?",
+                Integer.class,
+                dni
+        );
+        return count != null && count > 0;
+    }
+
     public Integer getIdPersonaByMail(String mail) {
         try {
             return jdbcTemplate.queryForObject(

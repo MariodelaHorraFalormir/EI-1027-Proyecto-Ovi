@@ -96,9 +96,9 @@ public class PaRequestDao {
         return jdbcTemplate.query("SELECT * FROM pa_request", new PaRequestRowMapper());
     }
 
-    public void cambiarEstadoPaRequest(int oviUser, StatusPaRequest statusPaRequest) {
-        String sql = "UPDATE pa_request SET status = ?::status_pa_request_enum WHERE ovi_user = ?";
-        jdbcTemplate.update(sql, statusPaRequest.getTexto(), oviUser);
+    public void cambiarEstadoPaRequest(int idPaRequest, StatusPaRequest statusPaRequest) {
+        String sql = "UPDATE pa_request SET status = ?::status_pa_request_enum WHERE id = ?";
+        jdbcTemplate.update(sql, statusPaRequest.getTexto(), idPaRequest);
     }
 
     public List<PaRequest> getPaRequestsByOviUser(int oviUser) {

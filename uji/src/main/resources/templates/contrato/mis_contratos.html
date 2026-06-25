@@ -17,7 +17,7 @@
         <a th:href="@{/}" class="btn btn-outline-secondary rounded-pill px-4">Volver al Inicio</a>
       </div>
 
-      <p class="text-muted mb-4">Aquí puedes consultar el histórico y el estado de tus acuerdos de asistencia personal.</p>
+      <p class="text-muted mb-4">Aquí puedes consultar el histórico, el estado y modificar tus acuerdos de asistencia personal.</p>
 
       <div th:if="${contratos.empty}" class="alert alert-info text-center p-4 rounded-3">
         No tienes ningún contrato registrado en el sistema actualmente.
@@ -28,24 +28,44 @@
           <thead class="table-light">
           <tr>
             <th>Ref. Contrato</th>
-            <th>Nº Solicitud</th>
-            <th>Fecha Inicio</th>
-            <th>Fecha Fin</th>
+            <th>Contexto AP</th>
+            <th>Participantes</th>
+            <th>Fechas</th>
             <th>Estado</th>
+            <th>Acciones</th>
           </tr>
           </thead>
           <tbody>
           <tr th:each="c : ${contratos}">
             <td class="fw-bold text-primary">#<span th:text="${c.id}"></span></td>
-            <td>Solicitud #<span th:text="${c.idSolicitud}"></span></td>
-            <td th:text="${c.fechaInicio}"></td>
-            <td th:text="${c.fechaFin != null ? c.fechaFin : 'Indefinido'}"></td>
+
             <td>
-                                <span class="badge rounded-pill px-3 py-2"
-                                      th:text="${c.estado}"
-                                      th:classappend="${c.estado == 'Activo' ? 'bg-success' : 'bg-secondary'}">
-                                </span>
+              <span class="badge bg-info text-dark">Solicitud #<span th:text="${c.idSolicitud}"></span></span>
             </td>
+
+            <td>
+              <small class="d-block text-muted"><strong>Usuario OVI:</strong> ID <span th:text="${c.idUsuarioOvi}"></span></small>
+              <small class="d-block text-muted"><strong>Asistente:</strong> ID <span th:text="${c.idPapPati}"></span></small>
+            </td>
+
+            <td>
+              <small class="d-block"><strong>Inicio:</strong> <span th:text="${c.fechaInicio}"></span></small>
+              <small class="d-block"><strong>Fin:</strong> <span th:text="${c.fechaFin != null ? c.fechaFin : 'Indefinido'}"></span></small>
+            </td>
+
+            <td>
+                <span class="badge rounded-pill px-3 py-2"
+                      th:text="${c.estado}"
+                      th:classappend="${c.estado == 'Activo' ? 'bg-success' : (c.estado == 'Suspendido' ? 'bg-warning text-dark' : 'bg-secondary')}">
+                </span>
+            </td>
+
+            <td>
+              <a th:href="@{/contrato/editar/{id}(id=${c.id})}" class="btn btn-sm btn-warning fw-bold rounded-pill shadow-sm">
+                ✏️ Editar
+              </a>
+            </td>
+
           </tr>
           </tbody>
         </table>

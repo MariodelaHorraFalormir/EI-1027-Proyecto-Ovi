@@ -73,4 +73,35 @@ public class ContratoDao {
             return c;
         }, idUsuario, idUsuario);
     }
+
+    // Obtener un contrato específico por su ID (para poder editarlo)
+    public Contrato getContratoPorId(int id) {
+        String sql = "SELECT * FROM contrato WHERE id = ?";
+        try {
+            return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
+                Contrato c = new Contrato();
+                c.setId(rs.getInt("id"));
+                c.setIdSolicitud(rs.getInt("id_solicitud"));
+                c.setIdUsuarioOvi(rs.getInt("id_usuario_ovi"));
+                c.setIdPapPati(rs.getInt("id_pap_pati"));
+                if (rs.getDate("fecha_inicio") != null) c.setFechaInicio(rs.getDate("fecha_inicio").toLocalDate());
+                if (rs.getDate("fecha_fin") != null) c.setFechaFin(rs.getDate("fecha_fin").toLocalDate());
+                c.setEstado(rs.getString("estado"));
+                return c;
+            }, id);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    // Actualizar un contrato existente
+    public void updateContrato(Contrato contrato) {
+        String sql = "UPDATE contrato SET fecha_inicio = ?, fecha_fin = ?, estado = ? WHERE id = ?";
+        jdbcTemplate.update(sql,
+                contrato.getFechaInicio(),
+                contrato.getFechaFin(),
+                contrato.getEstado(),
+                contrato.getId()
+        );
+    }
 }

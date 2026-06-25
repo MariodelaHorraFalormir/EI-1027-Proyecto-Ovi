@@ -1,8 +1,10 @@
 package es.uji.ei1027.ovi.controller;
 
 import es.uji.ei1027.ovi.dao.ContratoDao;
+import es.uji.ei1027.ovi.dao.PaRequestDao;
 import es.uji.ei1027.ovi.modelo.Contrato.Contrato;
 import es.uji.ei1027.ovi.modelo.Login.UsuarioSesion;
+import es.uji.ei1027.ovi.modelo.PaRequest.StatusPaRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,6 +20,9 @@ public class ContratoController {
     @Autowired
     private ContratoDao contratoDao;
 
+    @Autowired
+    private PaRequestDao paRequestDao; // Inyectamos para poder cerrar la solicitud automáticamente
+
     // 1. Mostrar la pantalla para rellenar el contrato
     @GetMapping("/nuevo/{idSolicitud}/{idCandidato}")
     public String formularioContrato(@PathVariable int idSolicitud, @PathVariable int idCandidato, Model model, HttpSession session) {
@@ -26,12 +31,12 @@ public class ContratoController {
 
         model.addAttribute("idSolicitud", idSolicitud);
         model.addAttribute("idCandidato", idCandidato);
-        model.addAttribute("idUsuarioOvi", usuario.getIdPersona()); // El que crea el contrato
+        model.addAttribute("idUsuarioOvi", usuario.getIdPersona());
 
         return "contrato/nuevo";
     }
 
-    // 2. Guardar el contrato en la base de datos
+    // 2. Guardar el contrato en la base de datos y cerrar la solicitud
     @PostMapping("/guardar")
     public String guardarContrato(@RequestParam int idSolicitud,
                                   @RequestParam int idUsuarioOvi,
@@ -53,9 +58,13 @@ public class ContratoController {
             contrato.setFechaFin(LocalDate.parse(fechaFin));
         }
 
+        // Guardamos el contrato de forma normal
         contratoDao.addContrato(contrato);
 
-        // Cuando termina, lo mandamos a su panel de control
+        // ¡CLAVE CORRECCIÓN!: Al crearse el contrato, cerramos de forma automática la PaRequest
+        // Así pasa de 'En proceso' a 'Finalizada' y se evita que se dupliquen contratos para la misma solicitud
+        paRequestDao.cambiarEstadoPaRequest(idSolicitud, StatusPaRequest.Finalizada);
+
         return "redirect:/contrato/exito";
     }
 
@@ -70,9 +79,35 @@ public class ContratoController {
         UsuarioSesion usuario = (UsuarioSesion) session.getAttribute("usuario");
         if (usuario == null) return "redirect:/login";
 
-        // Usamos el método que ya creamos en el DAO
         model.addAttribute("contratos", contratoDao.getContratosPorUsuario(usuario.getIdPersona()));
 
         return "contrato/mis_contratos";
+    }
+
+    // 4. CORRECCIÓN: Mostrar formulario para editar un contrato existente
+    @GetMapping("/editar/{id}")
+    public String mostrarFormularioEditar(@PathVariable int id, Model model, HttpSession session) {
+        UsuarioSesion usuario = (UsuarioSesion) session.getAttribute("usuario");
+        if (usuario == null) return "redirect:/login";
+
+        Contrato contrato = contratoDao.getContratoPorId(id);
+        if (contrato == null) return "redirect:/contrato/mis-contratos";
+
+        model.addAttribute("contrato", contrato);
+        return "contrato/editar";
+    }
+
+    // 5. CORRECCIÓN: Procesar la edición del contrato
+    @PostMapping("/editar/{id}")
+    public String procesarEditar(@PathVariable int id,
+                                 @ModelAttribute("contrato") Contrato contrato,
+                                 HttpSession session) {
+        UsuarioSesion usuario = (UsuarioSesion) session.getAttribute("usuario");
+        if (usuario == null) return "redirect:/login";
+
+        contrato.setId(id);
+        contratoDao.updateContrato(contrato);
+
+        return "redirect:/contrato/mis-contratos";
     }
 }

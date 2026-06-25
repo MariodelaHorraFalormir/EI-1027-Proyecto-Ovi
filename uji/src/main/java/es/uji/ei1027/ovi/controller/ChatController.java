@@ -1,8 +1,10 @@
 package es.uji.ei1027.ovi.controller;
 
 import es.uji.ei1027.ovi.dao.MensajeDao;
+import es.uji.ei1027.ovi.dao.PaRequestDao;
 import es.uji.ei1027.ovi.modelo.Chat.Mensaje;
 import es.uji.ei1027.ovi.modelo.Login.UsuarioSesion;
+import es.uji.ei1027.ovi.modelo.PaRequest.PaRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -19,7 +21,9 @@ public class ChatController {
 
     private MensajeDao mensajeDao;
 
-    // Añadimos esto para poder buscar la lista de chats
+    @Autowired
+    private PaRequestDao paRequestDao; // Añadido para buscar contexto
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -34,16 +38,28 @@ public class ChatController {
         UsuarioSesion usuario = (UsuarioSesion) session.getAttribute("usuario");
         if (usuario == null) return "redirect:/login";
 
-        // Recuperamos los mensajes de esta solicitud
+        // Recuperamos los mensajes
         List<Mensaje> conversacion = mensajeDao.getMensajesPorSolicitud(idSolicitud);
+
+        // CORRECCIÓN: Recuperamos el contexto de la AP para mostrarlo en la cabecera
+        PaRequest paRequest = paRequestDao.getPaRequestById(idSolicitud);
+
+        // Le pasamos el texto del tipo de asistencia a la vista
+        String tipoAsistenciaStr = (paRequest != null && paRequest.getTipoAsistencia() != null)
+                ? paRequest.getTipoAsistencia().getTexto()
+                : "Asistencia General";
 
         model.addAttribute("conversacion", conversacion);
         model.addAttribute("idSolicitud", idSolicitud);
-        model.addAttribute("idReceptor", idReceptor); // Con quién estamos hablando
-        model.addAttribute("miId", usuario.getIdPersona());  // Mi ID para saber qué mensajes son míos (burbuja verde/gris)
+        model.addAttribute("idReceptor", idReceptor);
+        model.addAttribute("miId", usuario.getIdPersona());
+        model.addAttribute("tipoAsistencia", tipoAsistenciaStr); // Pasamos el contexto
 
-        return "chat/conversacion"; // Esta será la vista HTML
+        return "chat/conversacion";
     }
+
+    // (El resto de tus métodos enviarMensaje y misConversaciones se quedan igual)
+// ...
 
     // Enviar un mensaje
     @PostMapping("/enviar")
@@ -73,20 +89,49 @@ public class ChatController {
 
     // --- NUEVO MÉTODO PARA VER LA LISTA DE CHATS ---
     @GetMapping("/mis-conversaciones")
-    public String misConversaciones(Model model, HttpSession session) {
+    public String misConversaciones(Model model, HttpSession session,
+                                    @RequestParam(required = false) String filtro,
+                                    @RequestParam(defaultValue = "0") int page) {
         UsuarioSesion usuario = (UsuarioSesion) session.getAttribute("usuario");
         if (usuario == null) return "redirect:/login";
 
         int miId = usuario.getIdPersona();
 
-        // Buscamos las conversaciones activas donde yo sea el emisor o el receptor
+        // 1. Consulta base (buscamos nuestras conversaciones)
         String sql = "SELECT DISTINCT id_solicitud, " +
                 "CASE WHEN id_emisor = ? THEN id_receptor ELSE id_emisor END as id_contacto " +
                 "FROM mensaje WHERE id_emisor = ? OR id_receptor = ?";
 
-        List<Map<String, Object>> chats = jdbcTemplate.queryForList(sql, miId, miId, miId);
+        List<Map<String, Object>> todosLosChats = jdbcTemplate.queryForList(sql, miId, miId, miId);
 
-        model.addAttribute("chats", chats);
+        // 2. Aplicar Filtro (Si el usuario ha escrito algo en el buscador)
+        if (filtro != null && !filtro.trim().isEmpty()) {
+            todosLosChats.removeIf(chat ->
+                    !String.valueOf(chat.get("id_solicitud")).contains(filtro.trim()) &&
+                            !String.valueOf(chat.get("id_contacto")).contains(filtro.trim())
+            );
+            model.addAttribute("filtroActual", filtro);
+        }
+
+        // 3. Paginación (Mostramos de 5 en 5 para que se note el efecto)
+        int pageSize = 5;
+        int total = todosLosChats.size();
+        int totalPages = (int) Math.ceil((double) total / pageSize);
+        int from = page * pageSize;
+        int to = Math.min(from + pageSize, total);
+
+        // Evitamos errores si la página está fuera de rango
+        List<Map<String, Object>> chatsPaginados;
+        if (from <= total) {
+            chatsPaginados = todosLosChats.subList(from, to);
+        } else {
+            chatsPaginados = todosLosChats; // Fallback
+        }
+
+        model.addAttribute("chats", chatsPaginados);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+
         return "chat/lista_chats";
     }
 }

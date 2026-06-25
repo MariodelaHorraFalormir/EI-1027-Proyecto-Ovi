@@ -1,7 +1,9 @@
 package es.uji.ei1027.ovi.controller;
 
+import es.uji.ei1027.ovi.Validadores.PaRequestValidator;
 import es.uji.ei1027.ovi.dao.PaRequestDao;
 import es.uji.ei1027.ovi.dao.SolicitudesDao;
+import es.uji.ei1027.ovi.modelo.Login.UsuarioSesion;
 import es.uji.ei1027.ovi.modelo.PaRequest.PaRequest;
 import es.uji.ei1027.ovi.modelo.PaRequest.StatusPaRequest;
 import es.uji.ei1027.ovi.modelo.Solicitud.CategoriaSolicitud;
@@ -40,10 +42,22 @@ public class PaRequestController {
     }
 
     @GetMapping("/create/{id}")
-    public String mostrarFormularioRegistro(Model model, @PathVariable int id) {
+    public String mostrarFormularioRegistro(Model model, @PathVariable int id, HttpSession session) {
+        UsuarioSesion usuario = (UsuarioSesion) session.getAttribute("usuario");
+
+        if (usuario == null) {
+            return "redirect:/login";
+        }
+
+        if (usuario.getRolesActivos() != null &&
+                usuario.getRolesActivos().contains("PAP_PATI") &&
+                !usuario.getRolesActivos().contains("OVI_USER")) {
+            return "redirect:/";
+        }
+
         Solicitud solicitud = new Solicitud();
         solicitud.setPersonaSolicitante(id);
-        solicitud.setCategoriaSolicitud(CategoriaSolicitud.Proceso); // O 'Servicio' según prefieras
+        solicitud.setCategoriaSolicitud(CategoriaSolicitud.Proceso);
         solicitud.setTipoSolicitud(TipoSolicitud.Pa_request);
         solicitud.setEstadoSolicitud(EstadoSolicitud.Pendiente);
         solicitud.setFechaCreacion(LocalDate.now());
@@ -62,11 +76,18 @@ public class PaRequestController {
     @PostMapping("/create/{id}")
     public String procesarRegistro(
             @ModelAttribute("paRequest") PaRequest paRequest,
+            BindingResult bindingResultPaRequest,
             @ModelAttribute("solicitud") Solicitud solicitud,
-            BindingResult bindingResult,
-            @PathVariable int id) {
+            BindingResult bindingResultSolicitud,
+            @PathVariable int id,
+            Model model) {
 
-        if (bindingResult.hasErrors()) {
+        PaRequestValidator validador = new PaRequestValidator();
+        validador.validate(paRequest, bindingResultPaRequest);
+
+        if (bindingResultPaRequest.hasErrors() || bindingResultSolicitud.hasErrors()) {
+            model.addAttribute("paRequest", paRequest);
+            model.addAttribute("solicitud", solicitud);
             return "PaRequest/create";
         }
 
@@ -94,6 +115,7 @@ public class PaRequestController {
             return "PaRequest/create";
         }
     }
+
     @GetMapping("/mis/{id}")
     public String misProcesos(Model model, @PathVariable int id,
                               @RequestParam(defaultValue = "0") int page) {
@@ -167,21 +189,22 @@ public class PaRequestController {
         return "redirect:/PaRequest/detail/" + id;
     }
 
-// --- MÉTODOS PARA EL TÉCNICO: ACEPTAR Y RECHAZAR ---
-
     @GetMapping("/accept/{id}")
     public String aceptarPeticion(@PathVariable int id, Model model, HttpSession session) {
         if (session.getAttribute("usuario") == null) return "redirect:/login";
 
-        // 1. Buscamos la petición y la actualizamos
         PaRequest paRequest = paRequestDao.getPaRequestById(id);
         if (paRequest != null) {
-            // CORREÇÃO: Usamos "En_activo" porque é o que existe no StatusPaRequest
-            paRequest.setStatus(StatusPaRequest.En_activo);
-            paRequestDao.updatePaRequest(paRequest);
+            paRequestDao.cambiarEstadoPaRequest(id, StatusPaRequest.En_activo);
+
+            Solicitud solicitud = solicitudesDao.getSolicitudRolMasReciente(paRequest.getOviUser(), TipoSolicitud.Pa_request);
+            if (solicitud != null) {
+                UsuarioSesion usuario = (UsuarioSesion) session.getAttribute("usuario");
+                int idTecnico = (usuario != null) ? usuario.getIdPersona() : 1;
+                solicitudesDao.aprobarRapido(solicitud.getIdSolicitud(), idTecnico);
+            }
         }
 
-        // 2. Preparamos los datos para la pantalla del correo falso
         model.addAttribute("para", "Usuario solicitante (ID: " + paRequest.getOviUser() + ")");
         model.addAttribute("asunto", "✅ Tu Petición de Asistencia ha sido ACEPTADA");
         model.addAttribute("cuerpo", "Hola, te informamos de que el Técnico OVI ha revisado y aceptado tu petición de asistencia con número #" + id + ". Ya puedes acceder al sistema para ver los candidatos propuestos.");
@@ -196,9 +219,14 @@ public class PaRequestController {
 
         PaRequest paRequest = paRequestDao.getPaRequestById(id);
         if (paRequest != null) {
-            // CORREÇÃO: Usamos "Finalizada" para simular que foi rejeitada e encerrada
-            paRequest.setStatus(StatusPaRequest.Finalizada);
-            paRequestDao.updatePaRequest(paRequest);
+            paRequestDao.cambiarEstadoPaRequest(id, StatusPaRequest.Finalizada);
+
+            Solicitud solicitud = solicitudesDao.getSolicitudRolMasReciente(paRequest.getOviUser(), TipoSolicitud.Pa_request);
+            if (solicitud != null) {
+                UsuarioSesion usuario = (UsuarioSesion) session.getAttribute("usuario");
+                int idTecnico = (usuario != null) ? usuario.getIdPersona() : 1;
+                solicitudesDao.rechazarRapido(solicitud.getIdSolicitud(), idTecnico);
+            }
         }
 
         model.addAttribute("para", "Usuario solicitante (ID: " + paRequest.getOviUser() + ")");
@@ -215,12 +243,10 @@ public class PaRequestController {
             return "redirect:/login";
         }
 
-        // Obtenemos la lista de candidatos usando el método que acabas de crear
         List<Map<String, Object>> candidatos = PapPatiDao.getCandidatosDisponibles();
-
         model.addAttribute("candidatos", candidatos);
         model.addAttribute("idSolicitud", idSolicitud);
 
-        return "PaRequest/candidatos"; // Nos lleva a la vista HTML
+        return "PaRequest/candidatos";
     }
 }

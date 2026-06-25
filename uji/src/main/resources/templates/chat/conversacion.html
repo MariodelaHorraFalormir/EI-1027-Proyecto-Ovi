@@ -23,7 +23,7 @@
             flex-direction: column;
         }
         .chat-header {
-            background: #003366; /* Azul oscuro corporativo */
+            background: #003366;
             color: white;
             padding: 1rem 1.5rem;
             border-radius: 15px 15px 0 0;
@@ -35,7 +35,7 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
-            background-image: url('https://www.transparenttextures.com/patterns/cubes.png'); /* Fondo sutil */
+            background-image: url('https://www.transparenttextures.com/patterns/cubes.png');
         }
         .msg-bubble {
             max-width: 75%;
@@ -45,7 +45,7 @@
             word-wrap: break-word;
         }
         .msg-mine {
-            background-color: #d1e7dd; /* Verde claro estilo WhatsApp */
+            background-color: #d1e7dd;
             align-self: flex-end;
             border-bottom-right-radius: 2px;
         }
@@ -75,17 +75,19 @@
 
 <div class="container flex-grow-1">
     <div class="chat-container">
-        <!-- Cabecera del chat -->
+
         <div class="chat-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 fw-bold">Conversación (Solicitud #<span th:text="${idSolicitud}"></span>)</h5>
+            <div>
+                <h5 class="mb-0 fw-bold">Negociación AP #<span th:text="${idSolicitud}"></span></h5>
+                <small class="text-warning fw-semibold">💬 Asunto: <span th:text="${tipoAsistencia}"></span></small>
+            </div>
 
             <div>
-                <!-- Botón para formalizar el contrato -->
                 <a th:href="@{/contrato/nuevo/{idSol}/{idCand}(idSol=${idSolicitud}, idCand=${idReceptor})}"
                    class="btn btn-sm btn-success fw-bold me-2 shadow-sm">
                     🤝 Formalizar Contrato
                 </a>
-                <a th:href="@{/}" class="btn btn-sm btn-light fw-bold text-primary">Volver</a>
+                <a th:href="@{/chat/mis-conversaciones}" class="btn btn-sm btn-light fw-bold text-primary">Volver</a>
             </div>
         </div>
 
@@ -100,25 +102,20 @@
                 <div th:text="${msg.contenido}">Texto del mensaje...</div>
                 <div class="date-text" th:text="${msg.fechaEnvio}">Fecha</div>
             </div>
+
+            <div id="ultimo-mensaje"></div>
         </div>
 
         <div class="chat-input">
-            <form th:action="@{/chat/enviar}" method="post" class="d-flex gap-2">
-                <input type="hidden" name="idSolicitud" th:value="${idSolicitud}">
-                <input type="hidden" name="idReceptor" th:value="${idReceptor}">
-                <input type="text" name="contenido" class="form-control border-secondary rounded-pill px-3" placeholder="Escribe tu mensaje aquí..." required autocomplete="off">
+            <form th:action="@{/chat/enviar(idSolicitud=${idSolicitud}, idReceptor=${idReceptor})}" method="post" class="d-flex gap-2">
+                <input type="text" name="contenido" class="form-control border-secondary rounded-pill px-3" placeholder="Escribe tu mensaje aquí..." required autocomplete="off" autofocus>
                 <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">Enviar</button>
             </form>
         </div>
     </div>
 </div>
 
-<script>
-    // Este pequeño script hace que el chat baje automáticamente al último mensaje al cargar la página
-    var chatBox = document.getElementById("chatBox");
-    if(chatBox) {
-        chatBox.scrollTop = chatBox.scrollHeight;
-    }
-</script>
+<iframe src="#ultimo-mensaje" style="display:none;"></iframe>
+
 </body>
 </html>

@@ -1,10 +1,22 @@
 package es.uji.ei1027.ovi.Validadores;
 
+import es.uji.ei1027.ovi.dao.PersonaDao;
 import es.uji.ei1027.ovi.modelo.Persona.Persona;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 public class PersonaValidator implements Validator {
+
+    // Añadimos el DAO
+    private PersonaDao personaDao;
+
+    // Constructor vacío (por si lo usas en sitios donde no necesitas BD)
+    public PersonaValidator() {}
+
+    // Constructor con DAO (el que usaremos en el registro)
+    public PersonaValidator(PersonaDao personaDao) {
+        this.personaDao = personaDao;
+    }
 
     // Valores máximos por campo
     private static final int MAX_NOM = 100;
@@ -61,6 +73,9 @@ public class PersonaValidator implements Validator {
             errors.rejectValue("dni", "longitud", "Longitud máxima superada");
         } else if (!validarDni(dni)) {
             errors.rejectValue("dni", "incorrecto", "Introduce un DNI válido");
+        } else if (personaDao != null && personaDao.existeDni(dni)) {
+            // AQUÍ ESTÁ LA MAGIA: Comprueba si ya existe en la BD
+            errors.rejectValue("dni", "duplicado", "Este DNI ya está registrado en el sistema");
         }
 
         // Mail
@@ -99,31 +114,17 @@ public class PersonaValidator implements Validator {
     }
 
     private boolean validarMail(String mail) {
-        if (mail == null) {
-            return false;
-        }
-
-        mail = mail.trim();
-
-        // Validación simple pero mejor que solo contains("@")
-        return mail.contains("@");
+        if (mail == null) return false;
+        return mail.trim().contains("@");
     }
 
     private boolean validarDni(String dni) {
-        if (dni == null) {
-            return false;
-        }
-
+        if (dni == null) return false;
         dni = dni.trim().toUpperCase();
-
-        // Formato correcto: 8 números y 1 letra
-        if (!dni.matches("\\d{8}[A-Z]")) {
-            return false;
-        }
+        if (!dni.matches("\\d{8}[A-Z]")) return false;
 
         String numeros = dni.substring(0, 8);
         char letraIntroducida = dni.charAt(8);
-
         final String letras = "TRWAGMYFPDXBNJZSQVHLCKE";
 
         try {
