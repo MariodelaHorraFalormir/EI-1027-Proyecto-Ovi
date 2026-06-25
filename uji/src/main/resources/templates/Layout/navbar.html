@@ -103,6 +103,13 @@
                 </a>
             </li>
 
+          <li class="nav-item" th:if="${session.usuario.esPapPati()}">
+            <a class="nav-link text-white fw-semibold"
+               th:href="@{/PaRequest/misParticipadas/{id}(id=${session.usuario.idPersona})}">
+              Mis colaboraciones
+            </a>
+          </li>
+
           <!-- Menú de cuenta -->
           <li class="nav-item dropdown">
 
@@ -154,6 +161,14 @@
                         Mis procesos
                     </a>
                 </li>
+
+              <li th:if="${session.usuario.esPapPati()}">
+                <a class="dropdown-item"
+                   th:href="@{/PaRequest/misParticipadas/{id}(id=${session.usuario.idPersona})}">
+                  Mis colaboraciones
+                </a>
+              </li>
+
               <li>
                 <hr class="dropdown-divider">
               </li>

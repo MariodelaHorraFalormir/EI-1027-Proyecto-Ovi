@@ -134,6 +134,34 @@ public class PaRequestController {
         return "PaRequest/mis";
     }
 
+    @GetMapping("/misParticipadas/{id}")
+    public String misParticipadas(Model model, @PathVariable int id,
+                                  @RequestParam(defaultValue = "0") int page,
+                                  HttpSession session) {
+        UsuarioSesion usuario = (UsuarioSesion) session.getAttribute("usuario");
+        if (usuario == null) {
+            return "redirect:/login";
+        }
+        // Solo el propio PAP/PATI puede ver su lista (o un admin OVI)
+        if (usuario.getIdPersona() != id && !usuario.esAdminOvi()) {
+            return "redirect:/";
+        }
+
+        int pageSize = 10;
+        List<PaRequest> todos = paRequestDao.getPaRequestsByPapPati(id);
+        int total = todos.size();
+        int totalPages = (int) Math.ceil((double) total / pageSize);
+        int from = page * pageSize;
+        int to = Math.min(from + pageSize, total);
+        List<PaRequest> pagina = todos.subList(from, to);
+
+        model.addAttribute("paRequests", pagina);
+        model.addAttribute("idUsuario", id);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+        return "PaRequest/misParticipadas";
+    }
+
     @GetMapping("/list")
     public String listarPaRequests(Model model, HttpSession session,
                                    @RequestParam(defaultValue = "0") int page) {

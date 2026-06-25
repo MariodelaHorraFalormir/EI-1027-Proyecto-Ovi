@@ -112,4 +112,19 @@ public class PaRequestDao {
             return new ArrayList<>();
         }
     }
+
+    public List<PaRequest> getPaRequestsByPapPati(int idPapPati) {
+        try {
+            return jdbcTemplate.query(
+                    "SELECT DISTINCT pr.* FROM pa_request pr " +
+                            "JOIN conversacion c ON c.pa_request = pr.id " +
+                            "WHERE c.pap_pati = ? " +
+                            "ORDER BY pr.id DESC",
+                    new PaRequestRowMapper(),
+                    idPapPati
+            );
+        } catch (EmptyResultDataAccessException e) {
+            return new ArrayList<>();
+        }
+    }
 }
