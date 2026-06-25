@@ -23,6 +23,7 @@ public class SolicitudRowMapper implements RowMapper<Solicitud> {
             solicitud.setFechaResolucion(rs.getDate("fecha_resolucion").toLocalDate());
         }
         solicitud.setMensajeRevision(rs.getString("mensaje_revision"));
+        solicitud.setMotivoResolucion(rs.getString("motivo_resolucion"));
 
         Timestamp fechaUltimaRevision = rs.getTimestamp("fecha_ultima_revision");
         if (fechaUltimaRevision != null) {
