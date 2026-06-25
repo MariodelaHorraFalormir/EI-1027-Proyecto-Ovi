@@ -267,15 +267,24 @@ public class PaRequestController {
     }
 
     @GetMapping("/candidatos/{idSolicitud}")
-    public String verCandidatos(@PathVariable int idSolicitud, Model model, HttpSession session) {
+    public String verCandidatos(@PathVariable int idSolicitud, Model model, HttpSession session,
+                                @RequestParam(defaultValue = "0") int page) {
         if (session.getAttribute("usuario") == null) {
             return "redirect:/login";
         }
 
-        List<Map<String, Object>> candidatos = PapPatiDao.getCandidatosDisponibles();
-        model.addAttribute("candidatos", candidatos);
-        model.addAttribute("idSolicitud", idSolicitud);
+        int pageSize = 10;
+        List<Map<String, Object>> todos = PapPatiDao.getCandidatosDisponibles();
+        int total = todos.size();
+        int totalPages = (int) Math.ceil((double) total / pageSize);
+        int from = page * pageSize;
+        int to = Math.min(from + pageSize, total);
+        List<Map<String, Object>> pagina = (from <= to) ? todos.subList(from, to) : java.util.Collections.emptyList();
 
+        model.addAttribute("candidatos", pagina);
+        model.addAttribute("idSolicitud", idSolicitud);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
         return "PaRequest/candidatos";
     }
 }

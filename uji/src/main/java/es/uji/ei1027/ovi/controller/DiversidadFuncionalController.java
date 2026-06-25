@@ -14,14 +14,26 @@ public class DiversidadFuncionalController {
     private DiversidadFuncionalDao diversidadFuncionalDao;
     @Autowired
     public void  setDiversidadFuncionalDao(DiversidadFuncionalDao dao) {diversidadFuncionalDao = dao;}
+
     @RequestMapping("/listaID/{id}")
-    public String listaID(@PathVariable int id, Model model){
+    public String listaID(@PathVariable int id, Model model,
+                          @RequestParam(defaultValue = "0") int page){
 
-        model.addAttribute("id",id);
-        model.addAttribute("diversidades",diversidadFuncionalDao.obtenerDiverdadesPorId(id));
+        int pageSize = 10;
+        java.util.List<DiversidadFuncional> todas = diversidadFuncionalDao.obtenerDiverdadesPorId(id);
+        int total = todas.size();
+        int totalPages = (int) Math.ceil((double) total / pageSize);
+        int from = page * pageSize;
+        int to = Math.min(from + pageSize, total);
+        java.util.List<DiversidadFuncional> pagina = (from <= to) ? todas.subList(from, to) : java.util.Collections.emptyList();
+
+        model.addAttribute("id", id);
+        model.addAttribute("diversidades", pagina);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
         return "DiversidadFuncional/listaID";
-
     }
+
     @RequestMapping("/delete/{idDiversidad}/{idUsuario}")
     public String processDelete(@PathVariable int idDiversidad, @PathVariable int idUsuario) {
         diversidadFuncionalDao.borrarDiversidadFuncional(idDiversidad);

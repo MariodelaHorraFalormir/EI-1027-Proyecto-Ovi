@@ -76,12 +76,22 @@ public class ContratoController {
 
     // 3. Ver mis contratos (Sirve tanto para OVI como para PAP/PATI)
     @GetMapping("/mis-contratos")
-    public String misContratos(Model model, HttpSession session) {
+    public String misContratos(Model model, HttpSession session,
+                               @RequestParam(defaultValue = "0") int page) {
         UsuarioSesion usuario = (UsuarioSesion) session.getAttribute("usuario");
         if (usuario == null) return "redirect:/login";
 
-        model.addAttribute("contratos", contratoDao.getContratosPorUsuario(usuario.getIdPersona()));
+        int pageSize = 10;
+        List<Contrato> todos = contratoDao.getContratosPorUsuario(usuario.getIdPersona());
+        int total = todos.size();
+        int totalPages = (int) Math.ceil((double) total / pageSize);
+        int from = page * pageSize;
+        int to = Math.min(from + pageSize, total);
+        List<Contrato> pagina = (from <= to) ? todos.subList(from, to) : java.util.Collections.emptyList();
 
+        model.addAttribute("contratos", pagina);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
         return "contrato/mis_contratos";
     }
 

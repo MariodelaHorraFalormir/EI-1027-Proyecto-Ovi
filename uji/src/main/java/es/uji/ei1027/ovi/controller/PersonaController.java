@@ -42,24 +42,27 @@ public class PersonaController {
     }
 
     @GetMapping("/list/{tipo}")
-    public String listarPorTipo(@PathVariable String tipo, Model model, HttpSession session) {
+    public String listarPorTipo(@PathVariable String tipo, Model model, HttpSession session,
+                                @RequestParam(defaultValue = "0") int page) {
         String url = "/Persona/list/" + tipo;
 
         UsuarioSesion usuario = sesionService.getUsuario(session);
+        if (usuario == null) return sesionService.redirigirALogin(session, url);
+        if (!personaService.esAdminOvi(usuario)) return "redirect:/";
 
-        if (usuario == null) {
-            return sesionService.redirigirALogin(session, url);
-        }
+        int pageSize = 10;
+        List<Persona> todas = personaService.getPersonasPorTipo(tipo);
+        int total = todas.size();
+        int totalPages = (int) Math.ceil((double) total / pageSize);
+        int from = page * pageSize;
+        int to = Math.min(from + pageSize, total);
+        List<Persona> pagina = (from <= to) ? todas.subList(from, to) : java.util.Collections.emptyList();
 
-        if (!personaService.esAdminOvi(usuario)) {
-            return "redirect:/";
-        }
-
-        List<Persona> personas = personaService.getPersonasPorTipo(tipo);
-
-        model.addAttribute("personasOrderId", personas);
+        model.addAttribute("personasOrderId", pagina);
         model.addAttribute("tituloListado", personaService.getTituloListado(tipo));
-
+        model.addAttribute("tipoActual", tipo);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
         return "Persona/list";
     }
 
