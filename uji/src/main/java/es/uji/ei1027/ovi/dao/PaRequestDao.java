@@ -117,11 +117,11 @@ public class PaRequestDao {
         try {
             return jdbcTemplate.query(
                     "SELECT DISTINCT pr.* FROM pa_request pr " +
-                            "JOIN conversacion c ON c.pa_request = pr.id " +
-                            "WHERE c.pap_pati = ? " +
+                            "JOIN mensaje m ON m.id_solicitud = pr.id " +
+                            "WHERE m.id_emisor = ? OR m.id_receptor = ? " +
                             "ORDER BY pr.id DESC",
                     new PaRequestRowMapper(),
-                    idPapPati
+                    idPapPati, idPapPati
             );
         } catch (EmptyResultDataAccessException e) {
             return new ArrayList<>();

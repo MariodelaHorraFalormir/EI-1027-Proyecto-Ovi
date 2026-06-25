@@ -125,8 +125,8 @@ public class PapPatiDao {
                 "pp.experiencia, pp.disponibilidad " +
                 "FROM persona p " +
                 "JOIN pap_pati pp ON p.id = pp.id " +
-                "JOIN conversacion c ON c.pap_pati = pp.id " +
-                "WHERE c.pa_request = ? " +
+                "JOIN mensaje m ON (m.id_emisor = pp.id OR m.id_receptor = pp.id) " +
+                "WHERE m.id_solicitud = ? " +
                 "ORDER BY p.apellidos, p.nombre";
         return jdbcTemplate.queryForList(sql, idPaRequest);
     }
