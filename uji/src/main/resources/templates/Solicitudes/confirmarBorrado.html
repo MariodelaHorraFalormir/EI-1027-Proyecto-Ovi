@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <title>Confirmar borrado</title>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" />
+</head>
+<body>
+
+<div th:replace="~{layout/navbar :: main-nav}"></div>
+
+<main class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">Confirmar borrado de solicitud</h4>
+                </div>
+                <div class="card-body">
+                    <p>¿Estás seguro de que quieres borrar esta solicitud?</p>
+                    <ul>
+                        <li><strong>ID:</strong> <span th:text="${solicitud.idSolicitud}"></span></li>
+                        <li><strong>Categoría:</strong> <span th:text="${solicitud.categoriaSolicitud}"></span></li>
+                        <li><strong>Tipo:</strong> <span th:text="${solicitud.tipoSolicitud}"></span></li>
+                        <li><strong>Estado:</strong> <span th:text="${solicitud.estadoSolicitud}"></span></li>
+                        <li><strong>Fecha de creación:</strong>
+                            <span th:text="${solicitud.fechaCreacion != null ? #temporals.format(solicitud.fechaCreacion, 'dd/MM/yyyy') : '-'}"></span>
+                        </li>
+                    </ul>
+                    <p class="text-danger mb-0"><strong>Esta acción no se puede deshacer.</strong></p>
+                </div>
+                <div class="card-footer d-flex justify-content-end gap-2">
+                    <a th:href="@{/Solicitudes/list/todas}" class="btn btn-secondary">
+                        Cancelar
+                    </a>
+                    <a th:href="@{/Solicitudes/delete/{id}(id=${solicitud.idSolicitud})}"
+                       class="btn btn-danger">
+                        Sí, borrar
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+</body>
+</html>

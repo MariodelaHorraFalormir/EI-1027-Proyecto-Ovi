@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/Solicitudes")
@@ -107,8 +108,10 @@ public class SolicitudController {
         model.addAttribute("solicitud", solicitudDao.getSolicitudById(id));
         return "Solicitudes/update";
     }
+
     @PostMapping("/update/{id}")
-    public String updateSolicitud(@PathVariable int id, @ModelAttribute("solicitud") Solicitud solicitud , HttpSession session) {
+    public String updateSolicitud(@PathVariable int id, @ModelAttribute("solicitud") Solicitud solicitud,
+                                  HttpSession session, RedirectAttributes redirectAttrs) {
         String url = "/Solicitudes/update/" + id;
 
         UsuarioSesion usuario = sesionService.getUsuario(session);
@@ -120,9 +123,12 @@ public class SolicitudController {
             return "redirect:/";
         }
 
-        solicitudesService.updateSolicitud(id, solicitud,usuario);
+        solicitudesService.updateSolicitud(id, solicitud, usuario);
+        redirectAttrs.addFlashAttribute("mensajeExito",
+                "Solicitud con ID " + id + " actualizada correctamente.");
         return "redirect:/Solicitudes/list/todas";
     }
+
     @PostMapping("/aprobarRapido/{id}")
     public String aprobarRapido(Model model, @PathVariable int id , HttpSession session){
         String url = "/Solicitudes/aprobarRapido/" + id;
@@ -176,8 +182,28 @@ public class SolicitudController {
 
         return "correo/simulacion";
     }
+
+    @GetMapping("/confirmarBorrado/{id}")
+    public String confirmarBorrado(@PathVariable int id, Model model, HttpSession session) {
+        String url = "/Solicitudes/confirmarBorrado/" + id;
+
+        UsuarioSesion usuario = sesionService.getUsuario(session);
+
+        if (usuario == null) {
+            return sesionService.redirigirALogin(session, url);
+        }
+
+        if (!solicitudesService.puedeGestionarSolicitudes(usuario)) {
+            return "redirect:/";
+        }
+
+        model.addAttribute("solicitud", solicitudDao.getSolicitudById(id));
+        return "Solicitudes/confirmarBorrado";
+    }
+
     @RequestMapping("/delete/{id}")
-    public String processDelete(@PathVariable int id , HttpSession session) {
+    public String processDelete(@PathVariable int id, HttpSession session,
+                                RedirectAttributes redirectAttrs) {
         String url = "/Solicitudes/delete/" + id;
 
         UsuarioSesion usuario = sesionService.getUsuario(session);
@@ -190,7 +216,10 @@ public class SolicitudController {
             return "redirect:/";
         }
         solicitudDao.deleteSolicitud(id);
-        return "redirect:/Solicitudes/list/todas";    }
+        redirectAttrs.addFlashAttribute("mensajeExito",
+                "Solicitud con ID " + id + " borrada correctamente.");
+        return "redirect:/Solicitudes/list/todas";
+    }
 
 
     @GetMapping("/mis")
