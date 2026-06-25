@@ -115,6 +115,42 @@
             </div>
         </div>
 
+        <!-- PAP/PATI asociados al proceso (solo visible para el técnico OVI) -->
+        <div class="block-card" th:if="${session.usuario != null and session.usuario.esAdminOvi()}">
+            <div class="block-title">PAP/PATI asociados a este proceso</div>
+
+            <div th:if="${#lists.isEmpty(papPatisAsociados)}" class="alert alert-info mb-0">
+                Todavía no hay ningún PAP/PATI asociado a esta solicitud (no se han iniciado conversaciones).
+            </div>
+
+            <div th:if="${!#lists.isEmpty(papPatisAsociados)}" class="table-responsive">
+                <table class="table table-striped table-hover align-middle mb-0">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Apellidos</th>
+                        <th>Experiencia</th>
+                        <th>Disponibilidad</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="cand : ${papPatisAsociados}">
+                        <td th:text="${cand.id_candidato}"></td>
+                        <td th:text="${cand.nombre}"></td>
+                        <td th:text="${cand.apellidos}"></td>
+                        <td>
+                            <span th:text="${cand.experiencia}"></span> años
+                        </td>
+                        <td>
+                            <span class="badge bg-info text-dark" th:text="${cand.disponibilidad}"></span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
         <div class="mt-4 d-flex gap-2">
             <a th:href="@{/PaRequest/list}" class="btn btn-secondary">Volver al listado</a>
             <a th:href="@{/PaRequest/update/{id}(id=${paRequest.id})}" class="btn btn-warning">Editar proceso</a>

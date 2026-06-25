@@ -120,4 +120,15 @@ public class PapPatiDao {
         return jdbcTemplate.queryForList(sql);
     }
 
+    public List<Map<String, Object>> getPapPatisByPaRequest(int idPaRequest) {
+        String sql = "SELECT DISTINCT p.nombre, p.apellidos, pp.id AS id_candidato, " +
+                "pp.experiencia, pp.disponibilidad " +
+                "FROM persona p " +
+                "JOIN pap_pati pp ON p.id = pp.id " +
+                "JOIN conversacion c ON c.pap_pati = pp.id " +
+                "WHERE c.pa_request = ? " +
+                "ORDER BY p.apellidos, p.nombre";
+        return jdbcTemplate.queryForList(sql, idPaRequest);
+    }
+
 }

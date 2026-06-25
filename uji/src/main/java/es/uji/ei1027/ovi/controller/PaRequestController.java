@@ -190,6 +190,7 @@ public class PaRequestController {
         PaRequest paRequest = paRequestDao.getPaRequestById(id);
         if (paRequest == null) return "redirect:/PaRequest/list";
         model.addAttribute("paRequest", paRequest);
+        model.addAttribute("papPatisAsociados", PapPatiDao.getPapPatisByPaRequest(id));
         return "PaRequest/detail";
     }
 
