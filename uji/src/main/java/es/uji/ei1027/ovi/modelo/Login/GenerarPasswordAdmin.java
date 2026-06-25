@@ -27,11 +27,11 @@ public class GenerarPasswordAdmin implements CommandLineRunner {
         String  passwordPlano;
         for (int i = 0 ; i < 2 ; i++){
             if(i == 0){
-                 mailAdmin = "admin1@ovi.es";
-                 passwordPlano = "admin123";
-            }else {
-                  mailAdmin = "joel.user@ovi.es";
-                  passwordPlano = "user123";
+                mailAdmin = "admin1@ovi.es";
+                passwordPlano = "admin123";
+            } else {
+                mailAdmin = "joel.user@ovi.es";
+                passwordPlano = "user123";
             }
 
 
