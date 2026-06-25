@@ -134,4 +134,25 @@ public class ChatController {
 
         return "chat/lista_chats";
     }
+
+    @GetMapping("/list/todas")
+    public String todasLasConversaciones(Model model, HttpSession session,
+                                         @RequestParam(defaultValue = "0") int page) {
+        UsuarioSesion usuario = (UsuarioSesion) session.getAttribute("usuario");
+        if (usuario == null) return "redirect:/login";
+        if (!usuario.esAdminOvi()) return "redirect:/";
+
+        int pageSize = 10;
+        List<Map<String, Object>> todas = mensajeDao.getTodasLasConversaciones();
+        int total = todas.size();
+        int totalPages = (int) Math.ceil((double) total / pageSize);
+        int from = page * pageSize;
+        int to = Math.min(from + pageSize, total);
+        List<Map<String, Object>> pagina = todas.subList(from, to);
+
+        model.addAttribute("conversaciones", pagina);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+        return "chat/list_todas";
+    }
 }

@@ -104,4 +104,19 @@ public class ContratoDao {
                 contrato.getId()
         );
     }
+
+    public List<Contrato> getTodosLosContratos() {
+        String sql = "SELECT * FROM contrato ORDER BY id DESC";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            Contrato c = new Contrato();
+            c.setId(rs.getInt("id"));
+            c.setIdSolicitud(rs.getInt("id_solicitud"));
+            c.setIdUsuarioOvi(rs.getInt("id_usuario_ovi"));
+            c.setIdPapPati(rs.getInt("id_pap_pati"));
+            if (rs.getDate("fecha_inicio") != null) c.setFechaInicio(rs.getDate("fecha_inicio").toLocalDate());
+            if (rs.getDate("fecha_fin") != null) c.setFechaFin(rs.getDate("fecha_fin").toLocalDate());
+            c.setEstado(rs.getString("estado"));
+            return c;
+        });
+    }
 }

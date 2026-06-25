@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class MensajeDao {
@@ -71,5 +72,18 @@ public class MensajeDao {
             }
             return m;
         }, idSolicitud);
+    }
+
+    public List<Map<String, Object>> getTodasLasConversaciones() {
+        String sql =
+                "SELECT id_solicitud, " +
+                        "LEAST(id_emisor, id_receptor) AS persona_a, " +
+                        "GREATEST(id_emisor, id_receptor) AS persona_b, " +
+                        "COUNT(*) AS num_mensajes, " +
+                        "MAX(fecha_envio) AS ultimo_mensaje " +
+                        "FROM mensaje " +
+                        "GROUP BY id_solicitud, LEAST(id_emisor, id_receptor), GREATEST(id_emisor, id_receptor) " +
+                        "ORDER BY ultimo_mensaje DESC";
+        return jdbcTemplate.queryForList(sql);
     }
 }

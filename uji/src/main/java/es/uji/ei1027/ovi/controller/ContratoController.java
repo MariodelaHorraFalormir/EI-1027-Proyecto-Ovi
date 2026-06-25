@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Controller
 @RequestMapping("/contrato")
@@ -82,6 +83,27 @@ public class ContratoController {
         model.addAttribute("contratos", contratoDao.getContratosPorUsuario(usuario.getIdPersona()));
 
         return "contrato/mis_contratos";
+    }
+
+    @GetMapping("/list/todos")
+    public String todosLosContratos(Model model, HttpSession session,
+                                    @RequestParam(defaultValue = "0") int page) {
+        UsuarioSesion usuario = (UsuarioSesion) session.getAttribute("usuario");
+        if (usuario == null) return "redirect:/login";
+        if (!usuario.esAdminOvi()) return "redirect:/";
+
+        int pageSize = 10;
+        List<Contrato> todos = contratoDao.getTodosLosContratos();
+        int total = todos.size();
+        int totalPages = (int) Math.ceil((double) total / pageSize);
+        int from = page * pageSize;
+        int to = Math.min(from + pageSize, total);
+        List<Contrato> pagina = todos.subList(from, to);
+
+        model.addAttribute("contratos", pagina);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+        return "contrato/list_todos";
     }
 
     // 4. CORRECCIÓN: Mostrar formulario para editar un contrato existente
