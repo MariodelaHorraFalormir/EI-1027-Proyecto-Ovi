@@ -32,7 +32,8 @@ public class SolicitudController {
 
 
     @RequestMapping("/list/{tipo}")
-    public String  listaporId(Model model , @PathVariable String tipo , HttpSession session){
+    public String  listaporId(Model model , @PathVariable String tipo , HttpSession session,
+                              @RequestParam(defaultValue = "0") int page){
         String url = "/Solicitudes/list/" + tipo;
 
         UsuarioSesion usuario = sesionService.getUsuario(session);
@@ -44,9 +45,20 @@ public class SolicitudController {
         if (!solicitudesService.puedeGestionarSolicitudes(usuario)) {
             return "redirect:/";
         }
-        model.addAttribute("solicitudes", solicitudesService.getSolicitudesPorTipo(tipo));
+
+        int pageSize = 10;
+        java.util.List<Solicitud> todas = solicitudesService.getSolicitudesPorTipo(tipo);
+        int total = todas.size();
+        int totalPages = (int) Math.ceil((double) total / pageSize);
+        int from = page * pageSize;
+        int to = Math.min(from + pageSize, total);
+        java.util.List<Solicitud> pagina = (from <= to) ? todas.subList(from, to) : java.util.Collections.emptyList();
+
+        model.addAttribute("solicitudes", pagina);
         model.addAttribute("tituloListado", solicitudesService.getTituloListado(tipo));
         model.addAttribute("tipoActual", tipo);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
         return "Solicitudes/listId";
     }
     @GetMapping("/detail/{id}")
@@ -223,7 +235,8 @@ public class SolicitudController {
 
 
     @GetMapping("/mis")
-    public String misSolicitudes(Model model, HttpSession session) {
+    public String misSolicitudes(Model model, HttpSession session,
+                                 @RequestParam(defaultValue = "0") int page) {
         String url = "/Solicitudes/mis";
 
         UsuarioSesion usuario = sesionService.getUsuario(session);
@@ -232,8 +245,18 @@ public class SolicitudController {
             return sesionService.redirigirALogin(session, url);
         }
 
-        model.addAttribute("solicitudes", solicitudesService.getSolicitudesDeUsuario(usuario));
+        int pageSize = 10;
+        java.util.List<Solicitud> todas = solicitudesService.getSolicitudesDeUsuario(usuario);
+        int total = todas.size();
+        int totalPages = (int) Math.ceil((double) total / pageSize);
+        int from = page * pageSize;
+        int to = Math.min(from + pageSize, total);
+        java.util.List<Solicitud> pagina = (from <= to) ? todas.subList(from, to) : java.util.Collections.emptyList();
+
+        model.addAttribute("solicitudes", pagina);
         model.addAttribute("tituloListado", "Mis solicitudes");
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
 
         return "Solicitudes/mis";
     }
