@@ -133,6 +133,11 @@
             color: #6c757d;
         }
 
+        .invalid-feedback {
+            font-size: 0.88rem;
+            font-weight: 600;
+        }
+
         textarea.form-control {
             min-height: 140px;
             resize: vertical;
@@ -155,17 +160,20 @@
                     Modifica el tipo de diversidad funcional y sus observaciones asociadas
                 </p>
             </div>
-
-
         </div>
 
         <form th:object="${diversidadFuncional}"
               method="post"
-              th:action="@{/DiversidadFuncional/update}">
+              th:action="@{/DiversidadFuncional/update}"
+              novalidate>
 
-            <!-- Campos ocultos importantes -->
             <input type="hidden" th:field="*{idDiversidadFuncional}">
             <input type="hidden" th:field="*{oviUserId}">
+
+            <div class="alert alert-danger"
+                 th:if="${#fields.hasAnyErrors()}">
+                Revisa los campos marcados antes de guardar los cambios.
+            </div>
 
             <div class="block-card">
                 <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
@@ -182,7 +190,8 @@
 
                         <select id="tipo"
                                 class="form-select"
-                                th:field="*{tipo}">
+                                th:field="*{tipo}"
+                                th:errorclass="is-invalid">
                             <option value="">Selecciona una opción</option>
 
                             <option th:each="opcion : ${listaTipos}"
@@ -191,6 +200,11 @@
                                 Tipo
                             </option>
                         </select>
+
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('tipo')}"
+                             th:errors="*{tipo}">
+                        </div>
 
                         <div class="text-muted-small mt-2">
                             Cambia el tipo si la información registrada no es correcta.
@@ -205,10 +219,18 @@
                         <textarea id="observaciones"
                                   class="form-control"
                                   th:field="*{observaciones}"
+                                  th:errorclass="is-invalid"
+                                  minlength="10"
+                                  maxlength="500"
                                   placeholder="Añade o modifica información complementaria..."></textarea>
 
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('observaciones')}"
+                             th:errors="*{observaciones}">
+                        </div>
+
                         <div class="text-muted-small mt-2">
-                            Puedes dejar este campo vacío si no hay observaciones.
+                            Es obligatorio añadir una observación de al menos 10 caracteres.
                         </div>
                     </div>
 

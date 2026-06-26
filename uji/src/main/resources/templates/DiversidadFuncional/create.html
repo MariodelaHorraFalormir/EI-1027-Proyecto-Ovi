@@ -133,6 +133,11 @@
             color: #6c757d;
         }
 
+        .invalid-feedback {
+            font-size: 0.88rem;
+            font-weight: 600;
+        }
+
         textarea.form-control {
             min-height: 140px;
             resize: vertical;
@@ -152,19 +157,23 @@
             <div>
                 <h1 class="section-title">Añadir diversidad funcional</h1>
                 <p class="section-subtitle mb-0">
-                    Indica el tipo de diversidad funcional y añade observaciones si lo consideras necesario
+                    Indica el tipo de diversidad funcional y añade observaciones
                 </p>
             </div>
-
         </div>
 
         <form th:object="${diversidadFuncional}"
               method="post"
-              th:action="@{/DiversidadFuncional/create/{id}(id=*{oviUserId})}">
+              th:action="@{/DiversidadFuncional/create/{id}(id=*{oviUserId})}"
+              novalidate>
 
-            <!-- ocultos -->
             <input type="hidden" th:field="*{idDiversidadFuncional}">
             <input type="hidden" th:field="*{oviUserId}">
+
+            <div class="alert alert-danger"
+                 th:if="${#fields.hasAnyErrors()}">
+                Revisa los campos marcados antes de guardar la diversidad funcional.
+            </div>
 
             <div class="block-card">
                 <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
@@ -180,13 +189,20 @@
 
                         <select id="tipo"
                                 class="form-select"
-                                th:field="*{tipo}">
+                                th:field="*{tipo}"
+                                th:errorclass="is-invalid">
                             <option value="">Selecciona una opción</option>
                             <option th:each="opcion : ${listaTipos}"
                                     th:value="${opcion}"
                                     th:text="${opcion}">
+                                Tipo
                             </option>
                         </select>
+
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('tipo')}"
+                             th:errors="*{tipo}">
+                        </div>
 
                         <div class="text-muted-small mt-2">
                             Selecciona el tipo que mejor describa la situación.
@@ -197,10 +213,23 @@
                         <label class="data-label" for="observaciones">
                             Observaciones
                         </label>
+
                         <textarea id="observaciones"
                                   class="form-control"
                                   th:field="*{observaciones}"
-                                  placeholder="Añade información complementaria si hace falta..."></textarea>
+                                  th:errorclass="is-invalid"
+                                  minlength="10"
+                                  maxlength="500"
+                                  placeholder="Añade información complementaria..."></textarea>
+
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('observaciones')}"
+                             th:errors="*{observaciones}">
+                        </div>
+
+                        <div class="text-muted-small mt-2">
+                            Es obligatorio añadir una observación de al menos 10 caracteres.
+                        </div>
                     </div>
                 </div>
             </div>

@@ -1,11 +1,13 @@
 package es.uji.ei1027.ovi.controller;
 
+import es.uji.ei1027.ovi.Validadores.DiversidadFuncionalValidator;
 import es.uji.ei1027.ovi.dao.DiversidadFuncionalDao;
 import es.uji.ei1027.ovi.modelo.OviUser.DiversidadFuncional;
 import es.uji.ei1027.ovi.modelo.OviUser.TipoDiversidadFuncional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 //comentario par github 
 @Controller
@@ -60,8 +62,22 @@ public class DiversidadFuncionalController {
     }
 
     @PostMapping("/create/{id}")
-    public String create(@PathVariable int id, @ModelAttribute("diversidadFuncional") DiversidadFuncional diversidadFuncional) {
+    public String create(
+            @PathVariable int id,
+            @ModelAttribute("diversidadFuncional") DiversidadFuncional diversidadFuncional,
+            BindingResult bindingResult,
+            Model model) {
+
         diversidadFuncional.setOviUserId(id);
+
+        DiversidadFuncionalValidator validator = new DiversidadFuncionalValidator();
+        validator.validate(diversidadFuncional, bindingResult);
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("listaTipos", TipoDiversidadFuncional.getLista());
+            return "DiversidadFuncional/create";
+        }
+
         diversidadFuncionalDao.addDiversidadFuncional(diversidadFuncional);
 
         return "redirect:/DiversidadFuncional/listaID/" + id;
@@ -79,8 +95,21 @@ public class DiversidadFuncionalController {
     }
 
     @PostMapping("/update")
-    public String update(@ModelAttribute("diversidadFuncional") DiversidadFuncional diversidadFuncional) {
+    public String update(
+            @ModelAttribute("diversidadFuncional") DiversidadFuncional diversidadFuncional,
+            BindingResult bindingResult,
+            Model model) {
+
+        DiversidadFuncionalValidator validator = new DiversidadFuncionalValidator();
+        validator.validate(diversidadFuncional, bindingResult);
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("listaTipos", TipoDiversidadFuncional.getLista());
+            return "DiversidadFuncional/update";
+        }
+
         diversidadFuncionalDao.updateDiversidadFuncional(diversidadFuncional);
+
         return "redirect:/DiversidadFuncional/listaID/" + diversidadFuncional.getOviUserId();
     }
 }

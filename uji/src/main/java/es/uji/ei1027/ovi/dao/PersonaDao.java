@@ -89,21 +89,44 @@ public class PersonaDao {
     }
 
     public boolean existeMail(String mail) {
-
         Integer count = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM persona WHERE mail = ?",
+                "SELECT COUNT(*) FROM persona WHERE LOWER(mail) = LOWER(?)",
                 Integer.class,
                 mail
         );
+
         return count != null && count > 0;
     }
 
     public boolean existeDni(String dni) {
         Integer count = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM persona WHERE dni = ?",
+                "SELECT COUNT(*) FROM persona WHERE UPPER(dni) = UPPER(?)",
                 Integer.class,
                 dni
         );
+
+        return count != null && count > 0;
+    }
+
+    public boolean existeMailEnOtraPersona(String mail, int idPersona) {
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM persona WHERE LOWER(mail) = LOWER(?) AND id <> ?",
+                Integer.class,
+                mail,
+                idPersona
+        );
+
+        return count != null && count > 0;
+    }
+
+    public boolean existeDniEnOtraPersona(String dni, int idPersona) {
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM persona WHERE UPPER(dni) = UPPER(?) AND id <> ?",
+                Integer.class,
+                dni,
+                idPersona
+        );
+
         return count != null && count > 0;
     }
 
@@ -176,4 +199,6 @@ public class PersonaDao {
             return null;
         }
     }
+
+
 }

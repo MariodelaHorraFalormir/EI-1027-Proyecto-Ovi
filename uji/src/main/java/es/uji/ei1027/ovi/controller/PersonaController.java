@@ -95,6 +95,7 @@ public class PersonaController {
     public String processUpdateSubmit(
             @ModelAttribute("personaFormulario") PersonaFormulario formulario,
             BindingResult bindingResult,
+            Model model,
             HttpSession session) {
 
         int id = formulario.getPersona().getIdPersona();
@@ -105,12 +106,28 @@ public class PersonaController {
         if (usuario == null) {
             return sesionService.redirigirALogin(session, url);
         }
-
+        conservarFechasOriginalesSiVienenVacias(formulario, id);
         if (!personaService.puedeEditarPersona(usuario, id)) {
             return "redirect:/";
         }
 
+        PersonaValidator validator = new PersonaValidator(
+                personaDao,
+                PersonaValidator.ModoValidacion.UPDATE
+        );
+
+        bindingResult.pushNestedPath("persona");
+        try {
+            validator.validate(formulario.getPersona(), bindingResult);
+        } finally {
+            bindingResult.popNestedPath();
+        }
+
+        validarNuevaContrasena(formulario, bindingResult);
+
         if (bindingResult.hasErrors()) {
+            recargarRolesFormulario(formulario, id);
+            cargarModeloPersona(model, usuario, formulario);
             return "Persona/update";
         }
 
@@ -150,7 +167,11 @@ public class PersonaController {
             BindingResult bindingResult,
             Model model) {
 
-        PersonaValidator validator = new PersonaValidator(personaDao);
+        PersonaValidator validator = new PersonaValidator(
+                personaDao,
+                PersonaValidator.ModoValidacion.REGISTRO
+        );
+
         validator.validate(persona, bindingResult);
 
         if (bindingResult.hasErrors()) {
@@ -168,7 +189,6 @@ public class PersonaController {
             return "Persona/registro";
         }
     }
-
     private void cargarModeloPersona(
             Model model,
             UsuarioSesion usuario,
@@ -190,5 +210,61 @@ public class PersonaController {
     @Autowired
     public void setPersonaDao(PersonaDao personaDao) {
         this.personaDao = personaDao;
+    }
+    private void validarNuevaContrasena(
+            PersonaFormulario formulario,
+            BindingResult bindingResult
+    ) {
+        String nuevaContrasena = formulario.getNuevaContrasena();
+
+        if (nuevaContrasena == null || nuevaContrasena.trim().isEmpty()) {
+            return;
+        }
+
+        if (nuevaContrasena.length() > 100) {
+            bindingResult.rejectValue(
+                    "nuevaContrasena",
+                    "longitud",
+                    "Longitud máxima superada"
+            );
+        } else if (nuevaContrasena.length() < 6) {
+            bindingResult.rejectValue(
+                    "nuevaContrasena",
+                    "corta",
+                    "La contraseña debe tener al menos 6 caracteres"
+            );
+        }
+    }
+    private void recargarRolesFormulario(PersonaFormulario formulario, int id) {
+        PersonaFormulario formularioCompleto = personaService.getPersonaFormulario(id);
+
+        if (formularioCompleto == null) {
+            return;
+        }
+
+        formulario.setOviUser(formularioCompleto.getOviUser());
+        formulario.setPapPati(formularioCompleto.getPapPati());
+        formulario.setAdminOvi(formularioCompleto.getAdminOvi());
+    }
+    private void conservarFechasOriginalesSiVienenVacias(PersonaFormulario formulario, int id) {
+        Persona personaOriginal = personaDao.getPersona(id);
+
+        if (personaOriginal == null || formulario.getPersona() == null) {
+            return;
+        }
+
+        Persona personaEditada = formulario.getPersona();
+
+        if (personaEditada.getFechaNacimiento() == null) {
+            personaEditada.setFechaNacimiento(personaOriginal.getFechaNacimiento());
+        }
+
+        if (personaEditada.getFechaAlta() == null) {
+            personaEditada.setFechaAlta(personaOriginal.getFechaAlta());
+        }
+
+        if (personaEditada.getFechaBaja() == null) {
+            personaEditada.setFechaBaja(personaOriginal.getFechaBaja());
+        }
     }
 }
