@@ -69,37 +69,47 @@ public class OviUserController {
 
     @GetMapping("/solicitud")
     public String gestionarSolicitudOviUser(HttpSession session) {
-
         if (!sesionService.hayUsuarioLogueado(session)) {
             sesionService.guardarNextUrl(session, "/OviUser/solicitud");
             return "redirect:/login";
         }
-        int idPersona = sesionService.getUsuario(session).getIdPersona();
-        String rutaDestino = oviUserService.obtenerRutaSolicitudOviUser(idPersona);
 
-        return "redirect:" + rutaDestino;
+        int idPersona = sesionService.getUsuario(session).getIdPersona();
+
+        // 1. Si ya es OVI User, lo mandamos a ver sus detalles
+        if (oviUserDao.getOviUser(idPersona) != null) {
+            return "redirect:/OviUser/details/" + idPersona;
+        }
+
+        // 2. Si no lo es, lo mandamos DIRECTO al formulario de creación
+        return "redirect:/OviUser/create/" + idPersona;
     }
 
 
     @GetMapping("/create/{id}")
     public String mostrarFormularioRegistro(Model model , @PathVariable int id , HttpSession session) {
         String url = "/OviUser/create/"+id;
+
         if (!sesionService.hayUsuarioLogueado(session)) {
-           return    sesionService.redirigirALogin(session,url);
+            return sesionService.redirigirALogin(session,url);
         }
+
+        // CORRECCIÓN: Si ya existe, lo mandamos a details, no a solicitud (evita bucle infinito)
         if (oviUserDao.getOviUser(id) != null) {
-            return "redirect:/OviUser/solicitud";
+            return "redirect:/OviUser/details/" + id;
         }
+
         UsuarioSesion usuario = (UsuarioSesion) session.getAttribute("usuario");
         int idPersona = sesionService.getUsuario(session).getIdPersona();
+
         if (!personaService.esAdminOvi(usuario) && idPersona != id){
             return "redirect:/";
         }
 
-        Solicitud solicitud = solicitudesService.solicitudRol(id,TipoSolicitud.Ovi_user);
-
+        Solicitud solicitud = solicitudesService.solicitudRol(id, TipoSolicitud.Ovi_user);
         OviUser oviUser = new OviUser();
         oviUser.setIdOviUser(id);
+
         model.addAttribute("oviUser", oviUser);
         model.addAttribute("solicitud", solicitud);
         return "OviUser/create";
@@ -120,8 +130,9 @@ public class OviUserController {
             return sesionService.redirigirALogin(session, url);
         }
 
+        // CORRECCIÓN: Evitar bucle infinito
         if (oviUserDao.getOviUser(id) != null) {
-            return "redirect:/OviUser/solicitud";
+            return "redirect:/OviUser/details/" + id;
         }
 
         UsuarioSesion usuario = (UsuarioSesion) session.getAttribute("usuario");
@@ -131,10 +142,8 @@ public class OviUserController {
             return "redirect:/";
         }
 
-        // Muy importante: aseguramos el id correcto
         oviUser.setIdOviUser(id);
 
-        // Conectamos el validator
         OviUserValidator oviUserValidator = new OviUserValidator();
         oviUserValidator.validate(oviUser, bindingResult);
 
