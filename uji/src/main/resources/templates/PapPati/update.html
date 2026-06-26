@@ -99,6 +99,11 @@
             font-weight: 600;
         }
 
+        .btn-sm {
+            padding: 0.45rem 0.8rem;
+            border-radius: 10px;
+        }
+
         .btn-primary {
             background-color: #1f4e79;
             border-color: #1f4e79;
@@ -108,6 +113,7 @@
             background-color: #193f63;
             border-color: #193f63;
         }
+
         .status-badge {
             display: inline-block;
             font-weight: 700;
@@ -145,6 +151,30 @@
             font-size: 0.88rem;
             color: #64748b;
         }
+
+        .text-muted-small {
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        .cv-box {
+            background: white;
+            border: 1px solid #d8e0ea;
+            border-radius: 12px;
+            padding: 0.85rem 0.95rem;
+        }
+
+        .cv-actions {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .invalid-feedback {
+            font-size: 0.88rem;
+            font-weight: 600;
+        }
     </style>
 </head>
 
@@ -169,45 +199,50 @@
             <!-- ESTADO DEL ROL: SOLO LECTURA -->
             <div class="d-flex flex-column align-items-md-end gap-2">
 
-
-
                 <div th:switch="${papPati.estadoRol != null ? papPati.estadoRol.name() : 'SinEstado'}">
 
-            <span th:case="'Activo'"
-                  class="status-badge status-activo">
-                Rol activo
-            </span>
+                    <span th:case="'Activo'"
+                          class="status-badge status-activo">
+                        Rol activo
+                    </span>
 
                     <span th:case="'Pendiente'"
                           class="status-badge status-pendiente">
-                Rol pendiente
-            </span>
+                        Rol pendiente
+                    </span>
 
                     <span th:case="'Rechazado'"
                           class="status-badge status-rechazado">
-                Rol rechazado
-            </span>
+                        Rol rechazado
+                    </span>
 
                     <span th:case="*"
                           class="status-badge status-sin-estado">
-                Sin estado
-            </span>
+                        Sin estado
+                    </span>
 
                 </div>
 
                 <span class="status-help-text">
-            Solo lectura
-        </span>
+                    Solo lectura
+                </span>
 
             </div>
         </div>
 
         <form th:object="${papPati}"
               method="post"
-              th:action="@{/PapPati/update/{id}(id=${papPati.idPatPati})}">
+              th:action="@{/PapPati/update/{id}(id=${papPati.idPatPati})}"
+              enctype="multipart/form-data"
+              novalidate>
 
             <!-- OCULTO -->
             <input type="hidden" th:field="*{idPatPati}">
+
+            <div class="alert alert-danger"
+                 th:if="${#fields.hasAnyErrors()}">
+                Revisa los campos marcados antes de guardar los cambios.
+            </div>
 
             <!-- DATOS PAP PATI -->
             <div class="block-card">
@@ -217,7 +252,9 @@
 
                     <div class="col-md-6">
                         <label for="disponibilidad">Disponibilidad</label>
-                        <select id="disponibilidad" class="form-select" th:field="*{disponibilidad}">
+                        <select id="disponibilidad"
+                                class="form-select"
+                                th:field="*{disponibilidad}">
                             <option th:each="d : ${T(es.uji.ei1027.ovi.modelo.PapPati.Disponibilidad).values()}"
                                     th:value="${d}"
                                     th:text="${d}">
@@ -236,7 +273,9 @@
 
                     <div class="col-md-6">
                         <label for="vehiculoPropio">Vehículo propio</label>
-                        <select id="vehiculoPropio" class="form-select" th:field="*{vehiculoPropio}">
+                        <select id="vehiculoPropio"
+                                class="form-select"
+                                th:field="*{vehiculoPropio}">
                             <option th:value="true">Sí</option>
                             <option th:value="false">No</option>
                         </select>
@@ -244,7 +283,9 @@
 
                     <div class="col-md-6">
                         <label for="carnetConducir">Carnet de conducir</label>
-                        <select id="carnetConducir" class="form-select" th:field="*{carnetConducir}">
+                        <select id="carnetConducir"
+                                class="form-select"
+                                th:field="*{carnetConducir}">
                             <option th:value="true">Sí</option>
                             <option th:value="false">No</option>
                         </select>
@@ -256,8 +297,7 @@
                                id="fechaInicioDisponibilidad"
                                name="fechaInicioDisponibilidad"
                                class="form-control"
-                               th:value="${papPati.fechaInicioDisponibilidad != null ? #temporals.format(papPati.fechaInicioDisponibilidad, 'yyyy-MM-dd') : ''}"
-                               required>
+                               th:value="${papPati.fechaInicioDisponibilidad != null ? #temporals.format(papPati.fechaInicioDisponibilidad, 'yyyy-MM-dd') : ''}">
                     </div>
 
                     <div class="col-md-6">
@@ -277,12 +317,53 @@
                                th:field="*{centroSocial}">
                     </div>
 
+                    <!-- CV ACTUAL Y NUEVO CV -->
                     <div class="col-md-6">
-                        <label for="urlCV">URL CV</label>
-                        <input type="text"
-                               id="urlCV"
+                        <label for="cvFile">CV en PDF</label>
+
+                        <div class="cv-box mb-3">
+                            <div th:if="${papPati.urlCV != null && !#strings.isEmpty(papPati.urlCV)}">
+                                <div class="text-muted-small mb-2">
+                                    CV actual guardado:
+                                </div>
+
+                                <div class="cv-actions">
+                                    <a th:href="${papPati.urlCV}"
+                                       class="btn btn-primary btn-sm"
+                                       th:attr="download=${'CV_PAP_PATI_' + papPati.idPatPati}">
+                                        Descargar CV actual
+                                    </a>
+
+                                    <a th:href="${papPati.urlCV}"
+                                       class="btn btn-outline-secondary btn-sm"
+                                       target="_blank">
+                                        Abrir CV
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div th:if="${papPati.urlCV == null || #strings.isEmpty(papPati.urlCV)}"
+                                 class="text-muted-small">
+                                No hay CV guardado actualmente.
+                            </div>
+                        </div>
+
+                        <input type="file"
+                               id="cvFile"
+                               name="cvFile"
                                class="form-control"
-                               th:field="*{urlCV}">
+                               th:classappend="${#fields.hasErrors('urlCV')} ? ' is-invalid' : ''"
+                               accept="application/pdf,.pdf">
+
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('urlCV')}"
+                             th:errors="*{urlCV}">
+                            Error en el CV
+                        </div>
+
+                        <div class="text-muted-small mt-2">
+                            Si no subes un archivo nuevo, se mantendrá el CV actual. Solo se aceptan archivos PDF de máximo 5 MB.
+                        </div>
                     </div>
 
                     <div class="col-12">
@@ -332,7 +413,7 @@
                     Volver a persona
                 </a>
 
-                <a th:href="@{/Persona/listId}"
+                <a th:href="@{/Persona/list/todas}"
                    class="btn btn-outline-secondary">
                     Volver al listado
                 </a>

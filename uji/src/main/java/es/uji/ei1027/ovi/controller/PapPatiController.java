@@ -1,54 +1,171 @@
 package es.uji.ei1027.ovi.controller;
 
-import es.uji.ei1027.ovi.Service.*;
+import es.uji.ei1027.ovi.Service.PapPatiService;
+import es.uji.ei1027.ovi.Service.SesionService;
+import es.uji.ei1027.ovi.Service.SolicitudesService;
 import es.uji.ei1027.ovi.dao.EspecialidadesDao;
 import es.uji.ei1027.ovi.dao.PapPatiDao;
 import es.uji.ei1027.ovi.dao.SolicitudesDao;
-import es.uji.ei1027.ovi.modelo.OviUser.OviUser;
 import es.uji.ei1027.ovi.modelo.OviUser.TipoDiversidadFuncional;
 import es.uji.ei1027.ovi.modelo.PapPati.Especialidad;
 import es.uji.ei1027.ovi.modelo.PapPati.PapPati;
-import es.uji.ei1027.ovi.modelo.Persona.PersonaFormulario;
-import es.uji.ei1027.ovi.modelo.Solicitud.CategoriaSolicitud;
-import es.uji.ei1027.ovi.modelo.Solicitud.EstadoSolicitud;
 import es.uji.ei1027.ovi.modelo.Solicitud.Solicitud;
 import es.uji.ei1027.ovi.modelo.Solicitud.TipoSolicitud;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Controller
 @RequestMapping("/PapPati")
 public class PapPatiController {
+
     private SolicitudesDao solicitudesDao;
     private PapPatiDao papPatiDao;
     private EspecialidadesDao especialidadesDao;
     private SolicitudesService solicitudesService;
     private PapPatiService papPatiService;
     private SesionService sesionService;
+
+    private static final long MAX_CV_SIZE = 5 * 1024 * 1024; // 5 MB
+
+    private static final Path CV_UPLOAD_DIR =
+            Paths.get("uploads", "cv").toAbsolutePath().normalize();
+
     @Autowired
     public void setPapPatiService(PapPatiService papPatiService) {
         this.papPatiService = papPatiService;
     }
+
     @Autowired
-    public void setSolicitudesService(SolicitudesService solicitudesService) {this.solicitudesService = solicitudesService;}
-    @Autowired
-    public void setSolicitudDao(SolicitudesDao solicitudDao) {this.solicitudesDao = solicitudDao;}
-    @Autowired
-    public void setPersonaService(EspecialidadesDao especialidadesDao) {this.especialidadesDao = especialidadesDao;}
-    @Autowired
-    public void setPapPatiDao(PapPatiDao papPatiDao) {this.papPatiDao = papPatiDao;
+    public void setSolicitudesService(SolicitudesService solicitudesService) {
+        this.solicitudesService = solicitudesService;
     }
+
+    @Autowired
+    public void setSolicitudDao(SolicitudesDao solicitudDao) {
+        this.solicitudesDao = solicitudDao;
+    }
+
+    @Autowired
+    public void setPersonaService(EspecialidadesDao especialidadesDao) {
+        this.especialidadesDao = especialidadesDao;
+    }
+
+    @Autowired
+    public void setPapPatiDao(PapPatiDao papPatiDao) {
+        this.papPatiDao = papPatiDao;
+    }
+
     @Autowired
     public void setSesionService(SesionService sesionService) {
         this.sesionService = sesionService;
+    }
+
+    private boolean esCvPdfValido(MultipartFile cvFile) {
+        if (cvFile == null || cvFile.isEmpty()) {
+            return false;
+        }
+
+        String nombreOriginal = cvFile.getOriginalFilename();
+
+        if (nombreOriginal == null) {
+            return false;
+        }
+
+        return nombreOriginal.toLowerCase().endsWith(".pdf");
+    }
+
+    private String guardarCvPdf(MultipartFile cvFile, int idPersona) throws IOException {
+        Files.createDirectories(CV_UPLOAD_DIR);
+
+        String nombreArchivo = "cv_pappati_" + idPersona + "_" + UUID.randomUUID() + ".pdf";
+
+        Path destino = CV_UPLOAD_DIR.resolve(nombreArchivo).normalize();
+
+        Files.copy(cvFile.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
+
+        return "/uploads/cv/" + nombreArchivo;
+    }
+
+    private void validarCvObligatorio(MultipartFile cvFile, BindingResult bindingResult) {
+        if (cvFile == null || cvFile.isEmpty()) {
+            bindingResult.rejectValue(
+                    "urlCV",
+                    "cvFile.empty",
+                    "Debes subir el CV en formato PDF."
+            );
+        } else if (!esCvPdfValido(cvFile)) {
+            bindingResult.rejectValue(
+                    "urlCV",
+                    "cvFile.invalid",
+                    "El CV debe ser un archivo PDF."
+            );
+        } else if (cvFile.getSize() > MAX_CV_SIZE) {
+            bindingResult.rejectValue(
+                    "urlCV",
+                    "cvFile.size",
+                    "El CV no puede superar los 5 MB."
+            );
+        }
+    }
+
+    private void validarCvOpcional(MultipartFile cvFile, BindingResult bindingResult) {
+        if (cvFile == null || cvFile.isEmpty()) {
+            return;
+        }
+
+        if (!esCvPdfValido(cvFile)) {
+            bindingResult.rejectValue(
+                    "urlCV",
+                    "cvFile.invalid",
+                    "El CV debe ser un archivo PDF."
+            );
+        } else if (cvFile.getSize() > MAX_CV_SIZE) {
+            bindingResult.rejectValue(
+                    "urlCV",
+                    "cvFile.size",
+                    "El CV no puede superar los 5 MB."
+            );
+        }
+    }
+
+    private void recargarFormularioCreate(Model model,
+                                          Solicitud solicitud,
+                                          List<String> especialidadesSeleccionadas) {
+        model.addAttribute("solicitud", solicitud);
+        model.addAttribute("Especialidades", TipoDiversidadFuncional.getLista());
+
+        if (especialidadesSeleccionadas == null) {
+            model.addAttribute("especialidadesSeleccionadas", List.of());
+        } else {
+            model.addAttribute("especialidadesSeleccionadas", especialidadesSeleccionadas);
+        }
+    }
+
+    private void recargarFormularioUpdate(Model model,
+                                          PapPati papPati,
+                                          List<String> especialidadesSeleccionadas) {
+        model.addAttribute("papPati", papPati);
+        model.addAttribute("Especialidades", TipoDiversidadFuncional.getLista());
+
+        if (especialidadesSeleccionadas == null) {
+            model.addAttribute("especialidadesSeleccionadas", List.of());
+        } else {
+            model.addAttribute("especialidadesSeleccionadas", especialidadesSeleccionadas);
+        }
     }
 
     @GetMapping("/solicitud")
@@ -58,6 +175,7 @@ public class PapPatiController {
             sesionService.guardarNextUrl(session, "/PapPati/solicitud");
             return "redirect:/login";
         }
+
         int idPersona = sesionService.getUsuario(session).getIdPersona();
         String rutaDestino = papPatiService.obtenerRutaSolicitudPapPati(idPersona);
 
@@ -65,8 +183,8 @@ public class PapPatiController {
     }
 
     @GetMapping("/create/{id}")
-    public String mostrarFormularioRegistro(Model model , @PathVariable int id , HttpSession session) {
-        Solicitud solicitud = solicitudesService.solicitudRol(id,TipoSolicitud.Pap_pati);
+    public String mostrarFormularioRegistro(Model model, @PathVariable int id, HttpSession session) {
+        Solicitud solicitud = solicitudesService.solicitudRol(id, TipoSolicitud.Pap_pati);
         String url = "/PapPati/create/" + id;
 
         if (!sesionService.hayUsuarioLogueado(session)) {
@@ -82,49 +200,72 @@ public class PapPatiController {
         if (papPatiDao.getPapPati(id) != null) {
             return "redirect:/PapPati/solicitud";
         }
+
         PapPati papPati = new PapPati();
         papPati.setIdPatPati(id);
+
         model.addAttribute("papPati", papPati);
         model.addAttribute("solicitud", solicitud);
         model.addAttribute("Especialidades", TipoDiversidadFuncional.getLista());
         model.addAttribute("especialidadesSeleccionadas", List.of());
+
         return "PapPati/create";
     }
 
-
-
     @PostMapping("/create/{id}")
     public String procesarRegistro(
-            @ModelAttribute("papPati") PapPati papPati, @ModelAttribute("solicitud") Solicitud solicitud ,
+            @PathVariable int id,
+            @ModelAttribute("papPati") PapPati papPati,
             BindingResult bindingResult,
-            Model model , @PathVariable int id , @RequestParam(value = "especialidadesSeleccionadas", required = false) List<String> especialidades) {
+            @ModelAttribute("solicitud") Solicitud solicitud,
+            Model model,
+            @RequestParam(value = "especialidadesSeleccionadas", required = false) List<String> especialidades,
+            @RequestParam(value = "cvFile", required = false) MultipartFile cvFile) {
+
+        papPati.setIdPatPati(id);
+
+        validarCvObligatorio(cvFile, bindingResult);
 
         if (bindingResult.hasErrors()) {
+            recargarFormularioCreate(model, solicitud, especialidades);
             return "PapPati/create";
         }
-       // try {
+
+        try {
+            String rutaCv = guardarCvPdf(cvFile, id);
+            papPati.setUrlCV(rutaCv);
+
             solicitudesDao.createSolicitud(solicitud);
             papPatiDao.crear(papPati);
 
-            //esto se puede extraer al dao mejor
             if (especialidades != null) {
                 for (String esp : especialidades) {
                     especialidadesDao.addEspecialidad(id, esp);
                 }
             }
-        /*
-        }catch (Exception e){
+
+        } catch (IOException e) {
+            bindingResult.rejectValue(
+                    "urlCV",
+                    "cvFile.error",
+                    "No se ha podido guardar el CV."
+            );
+
+            recargarFormularioCreate(model, solicitud, especialidades);
             return "PapPati/create";
         }
-        */
-
 
         return "redirect:/";
     }
-    @RequestMapping(value = "/update/{id}",method = RequestMethod.GET)
+
+    @GetMapping("/update/{id}")
     public String editPersona(Model model, @PathVariable int id) {
         PapPati papPati = papPatiDao.getPapPati(id);
-        //esto lo podria extraer tambien
+
+        if (papPati == null) {
+            return "redirect:/";
+        }
+
         List<String> especialidadesSeleccionadas = new ArrayList<>();
 
         if (papPati.getEspecialidades() != null) {
@@ -135,36 +276,82 @@ public class PapPatiController {
 
         model.addAttribute("papPati", papPati);
         model.addAttribute("Especialidades", TipoDiversidadFuncional.getLista());
-        model.addAttribute("especialidadesSeleccionadas",especialidadesSeleccionadas);
-        return "PapPati/update";
+        model.addAttribute("especialidadesSeleccionadas", especialidadesSeleccionadas);
 
+        return "PapPati/update";
     }
-    @PostMapping(value = "/update/{id}")
+
+    @PostMapping("/update/{id}")
     public String procesarActualizarPapPati(
             @PathVariable int id,
             @ModelAttribute("papPati") PapPati papPati,
+            BindingResult bindingResult,
+            Model model,
             @RequestParam(value = "especialidadesSeleccionadas", required = false)
-            List<String> especialidadesSeleccionadas) {
-        especialidadesDao.deleteAllbyId(papPati.getIdPatPati());
-        //esto se puede extraer al dao mejor
-        if (especialidadesSeleccionadas != null) {
-            for (String esp : especialidadesSeleccionadas) {
-                especialidadesDao.addEspecialidad(id, esp);
-            }
+            List<String> especialidadesSeleccionadas,
+            @RequestParam(value = "cvFile", required = false)
+            MultipartFile cvFile) {
+
+        papPati.setIdPatPati(id);
+
+        PapPati papPatiOriginal = papPatiDao.getPapPati(id);
+
+        if (papPatiOriginal == null) {
+            return "redirect:/";
         }
 
-        papPatiDao.update(papPati);
+        validarCvOpcional(cvFile, bindingResult);
 
-        return "redirect:/Persona/update/" + id;
+        if (bindingResult.hasErrors()) {
+            papPati.setUrlCV(papPatiOriginal.getUrlCV());
+            recargarFormularioUpdate(model, papPati, especialidadesSeleccionadas);
+            return "PapPati/update";
+        }
+
+        try {
+            if (cvFile != null && !cvFile.isEmpty()) {
+                String nuevaRutaCv = guardarCvPdf(cvFile, id);
+                papPati.setUrlCV(nuevaRutaCv);
+            } else {
+                papPati.setUrlCV(papPatiOriginal.getUrlCV());
+            }
+
+            especialidadesDao.deleteAllbyId(papPati.getIdPatPati());
+
+            if (especialidadesSeleccionadas != null) {
+                for (String esp : especialidadesSeleccionadas) {
+                    especialidadesDao.addEspecialidad(id, esp);
+                }
+            }
+
+            papPatiDao.update(papPati);
+
+        } catch (IOException e) {
+            bindingResult.rejectValue(
+                    "urlCV",
+                    "cvFile.error",
+                    "No se ha podido guardar el CV."
+            );
+
+            papPati.setUrlCV(papPatiOriginal.getUrlCV());
+            recargarFormularioUpdate(model, papPati, especialidadesSeleccionadas);
+            return "PapPati/update";
+        }
+
+        return "PapPati/details/" + id;
     }
+
     @GetMapping("/details/{id}")
     public String details(@PathVariable int id, Model model) {
         PapPati papPati = papPatiDao.getPapPati(id);
 
+        if (papPati == null) {
+            return "redirect:/";
+        }
+
         model.addAttribute("papPati", papPati);
-        model.addAttribute("especialidadesSeleccionadas",
-                papPati.getEspecialidadesNombre());
+        model.addAttribute("especialidadesSeleccionadas", papPati.getEspecialidadesNombre());
+
         return "PapPati/details";
     }
-
 }

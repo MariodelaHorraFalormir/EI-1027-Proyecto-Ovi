@@ -148,6 +148,7 @@
             font-size: 0.92rem;
             color: #6c757d;
         }
+
         .status-badge {
             display: inline-block;
             font-weight: 700;
@@ -181,9 +182,15 @@
             border-color: #d1d5db;
         }
 
-        .status-help-text {
-            font-size: 0.88rem;
-            color: #64748b;
+        .cv-actions {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .cv-empty {
+            color: #6c757d;
         }
     </style>
 </head>
@@ -206,35 +213,33 @@
                 </p>
             </div>
 
-            <!-- ESTADO DEL ROL: SOLO LECTURA -->
             <div class="d-flex flex-column align-items-md-end gap-2">
-
                 <div th:switch="${papPati.estadoRol != null ? papPati.estadoRol.name() : 'SinEstado'}">
 
-            <span th:case="'Activo'"
-                  class="status-badge status-activo">
-                Rol activo
-            </span>
+                    <span th:case="'Activo'"
+                          class="status-badge status-activo">
+                        Rol activo
+                    </span>
 
                     <span th:case="'Pendiente'"
                           class="status-badge status-pendiente">
-                Rol pendiente
-            </span>
+                        Rol pendiente
+                    </span>
 
                     <span th:case="'Rechazado'"
                           class="status-badge status-rechazado">
-                Rol rechazado
-            </span>
+                        Rol rechazado
+                    </span>
 
                     <span th:case="*"
                           class="status-badge status-sin-estado">
-                Sin estado
-            </span>
+                        Sin estado
+                    </span>
 
                 </div>
-
             </div>
         </div>
+
         <!-- DATOS PAP PATI -->
         <div class="block-card">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
@@ -300,21 +305,35 @@
                     </div>
                 </div>
 
+                <!-- CV DESCARGABLE -->
                 <div class="col-md-6">
-                    <div class="data-label">URL CV</div>
+                    <div class="data-label">CV</div>
 
-                    <div class="data-value"
+                    <div class="data-value cv-empty"
                          th:if="${papPati.urlCV == null || #strings.isEmpty(papPati.urlCV)}">
-                        No indicada
+                        No hay CV disponible
                     </div>
 
                     <div class="data-value"
                          th:if="${papPati.urlCV != null && !#strings.isEmpty(papPati.urlCV)}">
-                        <a th:href="${papPati.urlCV}"
-                           th:text="${papPati.urlCV}"
-                           target="_blank">
-                            URL CV
-                        </a>
+
+                        <div class="cv-actions">
+                            <a th:href="${papPati.urlCV}"
+                               class="btn btn-primary btn-sm"
+                               th:attr="download=${'CV_PAP_PATI_' + papPati.idPatPati}">
+                                Descargar CV
+                            </a>
+
+                            <a th:href="${papPati.urlCV}"
+                               class="btn btn-outline-secondary btn-sm"
+                               target="_blank">
+                                Abrir CV
+                            </a>
+                        </div>
+
+                        <div class="text-muted-small mt-2">
+                            Puedes descargar el CV o abrirlo en una nueva pestaña.
+                        </div>
                     </div>
                 </div>
 

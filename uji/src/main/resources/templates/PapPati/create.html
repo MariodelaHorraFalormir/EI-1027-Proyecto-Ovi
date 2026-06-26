@@ -49,7 +49,8 @@
             margin-bottom: 1.2rem;
         }
 
-        .form-control, .form-select {
+        .form-control,
+        .form-select {
             border-radius: 12px;
         }
 
@@ -58,12 +59,43 @@
             color: white;
             border-radius: 999px;
             padding: 0.4rem 0.8rem;
+            font-weight: 600;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            gap: 1rem;
+            flex-wrap: wrap;
         }
 
         .actions {
             margin-top: 2rem;
             display: flex;
             gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .form-text {
+            font-size: 0.85rem;
+        }
+
+        .error-text {
+            color: #dc3545;
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+            font-weight: 600;
+        }
+
+        .file-warning {
+            background: #fff3cd;
+            color: #664d03;
+            border: 1px solid #ffecb5;
+            border-radius: 12px;
+            padding: 0.75rem 0.95rem;
+            margin-top: 0.6rem;
+            font-size: 0.9rem;
         }
     </style>
 </head>
@@ -80,8 +112,10 @@
         <!-- HEADER -->
         <div class="top-bar">
             <h1 class="section-title">Solicitud rol PapPati</h1>
+
             <span class="role-badge"
                   th:text="'Persona ID ' + ${papPati.idPatPati}">
+                Persona ID 1
             </span>
         </div>
 
@@ -91,7 +125,8 @@
 
         <form th:object="${papPati}"
               method="post"
-              th:action="@{/PapPati/create/{id}(id=${papPati.idPatPati})}">
+              th:action="@{/PapPati/create/{id}(id=${papPati.idPatPati})}"
+              enctype="multipart/form-data">
 
             <!-- OCULTOS -->
             <input type="hidden" th:field="*{idPatPati}">
@@ -107,7 +142,7 @@
                 <div class="row g-3">
 
                     <div class="col-md-6">
-                        <label>Disponibilidad</label>
+                        <label class="form-label">Disponibilidad</label>
                         <select class="form-select" th:field="*{disponibilidad}">
                             <option th:each="d : ${T(es.uji.ei1027.ovi.modelo.PapPati.Disponibilidad).values()}"
                                     th:value="${d}"
@@ -117,13 +152,15 @@
                     </div>
 
                     <div class="col-md-6">
-                        <label>Experiencia</label>
-                        <input type="number" class="form-control"
-                               th:field="*{experiencia}" min="0">
+                        <label class="form-label">Experiencia</label>
+                        <input type="number"
+                               class="form-control"
+                               th:field="*{experiencia}"
+                               min="0">
                     </div>
 
                     <div class="col-md-6">
-                        <label>Vehículo propio</label>
+                        <label class="form-label">Vehículo propio</label>
                         <select class="form-select" th:field="*{vehiculoPropio}">
                             <option th:value="true">Sí</option>
                             <option th:value="false">No</option>
@@ -131,7 +168,7 @@
                     </div>
 
                     <div class="col-md-6">
-                        <label>Carnet de conducir</label>
+                        <label class="form-label">Carnet de conducir</label>
                         <select class="form-select" th:field="*{carnetConducir}">
                             <option th:value="true">Sí</option>
                             <option th:value="false">No</option>
@@ -139,33 +176,62 @@
                     </div>
 
                     <div class="col-md-6">
-                        <label>Fecha inicio</label>
-                        <input type="date" class="form-control"
+                        <label class="form-label">Fecha inicio</label>
+                        <input type="date"
+                               class="form-control"
                                th:field="*{fechaInicioDisponibilidad}">
                     </div>
 
                     <div class="col-md-6">
-                        <label>Fecha fin</label>
-                        <input type="date" class="form-control"
+                        <label class="form-label">Fecha fin</label>
+                        <input type="date"
+                               class="form-control"
                                th:field="*{fechaFinDisponibilidad}">
                     </div>
 
                     <div class="col-md-6">
-                        <label>Centro social</label>
-                        <input type="text" class="form-control"
+                        <label class="form-label">Centro social</label>
+                        <input type="text"
+                               class="form-control"
                                th:field="*{centroSocial}">
                     </div>
 
+                    <!-- CV PDF -->
                     <div class="col-md-6">
-                        <label>URL CV</label>
-                        <input type="text" class="form-control"
-                               th:field="*{urlCV}">
+                        <label for="cvFile" class="form-label">CV en PDF</label>
+
+                        <input type="file"
+                               class="form-control"
+                               id="cvFile"
+                               name="cvFile"
+                               accept="application/pdf,.pdf">
+
+                        <div class="form-text">
+                            Sube tu CV en formato PDF. El archivo se guardará y después estará disponible para descargar desde los detalles del PAP/PATI.
+                        </div>
+
+                        <div class="error-text"
+                             th:if="${#fields.hasErrors('urlCV')}"
+                             th:errors="*{urlCV}">
+                            Error en el CV
+                        </div>
+
+                        <div class="error-text"
+                             th:if="${errorCv != null}"
+                             th:text="${errorCv}">
+                            Error en el CV
+                        </div>
+
+                        <div class="file-warning">
+                            Solo se aceptan archivos PDF.
+                        </div>
                     </div>
 
                     <div class="col-12">
-                        <label>Descripción</label>
+                        <label class="form-label">Descripción</label>
                         <textarea class="form-control"
-                                  th:field="*{descripcionPerfil}"></textarea>
+                                  th:field="*{descripcionPerfil}"
+                                  placeholder="Describe brevemente tu perfil, experiencia o disponibilidad..."></textarea>
                     </div>
 
                 </div>
@@ -183,10 +249,12 @@
                             <input class="form-check-input"
                                    type="checkbox"
                                    name="especialidadesSeleccionadas"
-                                   th:value="${esp}">
+                                   th:value="${esp}"
+                                   th:checked="${especialidadesSeleccionadas != null and especialidadesSeleccionadas.contains(esp)}">
 
                             <label class="form-check-label"
                                    th:text="${esp}">
+                                Especialidad
                             </label>
                         </div>
                     </div>
