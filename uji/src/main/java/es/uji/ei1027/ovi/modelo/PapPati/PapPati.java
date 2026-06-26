@@ -9,7 +9,7 @@ import java.util.List;
 
 public class PapPati {
     private Disponibilidad disponibilidad;
-    private int experiencia;
+    private Integer  experiencia;
     private Boolean carnetConducir;
     private Boolean vehiculoPropio;
     private String urlCV;
@@ -39,11 +39,11 @@ public class PapPati {
         this.carnetConducir = carnetConducir;
     }
 
-    public int getExperiencia() {
+    public Integer  getExperiencia() {
         return experiencia;
     }
 
-    public void setExperiencia(int experiencia) {
+    public void setExperiencia(Integer  experiencia) {
         this.experiencia = experiencia;
     }
 

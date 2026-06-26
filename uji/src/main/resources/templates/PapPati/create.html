@@ -81,10 +81,8 @@
             font-size: 0.85rem;
         }
 
-        .error-text {
-            color: #dc3545;
+        .invalid-feedback {
             font-size: 0.85rem;
-            margin-top: 0.25rem;
             font-weight: 600;
         }
 
@@ -96,6 +94,11 @@
             padding: 0.75rem 0.95rem;
             margin-top: 0.6rem;
             font-size: 0.9rem;
+        }
+
+        textarea.form-control {
+            min-height: 90px;
+            resize: vertical;
         }
     </style>
 </head>
@@ -109,7 +112,6 @@
 <div class="container">
     <div class="edit-card">
 
-        <!-- HEADER -->
         <div class="top-bar">
             <h1 class="section-title">Solicitud rol PapPati</h1>
 
@@ -126,14 +128,23 @@
         <form th:object="${papPati}"
               method="post"
               th:action="@{/PapPati/create/{id}(id=${papPati.idPatPati})}"
-              enctype="multipart/form-data">
+              enctype="multipart/form-data"
+              novalidate>
 
-            <!-- OCULTOS -->
+            <!-- OCULTOS PAP/PATI -->
             <input type="hidden" th:field="*{idPatPati}">
+            <input type="hidden" th:field="*{urlCV}">
+
+            <!-- OCULTOS SOLICITUD -->
             <input type="hidden" name="personaSolicitante" th:value="${solicitud.personaSolicitante}">
             <input type="hidden" name="categoriaSolicitud" th:value="${solicitud.categoriaSolicitud}">
             <input type="hidden" name="tipoSolicitud" th:value="${solicitud.tipoSolicitud}">
             <input type="hidden" name="estadoSolicitud" th:value="${solicitud.estadoSolicitud}">
+
+            <div class="alert alert-danger"
+                 th:if="${#fields.hasAnyErrors()}">
+                Revisa los campos marcados antes de enviar la solicitud.
+            </div>
 
             <!-- DATOS PAP PATI -->
             <div class="block-card">
@@ -142,58 +153,114 @@
                 <div class="row g-3">
 
                     <div class="col-md-6">
-                        <label class="form-label">Disponibilidad</label>
-                        <select class="form-select" th:field="*{disponibilidad}">
+                        <label class="form-label" for="disponibilidad">Disponibilidad</label>
+
+                        <select id="disponibilidad"
+                                class="form-select"
+                                th:field="*{disponibilidad}"
+                                th:errorclass="is-invalid">
+                            <option value="">Selecciona una disponibilidad</option>
+
                             <option th:each="d : ${T(es.uji.ei1027.ovi.modelo.PapPati.Disponibilidad).values()}"
                                     th:value="${d}"
                                     th:text="${d}">
                             </option>
                         </select>
+
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('disponibilidad')}"
+                             th:errors="*{disponibilidad}">
+                        </div>
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label">Experiencia</label>
+                        <label class="form-label" for="experiencia">Experiencia</label>
+
                         <input type="number"
+                               id="experiencia"
                                class="form-control"
                                th:field="*{experiencia}"
-                               min="0">
+                               th:errorclass="is-invalid"
+                               min="0"
+                               max="80">
+
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('experiencia')}"
+                             th:errors="*{experiencia}">
+                        </div>
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label">Vehículo propio</label>
-                        <select class="form-select" th:field="*{vehiculoPropio}">
+                        <label class="form-label" for="vehiculoPropio">Vehículo propio</label>
+
+                        <select id="vehiculoPropio"
+                                class="form-select"
+                                th:field="*{vehiculoPropio}">
                             <option th:value="true">Sí</option>
                             <option th:value="false">No</option>
                         </select>
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label">Carnet de conducir</label>
-                        <select class="form-select" th:field="*{carnetConducir}">
+                        <label class="form-label" for="carnetConducir">Carnet de conducir</label>
+
+                        <select id="carnetConducir"
+                                class="form-select"
+                                th:field="*{carnetConducir}">
                             <option th:value="true">Sí</option>
                             <option th:value="false">No</option>
                         </select>
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label">Fecha inicio</label>
+                        <label class="form-label" for="fechaInicioDisponibilidad">Fecha inicio</label>
+
                         <input type="date"
+                               id="fechaInicioDisponibilidad"
+                               name="fechaInicioDisponibilidad"
                                class="form-control"
-                               th:field="*{fechaInicioDisponibilidad}">
+                               th:classappend="${#fields.hasErrors('fechaInicioDisponibilidad')} ? ' is-invalid' : ''"
+                               th:value="${papPati.fechaInicioDisponibilidad != null ? #temporals.format(papPati.fechaInicioDisponibilidad, 'yyyy-MM-dd') : ''}">
+
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('fechaInicioDisponibilidad')}"
+                             th:errors="*{fechaInicioDisponibilidad}">
+                        </div>
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label">Fecha fin</label>
+                        <label class="form-label" for="fechaFinDisponibilidad">Fecha fin</label>
+
                         <input type="date"
+                               id="fechaFinDisponibilidad"
+                               name="fechaFinDisponibilidad"
                                class="form-control"
-                               th:field="*{fechaFinDisponibilidad}">
+                               th:classappend="${#fields.hasErrors('fechaFinDisponibilidad')} ? ' is-invalid' : ''"
+                               th:value="${papPati.fechaFinDisponibilidad != null ? #temporals.format(papPati.fechaFinDisponibilidad, 'yyyy-MM-dd') : ''}">
+
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('fechaFinDisponibilidad')}"
+                             th:errors="*{fechaFinDisponibilidad}">
+                        </div>
+
+                        <div class="form-text">
+                            Puedes dejarla vacía si no tienes fecha de fin.
+                        </div>
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label">Centro social</label>
+                        <label class="form-label" for="centroSocial">Centro social</label>
+
                         <input type="text"
+                               id="centroSocial"
                                class="form-control"
-                               th:field="*{centroSocial}">
+                               th:field="*{centroSocial}"
+                               th:errorclass="is-invalid">
+
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('centroSocial')}"
+                             th:errors="*{centroSocial}">
+                        </div>
                     </div>
 
                     <!-- CV PDF -->
@@ -202,24 +269,23 @@
 
                         <input type="file"
                                class="form-control"
+                               th:classappend="${#fields.hasErrors('urlCV')} ? ' is-invalid' : ''"
                                id="cvFile"
                                name="cvFile"
                                accept="application/pdf,.pdf">
 
-                        <div class="form-text">
-                            Sube tu CV en formato PDF. El archivo se guardará y después estará disponible para descargar desde los detalles del PAP/PATI.
-                        </div>
-
-                        <div class="error-text"
+                        <div class="invalid-feedback d-block"
                              th:if="${#fields.hasErrors('urlCV')}"
                              th:errors="*{urlCV}">
-                            Error en el CV
                         </div>
 
-                        <div class="error-text"
-                             th:if="${errorCv != null}"
-                             th:text="${errorCv}">
-                            Error en el CV
+                        <div class="alert alert-success mt-2 mb-0"
+                             th:if="${papPati.urlCV != null && !#strings.isEmpty(papPati.urlCV)}">
+                            CV cargado correctamente. Puedes corregir el resto de campos sin volver a seleccionarlo.
+                        </div>
+
+                        <div class="form-text">
+                            Sube tu CV en formato PDF. Si ya aparece como cargado, no hace falta volver a seleccionarlo.
                         </div>
 
                         <div class="file-warning">
@@ -228,10 +294,24 @@
                     </div>
 
                     <div class="col-12">
-                        <label class="form-label">Descripción</label>
-                        <textarea class="form-control"
+                        <label class="form-label" for="descripcionPerfil">Descripción</label>
+
+                        <textarea id="descripcionPerfil"
+                                  class="form-control"
                                   th:field="*{descripcionPerfil}"
+                                  th:errorclass="is-invalid"
+                                  minlength="20"
+                                  maxlength="1000"
                                   placeholder="Describe brevemente tu perfil, experiencia o disponibilidad..."></textarea>
+
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('descripcionPerfil')}"
+                             th:errors="*{descripcionPerfil}">
+                        </div>
+
+                        <div class="form-text">
+                            La descripción debe tener al menos 20 caracteres.
+                        </div>
                     </div>
 
                 </div>
@@ -258,6 +338,10 @@
                             </label>
                         </div>
                     </div>
+                </div>
+
+                <div class="form-text">
+                    Puedes dejar las especialidades sin marcar si no corresponde ninguna.
                 </div>
             </div>
 

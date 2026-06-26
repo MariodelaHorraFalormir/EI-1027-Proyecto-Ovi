@@ -187,7 +187,6 @@
 <div class="container">
     <div class="edit-card">
 
-        <!-- HEADER -->
         <div class="top-bar">
             <div>
                 <h1 class="section-title">Editar rol PapPati</h1>
@@ -196,9 +195,7 @@
                 </p>
             </div>
 
-            <!-- ESTADO DEL ROL: SOLO LECTURA -->
             <div class="d-flex flex-column align-items-md-end gap-2">
-
                 <div th:switch="${papPati.estadoRol != null ? papPati.estadoRol.name() : 'SinEstado'}">
 
                     <span th:case="'Activo'"
@@ -226,7 +223,6 @@
                 <span class="status-help-text">
                     Solo lectura
                 </span>
-
             </div>
         </div>
 
@@ -236,15 +232,14 @@
               enctype="multipart/form-data"
               novalidate>
 
-            <!-- OCULTO -->
             <input type="hidden" th:field="*{idPatPati}">
+            <input type="hidden" th:field="*{urlCV}">
 
             <div class="alert alert-danger"
                  th:if="${#fields.hasAnyErrors()}">
                 Revisa los campos marcados antes de guardar los cambios.
             </div>
 
-            <!-- DATOS PAP PATI -->
             <div class="block-card">
                 <div class="block-title">Datos del rol</div>
 
@@ -254,12 +249,19 @@
                         <label for="disponibilidad">Disponibilidad</label>
                         <select id="disponibilidad"
                                 class="form-select"
-                                th:field="*{disponibilidad}">
+                                th:field="*{disponibilidad}"
+                                th:errorclass="is-invalid">
+                            <option value="">Selecciona una disponibilidad</option>
                             <option th:each="d : ${T(es.uji.ei1027.ovi.modelo.PapPati.Disponibilidad).values()}"
                                     th:value="${d}"
                                     th:text="${d}">
                             </option>
                         </select>
+
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('disponibilidad')}"
+                             th:errors="*{disponibilidad}">
+                        </div>
                     </div>
 
                     <div class="col-md-6">
@@ -268,7 +270,14 @@
                                id="experiencia"
                                class="form-control"
                                th:field="*{experiencia}"
-                               min="0">
+                               th:errorclass="is-invalid"
+                               min="0"
+                               max="80">
+
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('experiencia')}"
+                             th:errors="*{experiencia}">
+                        </div>
                     </div>
 
                     <div class="col-md-6">
@@ -295,18 +304,32 @@
                         <label for="fechaInicioDisponibilidad">Fecha inicio disponibilidad</label>
                         <input type="date"
                                id="fechaInicioDisponibilidad"
-                               name="fechaInicioDisponibilidad"
                                class="form-control"
-                               th:value="${papPati.fechaInicioDisponibilidad != null ? #temporals.format(papPati.fechaInicioDisponibilidad, 'yyyy-MM-dd') : ''}">
+                               th:field="*{fechaInicioDisponibilidad}"
+                               th:errorclass="is-invalid">
+
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('fechaInicioDisponibilidad')}"
+                             th:errors="*{fechaInicioDisponibilidad}">
+                        </div>
                     </div>
 
                     <div class="col-md-6">
                         <label for="fechaFinDisponibilidad">Fecha fin disponibilidad</label>
                         <input type="date"
                                id="fechaFinDisponibilidad"
-                               name="fechaFinDisponibilidad"
                                class="form-control"
-                               th:value="${papPati.fechaFinDisponibilidad != null ? #temporals.format(papPati.fechaFinDisponibilidad, 'yyyy-MM-dd') : ''}">
+                               th:field="*{fechaFinDisponibilidad}"
+                               th:errorclass="is-invalid">
+
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('fechaFinDisponibilidad')}"
+                             th:errors="*{fechaFinDisponibilidad}">
+                        </div>
+
+                        <div class="text-muted-small mt-2">
+                            Puedes dejarla vacía si no hay fecha final.
+                        </div>
                     </div>
 
                     <div class="col-md-6">
@@ -314,24 +337,29 @@
                         <input type="text"
                                id="centroSocial"
                                class="form-control"
-                               th:field="*{centroSocial}">
+                               th:field="*{centroSocial}"
+                               th:errorclass="is-invalid">
+
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('centroSocial')}"
+                             th:errors="*{centroSocial}">
+                        </div>
                     </div>
 
-                    <!-- CV ACTUAL Y NUEVO CV -->
                     <div class="col-md-6">
                         <label for="cvFile">CV en PDF</label>
 
                         <div class="cv-box mb-3">
                             <div th:if="${papPati.urlCV != null && !#strings.isEmpty(papPati.urlCV)}">
                                 <div class="text-muted-small mb-2">
-                                    CV actual guardado:
+                                    CV cargado actualmente:
                                 </div>
 
                                 <div class="cv-actions">
                                     <a th:href="${papPati.urlCV}"
                                        class="btn btn-primary btn-sm"
                                        th:attr="download=${'CV_PAP_PATI_' + papPati.idPatPati}">
-                                        Descargar CV actual
+                                        Descargar CV
                                     </a>
 
                                     <a th:href="${papPati.urlCV}"
@@ -362,7 +390,7 @@
                         </div>
 
                         <div class="text-muted-small mt-2">
-                            Si no subes un archivo nuevo, se mantendrá el CV actual. Solo se aceptan archivos PDF de máximo 5 MB.
+                            Si ya aparece un CV cargado, no hace falta volver a seleccionarlo. Solo se aceptan PDF de máximo 5 MB.
                         </div>
                     </div>
 
@@ -371,14 +399,25 @@
                         <textarea id="descripcionPerfil"
                                   class="form-control"
                                   rows="4"
-                                  th:field="*{descripcionPerfil}">
-                        </textarea>
+                                  th:field="*{descripcionPerfil}"
+                                  th:errorclass="is-invalid"
+                                  minlength="20"
+                                  maxlength="1000"
+                                  placeholder="Describe brevemente tu perfil, experiencia o disponibilidad..."></textarea>
+
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('descripcionPerfil')}"
+                             th:errors="*{descripcionPerfil}">
+                        </div>
+
+                        <div class="text-muted-small mt-2">
+                            La descripción debe tener al menos 20 caracteres.
+                        </div>
                     </div>
 
                 </div>
             </div>
 
-            <!-- ESPECIALIDADES -->
             <div class="block-card">
                 <div class="block-title">Especialidades</div>
 
@@ -400,9 +439,12 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="text-muted-small mt-2">
+                    Puedes dejar las especialidades sin marcar si no corresponde ninguna.
+                </div>
             </div>
 
-            <!-- BOTONES -->
             <div class="actions">
                 <button type="submit" class="btn btn-primary">
                     Guardar cambios

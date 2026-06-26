@@ -3,6 +3,7 @@ package es.uji.ei1027.ovi.controller;
 import es.uji.ei1027.ovi.Service.PapPatiService;
 import es.uji.ei1027.ovi.Service.SesionService;
 import es.uji.ei1027.ovi.Service.SolicitudesService;
+import es.uji.ei1027.ovi.Validadores.PapPatiValidator;
 import es.uji.ei1027.ovi.dao.EspecialidadesDao;
 import es.uji.ei1027.ovi.dao.PapPatiDao;
 import es.uji.ei1027.ovi.dao.SolicitudesDao;
@@ -100,29 +101,77 @@ public class PapPatiController {
         return "/uploads/cv/" + nombreArchivo;
     }
 
-    private void validarCvObligatorio(MultipartFile cvFile, BindingResult bindingResult) {
+    private boolean tieneCvGuardado(String urlCV) {
+        return urlCV != null && !urlCV.trim().isEmpty();
+    }
+
+    private boolean esRutaCvLocal(String urlCV) {
+        return urlCV != null && urlCV.startsWith("/uploads/cv/");
+    }
+
+    private void gestionarCvCreate(
+            PapPati papPati,
+            MultipartFile cvFile,
+            BindingResult bindingResult,
+            int idPersona
+    ) {
+        boolean yaTieneCvGuardado = tieneCvGuardado(papPati.getUrlCV());
+
         if (cvFile == null || cvFile.isEmpty()) {
-            bindingResult.rejectValue(
-                    "urlCV",
-                    "cvFile.empty",
-                    "Debes subir el CV en formato PDF."
-            );
-        } else if (!esCvPdfValido(cvFile)) {
+            if (!yaTieneCvGuardado) {
+                bindingResult.rejectValue(
+                        "urlCV",
+                        "cvFile.empty",
+                        "Debes subir el CV en formato PDF."
+                );
+            }
+
+            return;
+        }
+
+        if (!esCvPdfValido(cvFile)) {
             bindingResult.rejectValue(
                     "urlCV",
                     "cvFile.invalid",
                     "El CV debe ser un archivo PDF."
             );
-        } else if (cvFile.getSize() > MAX_CV_SIZE) {
+            return;
+        }
+
+        if (cvFile.getSize() > MAX_CV_SIZE) {
             bindingResult.rejectValue(
                     "urlCV",
                     "cvFile.size",
                     "El CV no puede superar los 5 MB."
             );
+            return;
+        }
+
+        try {
+            String cvAnteriorFormulario = papPati.getUrlCV();
+            String rutaCv = guardarCvPdf(cvFile, idPersona);
+            papPati.setUrlCV(rutaCv);
+
+            if (esRutaCvLocal(cvAnteriorFormulario) && !cvAnteriorFormulario.equals(rutaCv)) {
+                borrarCvSiExiste(cvAnteriorFormulario);
+            }
+
+        } catch (IOException e) {
+            bindingResult.rejectValue(
+                    "urlCV",
+                    "cvFile.error",
+                    "No se ha podido guardar el CV."
+            );
         }
     }
 
-    private void validarCvOpcional(MultipartFile cvFile, BindingResult bindingResult) {
+    private void gestionarCvUpdate(
+            PapPati papPati,
+            PapPati papPatiOriginal,
+            MultipartFile cvFile,
+            BindingResult bindingResult,
+            int idPersona
+    ) {
         if (cvFile == null || cvFile.isEmpty()) {
             return;
         }
@@ -133,18 +182,45 @@ public class PapPatiController {
                     "cvFile.invalid",
                     "El CV debe ser un archivo PDF."
             );
-        } else if (cvFile.getSize() > MAX_CV_SIZE) {
+            return;
+        }
+
+        if (cvFile.getSize() > MAX_CV_SIZE) {
             bindingResult.rejectValue(
                     "urlCV",
                     "cvFile.size",
                     "El CV no puede superar los 5 MB."
+            );
+            return;
+        }
+
+        try {
+            String cvAnteriorFormulario = papPati.getUrlCV();
+            String cvOriginalBaseDatos = papPatiOriginal.getUrlCV();
+            String nuevaRutaCv = guardarCvPdf(cvFile, idPersona);
+
+            papPati.setUrlCV(nuevaRutaCv);
+
+            if (esRutaCvLocal(cvAnteriorFormulario)
+                    && !cvAnteriorFormulario.equals(cvOriginalBaseDatos)
+                    && !cvAnteriorFormulario.equals(nuevaRutaCv)) {
+                borrarCvSiExiste(cvAnteriorFormulario);
+            }
+
+        } catch (IOException e) {
+            bindingResult.rejectValue(
+                    "urlCV",
+                    "cvFile.error",
+                    "No se ha podido guardar el CV."
             );
         }
     }
 
     private void recargarFormularioCreate(Model model,
                                           Solicitud solicitud,
+                                          PapPati papPati,
                                           List<String> especialidadesSeleccionadas) {
+        model.addAttribute("papPati", papPati);
         model.addAttribute("solicitud", solicitud);
         model.addAttribute("Especialidades", TipoDiversidadFuncional.getLista());
 
@@ -224,35 +300,23 @@ public class PapPatiController {
 
         papPati.setIdPatPati(id);
 
-        validarCvObligatorio(cvFile, bindingResult);
+        PapPatiValidator validator = new PapPatiValidator();
+        validator.validate(papPati, bindingResult);
+
+        gestionarCvCreate(papPati, cvFile, bindingResult, id);
 
         if (bindingResult.hasErrors()) {
-            recargarFormularioCreate(model, solicitud, especialidades);
+            recargarFormularioCreate(model, solicitud, papPati, especialidades);
             return "PapPati/create";
         }
 
-        try {
-            String rutaCv = guardarCvPdf(cvFile, id);
-            papPati.setUrlCV(rutaCv);
+        solicitudesDao.createSolicitud(solicitud);
+        papPatiDao.crear(papPati);
 
-            solicitudesDao.createSolicitud(solicitud);
-            papPatiDao.crear(papPati);
-
-            if (especialidades != null) {
-                for (String esp : especialidades) {
-                    especialidadesDao.addEspecialidad(id, esp);
-                }
+        if (especialidades != null) {
+            for (String esp : especialidades) {
+                especialidadesDao.addEspecialidad(id, esp);
             }
-
-        } catch (IOException e) {
-            bindingResult.rejectValue(
-                    "urlCV",
-                    "cvFile.error",
-                    "No se ha podido guardar el CV."
-            );
-
-            recargarFormularioCreate(model, solicitud, especialidades);
-            return "PapPati/create";
         }
 
         return "redirect:/";
@@ -300,45 +364,43 @@ public class PapPatiController {
             return "redirect:/";
         }
 
-        validarCvOpcional(cvFile, bindingResult);
+        if (!tieneCvGuardado(papPati.getUrlCV())) {
+            papPati.setUrlCV(papPatiOriginal.getUrlCV());
+        }
+
+        PapPatiValidator validator = new PapPatiValidator();
+        validator.validate(papPati, bindingResult);
+
+        gestionarCvUpdate(papPati, papPatiOriginal, cvFile, bindingResult, id);
 
         if (bindingResult.hasErrors()) {
-            papPati.setUrlCV(papPatiOriginal.getUrlCV());
             recargarFormularioUpdate(model, papPati, especialidadesSeleccionadas);
             return "PapPati/update";
         }
 
-        try {
-            if (cvFile != null && !cvFile.isEmpty()) {
-                String nuevaRutaCv = guardarCvPdf(cvFile, id);
-                papPati.setUrlCV(nuevaRutaCv);
-            } else {
-                papPati.setUrlCV(papPatiOriginal.getUrlCV());
-            }
+        String cvAntiguo = papPatiOriginal.getUrlCV();
+        String cvFinal = papPati.getUrlCV();
 
-            especialidadesDao.deleteAllbyId(papPati.getIdPatPati());
-
-            if (especialidadesSeleccionadas != null) {
-                for (String esp : especialidadesSeleccionadas) {
-                    especialidadesDao.addEspecialidad(id, esp);
-                }
-            }
-
-            papPatiDao.update(papPati);
-
-        } catch (IOException e) {
-            bindingResult.rejectValue(
-                    "urlCV",
-                    "cvFile.error",
-                    "No se ha podido guardar el CV."
-            );
-
-            papPati.setUrlCV(papPatiOriginal.getUrlCV());
-            recargarFormularioUpdate(model, papPati, especialidadesSeleccionadas);
-            return "PapPati/update";
+        if (!tieneCvGuardado(cvFinal)) {
+            cvFinal = cvAntiguo;
+            papPati.setUrlCV(cvFinal);
         }
 
-        return "PapPati/details/" + id;
+        especialidadesDao.deleteAllbyId(papPati.getIdPatPati());
+
+        if (especialidadesSeleccionadas != null) {
+            for (String esp : especialidadesSeleccionadas) {
+                especialidadesDao.addEspecialidad(id, esp);
+            }
+        }
+
+        papPatiDao.update(papPati);
+
+        if (tieneCvGuardado(cvFinal) && !cvFinal.equals(cvAntiguo)) {
+            borrarCvSiExiste(cvAntiguo);
+        }
+
+        return "redirect:/PapPati/details/" + id;
     }
 
     @GetMapping("/details/{id}")
@@ -353,5 +415,28 @@ public class PapPatiController {
         model.addAttribute("especialidadesSeleccionadas", papPati.getEspecialidadesNombre());
 
         return "PapPati/details";
+    }
+
+    private void borrarCvSiExiste(String urlCV) {
+        if (urlCV == null || urlCV.trim().isEmpty()) {
+            return;
+        }
+
+        if (!urlCV.startsWith("/uploads/cv/")) {
+            return;
+        }
+
+        String nombreArchivo = urlCV.substring("/uploads/cv/".length());
+        Path rutaArchivo = CV_UPLOAD_DIR.resolve(nombreArchivo).normalize();
+
+        if (!rutaArchivo.startsWith(CV_UPLOAD_DIR)) {
+            return;
+        }
+
+        try {
+            Files.deleteIfExists(rutaArchivo);
+        } catch (IOException e) {
+            System.err.println("No se pudo borrar el CV: " + rutaArchivo);
+        }
     }
 }
