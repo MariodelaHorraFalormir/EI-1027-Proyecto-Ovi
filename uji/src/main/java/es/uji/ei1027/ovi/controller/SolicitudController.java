@@ -140,7 +140,7 @@ public class SolicitudController {
     }
 
     @PostMapping("/update/{id}")
-    public String updateSolicitud(@PathVariable int id, @ModelAttribute("solicitud") Solicitud solicitud,
+    public String updateSolicitud(@PathVariable int id, @ModelAttribute("solicitud") Solicitud solicitudUpdate,
                                   HttpSession session, RedirectAttributes redirectAttrs) {
         String url = "/Solicitudes/update/" + id;
 
@@ -153,7 +153,34 @@ public class SolicitudController {
             return "redirect:/";
         }
 
-        solicitudesService.updateSolicitud(id, solicitud, usuario);
+        // 1. El servicio actualiza la solicitud original con los datos y el mensaje
+        solicitudesService.updateSolicitud(id, solicitudUpdate, usuario);
+
+        // 2. SINCRONIZACIÓN CORREGIDA (Por edición manual)
+        Solicitud solicitudGuardada = solicitudDao.getSolicitudById(id);
+
+        if (solicitudGuardada != null && solicitudGuardada.getTipoSolicitud() == TipoSolicitud.Pa_request) {
+            List<PaRequest> procesos = paRequestDao.getPaRequestsByOviUser(solicitudGuardada.getPersonaSolicitante());
+
+            // Evaluamos a qué estado de PaRequest equivale el nuevo estado de la Solicitud
+            StatusPaRequest nuevoEstadoPaRequest = null;
+            if (solicitudGuardada.getEstadoSolicitud() == es.uji.ei1027.ovi.modelo.Solicitud.EstadoSolicitud.Aprobada) {
+                nuevoEstadoPaRequest = StatusPaRequest.En_activo;
+            } else if (solicitudGuardada.getEstadoSolicitud() == es.uji.ei1027.ovi.modelo.Solicitud.EstadoSolicitud.Rechazada) {
+                nuevoEstadoPaRequest = StatusPaRequest.Finalizada;
+            }
+
+            // Si el técnico la ha aprobado o rechazado, sincronizamos el proceso del usuario
+            if (nuevoEstadoPaRequest != null) {
+                for (PaRequest proceso : procesos) {
+                    if (proceso.getStatus() == StatusPaRequest.En_espera) {
+                        paRequestDao.cambiarEstadoPaRequest(proceso.getId(), nuevoEstadoPaRequest);
+                        break; // Actualizamos y paramos
+                    }
+                }
+            }
+        }
+
         redirectAttrs.addFlashAttribute("mensajeExito",
                 "Solicitud con ID " + id + " actualizada correctamente.");
         return "redirect:/Solicitudes/list/todas";

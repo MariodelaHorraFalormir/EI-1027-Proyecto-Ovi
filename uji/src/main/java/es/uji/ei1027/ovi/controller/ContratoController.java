@@ -53,6 +53,12 @@ public class ContratoController {
         LocalDate fInicio = LocalDate.parse(fechaInicio);
         LocalDate fFin = null;
 
+        // NUEVA VALIDACIÓN: La fecha de inicio no puede ser en el pasado
+        if (fInicio.isBefore(LocalDate.now())) {
+            redirectAttrs.addFlashAttribute("errorFechas", "Error: La fecha de inicio del contrato no puede ser en el pasado.");
+            return "redirect:/contrato/nuevo/" + idSolicitud + "/" + idCandidato;
+        }
+
         // VALIDADOR DE FECHAS: Si hay fecha de fin, comprobamos que no sea anterior a la de inicio
         if (fechaFin != null && !fechaFin.trim().isEmpty()) {
             fFin = LocalDate.parse(fechaFin);

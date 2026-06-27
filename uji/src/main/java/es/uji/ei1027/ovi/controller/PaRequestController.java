@@ -1,5 +1,6 @@
 package es.uji.ei1027.ovi.controller;
 
+import es.uji.ei1027.ovi.Service.SolicitudesService;
 import es.uji.ei1027.ovi.Validadores.PaRequestValidator;
 import es.uji.ei1027.ovi.dao.PaRequestDao;
 import es.uji.ei1027.ovi.dao.SolicitudesDao;
@@ -30,6 +31,9 @@ public class PaRequestController {
 
     @Autowired
     private es.uji.ei1027.ovi.dao.PapPatiDao PapPatiDao;
+
+    @Autowired
+    private SolicitudesService solicitudesService;
 
     @Autowired
     public void setSolicitudDao(SolicitudesDao solicitudDao) {
@@ -296,18 +300,27 @@ public class PaRequestController {
         PaRequest paRequest = paRequestDao.getPaRequestById(id);
         if (paRequest == null) return "redirect:/PaRequest/mis/" + usuario.getIdPersona();
 
-        // Pasamos el objeto del proceso a la vista
         model.addAttribute("paRequest", paRequest);
 
-    /* NOTA: Aquí deberías recuperar los comentarios del técnico o el motivo de rechazo
-       desde tu SolicitudDao o el servicio correspondiente usando el ID o el usuario,
-       por ejemplo:
-       Solicitud sol = solicitudDao.getSolicitudByPaRequestId(id); // Adapta esto a tu modelo
-       model.addAttribute("solicitud", sol);
-    */
+        // 1. Buscamos todas las solicitudes de este usuario
+        java.util.List<es.uji.ei1027.ovi.modelo.Solicitud.Solicitud> solicitudes = solicitudesService.getSolicitudesDeUsuario(usuario);
 
-        // De momento simulamos el comentario del técnico
-        model.addAttribute("comentariosTecnico", "Falta adjuntar el certificado de discapacidad actualizado o el documento de identidad está caducado.");
+        String notasTecnico = "No hay anotaciones adicionales registradas para este proceso.";
+
+        // 2. Filtramos para encontrar la de Asistencia Personal y sacamos el mensaje real
+        for (es.uji.ei1027.ovi.modelo.Solicitud.Solicitud sol : solicitudes) {
+            if (sol.getTipoSolicitud() != null && sol.getTipoSolicitud().name().equalsIgnoreCase("Pa_request")) {
+
+                // ¡OJO AQUÍ! Cambia getMensajeResolucion() por el getter que uséis en vuestro modelo Solicitud
+                if (sol.getMotivoResolucion() != null && !sol.getMotivoResolucion().trim().isEmpty()) {
+                    notasTecnico = sol.getMotivoResolucion();
+                }
+                break; // Encontramos la solicitud, paramos de buscar
+            }
+        }
+
+        // 3. Enviamos el mensaje real a la vista
+        model.addAttribute("comentariosTecnico", notasTecnico);
 
         return "paRequest/detalles";
     }
