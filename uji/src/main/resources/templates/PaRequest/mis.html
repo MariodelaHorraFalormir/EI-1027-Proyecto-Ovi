@@ -25,7 +25,7 @@
             border-radius: 12px;
         }
         .tabla-procesos {
-            min-width: 1000px; /* Un poco más de espacio para la nueva columna */
+            min-width: 1000px;
             margin-bottom: 0;
         }
         .tabla-procesos thead th {
@@ -75,7 +75,7 @@
                     <th class="no-wrap">Fecha inicio</th>
                     <th class="no-wrap">Fecha fin</th>
                     <th class="no-wrap">Fecha creación</th>
-                    <th class="no-wrap text-center">Acciones</th> <!-- NUEVA COLUMNA -->
+                    <th class="no-wrap text-center">Acciones</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -102,17 +102,34 @@
                     <td class="no-wrap" th:text="${paRequest.fechaFin != null ? #temporals.format(paRequest.fechaFin, 'dd/MM/yyyy') : '-'}"></td>
                     <td class="no-wrap" th:text="${paRequest.fechaCreacion != null ? #temporals.format(paRequest.fechaCreacion, 'dd/MM/yyyy') : '-'}"></td>
 
-                    <!-- EL BOTÓN MÁGICO DE BÚSQUEDA DE CANDIDATOS -->
-                    <td class="align-middle text-center no-wrap">
-                        <a th:if="${paRequest.status != null and paRequest.status.toString() == 'En_activo'}"
+                    <td class="align-middle text-center no-wrap" th:switch="${paRequest.status != null ? paRequest.status.toString() : ''}">
+
+                        <a th:case="'En_activo'"
                            th:href="@{/PaRequest/candidatos/{id}(id=${paRequest.id})}"
                            class="btn btn-sm btn-success fw-bold shadow-sm rounded-pill px-3">
                             🔍 Buscar Candidato
                         </a>
 
-                        <span th:unless="${paRequest.status != null and paRequest.status.toString() == 'En_activo'}"
-                              class="text-muted small">
-                           En espera de resolución
+                        <span th:case="'En_espera'" class="text-muted small fw-semibold">
+                           ⏳ En espera de resolución
+                        </span>
+
+                        <div th:case="'Finalizada'" class="d-flex justify-content-center">
+                            <a th:href="@{/PaRequest/detalles/{id}(id=${paRequest.id})}"
+                               class="btn btn-sm btn-outline-primary fw-bold shadow-sm rounded-pill px-3">
+                                👁️ Ver Detalles
+                            </a>
+                        </div>
+
+                        <div th:case="'Rechazada'" class="d-flex justify-content-center">
+                            <a th:href="@{/PaRequest/detalles/{id}(id=${paRequest.id})}"
+                               class="btn btn-sm btn-outline-danger fw-bold shadow-sm rounded-pill px-3">
+                                👁️ Ver Motivos
+                            </a>
+                        </div>
+
+                        <span th:case="*" class="text-muted small">
+                           -
                         </span>
                     </td>
                 </tr>
@@ -120,7 +137,6 @@
             </table>
         </div>
 
-        <!-- Paginación -->
         <div th:if="${totalPages > 1}" class="d-flex justify-content-center mt-3">
             <nav>
                 <ul class="pagination">

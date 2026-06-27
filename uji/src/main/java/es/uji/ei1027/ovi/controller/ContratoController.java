@@ -44,27 +44,35 @@ public class ContratoController {
                                   @RequestParam int idCandidato,
                                   @RequestParam String fechaInicio,
                                   @RequestParam(required = false) String fechaFin,
-                                  HttpSession session) {
+                                  HttpSession session,
+                                  org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttrs) {
 
         UsuarioSesion usuario = (UsuarioSesion) session.getAttribute("usuario");
         if (usuario == null) return "redirect:/login";
+
+        LocalDate fInicio = LocalDate.parse(fechaInicio);
+        LocalDate fFin = null;
+
+        // VALIDADOR DE FECHAS: Si hay fecha de fin, comprobamos que no sea anterior a la de inicio
+        if (fechaFin != null && !fechaFin.trim().isEmpty()) {
+            fFin = LocalDate.parse(fechaFin);
+            if (fFin.isBefore(fInicio)) {
+                redirectAttrs.addFlashAttribute("errorFechas", "Error: La fecha de fin no puede ser anterior a la fecha de inicio.");
+                return "redirect:/contrato/nuevo/" + idSolicitud + "/" + idCandidato;
+            }
+        }
 
         Contrato contrato = new Contrato();
         contrato.setIdSolicitud(idSolicitud);
         contrato.setIdUsuarioOvi(idUsuarioOvi);
         contrato.setIdPapPati(idCandidato);
-        contrato.setFechaInicio(LocalDate.parse(fechaInicio));
+        contrato.setFechaInicio(fInicio);
+        contrato.setFechaFin(fFin);
 
-        if (fechaFin != null && !fechaFin.trim().isEmpty()) {
-            contrato.setFechaFin(LocalDate.parse(fechaFin));
-        }
-
-        // Guardamos el contrato de forma normal
         contratoDao.addContrato(contrato);
 
-        // ¡CLAVE CORRECCIÓN!: Al crearse el contrato, cerramos de forma automática la PaRequest
-        // Así pasa de 'En proceso' a 'Finalizada' y se evita que se dupliquen contratos para la misma solicitud
-        paRequestDao.cambiarEstadoPaRequest(idSolicitud, StatusPaRequest.Finalizada);
+        // Al crearse el contrato, cerramos la PaRequest a Finalizada
+        paRequestDao.cambiarEstadoPaRequest(idSolicitud, es.uji.ei1027.ovi.modelo.PaRequest.StatusPaRequest.Finalizada);
 
         return "redirect:/contrato/exito";
     }

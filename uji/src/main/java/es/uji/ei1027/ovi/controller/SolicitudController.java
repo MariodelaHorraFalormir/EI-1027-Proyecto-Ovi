@@ -5,8 +5,12 @@ import es.uji.ei1027.ovi.Service.SesionService;
 import es.uji.ei1027.ovi.Service.SolicitudesService;
 import es.uji.ei1027.ovi.dao.PersonaDao;
 import es.uji.ei1027.ovi.dao.SolicitudesDao;
+import es.uji.ei1027.ovi.dao.PaRequestDao;
 import es.uji.ei1027.ovi.modelo.Login.UsuarioSesion;
+import es.uji.ei1027.ovi.modelo.PaRequest.PaRequest;
+import es.uji.ei1027.ovi.modelo.PaRequest.StatusPaRequest;
 import es.uji.ei1027.ovi.modelo.Solicitud.Solicitud;
+import es.uji.ei1027.ovi.modelo.Solicitud.TipoSolicitud;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,20 +18,32 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/Solicitudes")
 public class SolicitudController {
     private SolicitudesDao solicitudDao;
     private SolicitudesService solicitudesService;
     private SesionService sesionService;
+
+    // Inyectamos el DAO de PaRequest para la sincronización
+    private PaRequestDao paRequestDao;
+
     @Autowired
     public void setSesionService(SesionService sesionService) {this.sesionService = sesionService;}
+
     @Autowired
     public void setSolicitudDao(SolicitudesDao solicitudDao) {this.solicitudDao = solicitudDao;}
 
     @Autowired
     public void setSolicitudesService(SolicitudesService solicitudesService) {
         this.solicitudesService = solicitudesService;
+    }
+
+    @Autowired
+    public void setPaRequestDao(PaRequestDao paRequestDao) {
+        this.paRequestDao = paRequestDao;
     }
 
 
@@ -61,6 +77,7 @@ public class SolicitudController {
         model.addAttribute("totalPages", totalPages);
         return "Solicitudes/listId";
     }
+
     @GetMapping("/detail/{id}")
     public String detalles(Model model, @PathVariable int id, HttpSession session) {
         String url = "/Solicitudes/detail/" + id;
@@ -100,6 +117,7 @@ public class SolicitudController {
         );
         return "Solicitudes/detail";
     }
+
     @RequestMapping(value ="/update/{id}" ,method = RequestMethod.GET)
     public String  update(Model model,@PathVariable int id , HttpSession session){
         String url = "/Solicitudes/update/" + id;
@@ -153,13 +171,26 @@ public class SolicitudController {
             return "redirect:/";
         }
 
-        // 1. Aprueba la solicitud en base de datos
+        // 1. Aprueba la solicitud general en base de datos
         solicitudesService.aprobarRapido(id,usuario);
 
-        // 2. Buscamos la solicitud para saber a quién enviarle el correo
+        // 2. Buscamos la solicitud para saber de quién es
         Solicitud solicitud = solicitudDao.getSolicitudById(id);
 
-        // 3. Preparamos el correo simulado
+        // 3. SINCRONIZACIÓN CORREGIDA CON PA_REQUEST (Por usuario y estado)
+        if (solicitud != null && solicitud.getTipoSolicitud() == TipoSolicitud.Pa_request) {
+            List<PaRequest> procesos = paRequestDao.getPaRequestsByOviUser(solicitud.getPersonaSolicitante());
+
+            // Buscamos cuál es el proceso de este usuario que estaba esperando
+            for (PaRequest proceso : procesos) {
+                if (proceso.getStatus() == StatusPaRequest.En_espera) {
+                    paRequestDao.cambiarEstadoPaRequest(proceso.getId(), StatusPaRequest.En_activo);
+                    break; // Actualizamos solo uno y paramos
+                }
+            }
+        }
+
+        // 4. Preparamos el correo simulado
         model.addAttribute("para", "Usuario solicitante (ID: " + solicitud.getPersonaSolicitante() + ")");
         model.addAttribute("asunto", "✅ Tu Solicitud OVI ha sido APROBADA");
         model.addAttribute("cuerpo", "Hola, te informamos de que el Técnico OVI ha revisado y aprobado tu solicitud general con número #" + id + ". Ya puedes continuar con el proceso en la plataforma.");
@@ -181,12 +212,25 @@ public class SolicitudController {
             return "redirect:/";
         }
 
-        // 1. Rechaza la solicitud en base de datos
+        // 1. Rechaza la solicitud general en base de datos
         solicitudesService.rechazarRapido(id, usuario);
 
         Solicitud solicitud = solicitudDao.getSolicitudById(id);
 
-        // 2. Preparamos el correo simulado
+        // 2. SINCRONIZACIÓN CORREGIDA CON PA_REQUEST (Por usuario y estado)
+        if (solicitud != null && solicitud.getTipoSolicitud() == TipoSolicitud.Pa_request) {
+            List<PaRequest> procesos = paRequestDao.getPaRequestsByOviUser(solicitud.getPersonaSolicitante());
+
+            // Buscamos cuál es el proceso de este usuario que estaba esperando
+            for (PaRequest proceso : procesos) {
+                if (proceso.getStatus() == StatusPaRequest.En_espera) {
+                    paRequestDao.cambiarEstadoPaRequest(proceso.getId(), StatusPaRequest.Finalizada);
+                    break; // Actualizamos solo uno y paramos
+                }
+            }
+        }
+
+        // 3. Preparamos el correo simulado
         model.addAttribute("para", "Usuario solicitante (ID: " + solicitud.getPersonaSolicitante() + ")");
         model.addAttribute("asunto", "❌ Tu Solicitud OVI ha sido RECHAZADA");
         model.addAttribute("cuerpo", "Hola, lamentamos informarte de que tu solicitud #" + id + " ha sido denegada. Por favor, revisa tus datos o ponte en contacto con la oficina.");

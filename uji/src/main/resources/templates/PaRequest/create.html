@@ -52,7 +52,6 @@
             <input type="hidden" name="personaSolicitante" th:value="${solicitud.personaSolicitante}" />
             <input type="hidden" id="personalidadInput" name="personalidad" />
 
-            <!-- Información de la solicitud -->
             <div class="block-card">
                 <div class="block-title">Información de la Solicitud</div>
                 <div class="row">
@@ -67,7 +66,6 @@
                 </div>
             </div>
 
-            <!-- Detalles de la necesidad -->
             <div class="block-card">
                 <div class="block-title">Detalles de la Necesidad</div>
                 <div class="mb-3">
@@ -76,22 +74,28 @@
                               name="mensajeSolicitud"
                               class="form-control"
                               rows="5"
+                              th:text="${solicitud.mensajeSolicitud}"
                               placeholder="Ejemplo: Necesito apoyo para movilidad en el entorno universitario y acompañamiento en gestiones diarias..."
                               required></textarea>
                 </div>
             </div>
 
-            <!-- Detalles del servicio -->
             <div class="block-card">
                 <div class="block-title">Detalles del Servicio</div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label class="form-label fw-bold">Fecha Inicio:</label>
-                        <input type="date" th:field="*{fechaInicio}" class="form-control" required/>
+                        <input type="date" th:field="*{fechaInicio}" class="form-control" th:classappend="${#fields.hasErrors('fechaInicio')} ? 'is-invalid'" required/>
+                        <div class="invalid-feedback fw-bold" th:if="${#fields.hasErrors('fechaInicio')}" th:errors="*{fechaInicio}">
+                            Error en la fecha
+                        </div>
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="form-label fw-bold">Fecha Fin (Opcional):</label>
-                        <input type="date" th:field="*{fechaFin}" class="form-control"/>
+                        <input type="date" th:field="*{fechaFin}" class="form-control" th:classappend="${#fields.hasErrors('fechaFin')} ? 'is-invalid'"/>
+                        <div class="invalid-feedback fw-bold" th:if="${#fields.hasErrors('fechaFin')}" th:errors="*{fechaFin}">
+                            Error en la fecha
+                        </div>
                     </div>
                 </div>
                 <div class="mb-3">
@@ -105,7 +109,6 @@
                 </div>
             </div>
 
-            <!-- Preferencias adicionales -->
             <div class="block-card">
                 <div class="block-title">Preferencias Adicionales</div>
                 <div class="row">
@@ -139,7 +142,6 @@
                 </div>
             </div>
 
-            <!-- Test de personalidad -->
             <div class="block-card">
                 <div class="block-title">Test de Personalidad</div>
                 <p class="personality-hint">Selecciona del 1 al 10 el punto que mejor te describe en cada dimensión. Esto nos ayuda a encontrar el asistente más compatible contigo.</p>

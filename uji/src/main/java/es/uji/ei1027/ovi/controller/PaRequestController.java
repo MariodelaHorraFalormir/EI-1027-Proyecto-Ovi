@@ -287,4 +287,55 @@ public class PaRequestController {
         model.addAttribute("totalPages", totalPages);
         return "PaRequest/candidatos";
     }
+
+    @GetMapping("/detalles/{id}")
+    public String verDetallesYEditar(@PathVariable int id, Model model, HttpSession session) {
+        UsuarioSesion usuario = (UsuarioSesion) session.getAttribute("usuario");
+        if (usuario == null) return "redirect:/login";
+
+        PaRequest paRequest = paRequestDao.getPaRequestById(id);
+        if (paRequest == null) return "redirect:/PaRequest/mis/" + usuario.getIdPersona();
+
+        // Pasamos el objeto del proceso a la vista
+        model.addAttribute("paRequest", paRequest);
+
+    /* NOTA: Aquí deberías recuperar los comentarios del técnico o el motivo de rechazo
+       desde tu SolicitudDao o el servicio correspondiente usando el ID o el usuario,
+       por ejemplo:
+       Solicitud sol = solicitudDao.getSolicitudByPaRequestId(id); // Adapta esto a tu modelo
+       model.addAttribute("solicitud", sol);
+    */
+
+        // De momento simulamos el comentario del técnico
+        model.addAttribute("comentariosTecnico", "Falta adjuntar el certificado de discapacidad actualizado o el documento de identidad está caducado.");
+
+        return "paRequest/detalles";
+    }
+
+    @PostMapping("/detalles/guardar/{id}")
+    public String guardarModificacionSolicitud(@PathVariable int id, @ModelAttribute("paRequest") PaRequest paRequestUpdate, HttpSession session) {
+        UsuarioSesion usuario = (UsuarioSesion) session.getAttribute("usuario");
+        if (usuario == null) return "redirect:/login";
+
+        // 1. Recuperamos el proceso original de la base de datos
+        PaRequest paRequestOriginal = paRequestDao.getPaRequestById(id);
+
+        if (paRequestOriginal != null) {
+            // 2. Actualizamos los campos que el usuario ha podido modificar en el formulario
+            paRequestOriginal.setTipoAsistencia(paRequestUpdate.getTipoAsistencia());
+            paRequestOriginal.setZonaGeografica(paRequestUpdate.getZonaGeografica());
+            paRequestOriginal.setDisponibilidadHoraria(paRequestUpdate.getDisponibilidadHoraria());
+            paRequestOriginal.setGeneroAsistente(paRequestUpdate.getGeneroAsistente());
+            paRequestOriginal.setPreferencias(paRequestUpdate.getPreferencias());
+
+            // 3. Importante: Al modificarla, el estado vuelve a ser "En espera" para que el técnico la revise de nuevo
+            paRequestOriginal.setStatus(StatusPaRequest.En_espera);
+
+            paRequestDao.updatePaRequest(paRequestOriginal);
+
+            // Aquí también deberías actualizar el estado de la Solicitud general a "Pendiente" si fuera necesario
+        }
+
+        return "redirect:/PaRequest/mis/" + usuario.getIdPersona();
+    }
 }

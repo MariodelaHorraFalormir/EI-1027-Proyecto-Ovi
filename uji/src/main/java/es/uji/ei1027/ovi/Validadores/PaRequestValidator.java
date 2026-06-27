@@ -19,9 +19,7 @@ public class PaRequestValidator implements Validator {
             errors.rejectValue("fechaInicio", "obligatorio", "Debes indicar una fecha de inicio");
         }
 
-        if (paRequest.getFechaFin() == null) {
-            errors.rejectValue("fechaFin", "obligatorio", "Debes indicar una fecha de fin");
-        }
+        // CORRECCIÓN: Eliminamos la validación que exigía que la Fecha Fin fuera obligatoria
 
         // Si ambas fechas existen, comprobamos que la de fin no sea anterior a la de inicio
         if (paRequest.getFechaInicio() != null && paRequest.getFechaFin() != null) {

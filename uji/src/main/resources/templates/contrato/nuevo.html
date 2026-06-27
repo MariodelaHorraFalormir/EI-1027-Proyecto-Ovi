@@ -35,13 +35,13 @@
         </div>
 
         <div class="d-grid gap-2">
+          <div th:if="${errorFechas}" class="alert alert-danger fw-bold" th:text="${errorFechas}"></div>
           <button type="submit" class="btn btn-success fw-bold py-2">Registrar Contrato</button>
-          <a href="javascript:history.back()" class="btn btn-outline-secondary">Cancelar y volver al chat</a>
-        </div>
+          <a th:href="@{/chat/{idSol}/{idCand}(idSol=${idSolicitud}, idCand=${idCandidato})}" class="btn btn-outline-secondary">Cancelar y volver al chat</a>        </div>
       </form>
     </div>
   </div>
 </div>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
