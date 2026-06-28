@@ -125,29 +125,15 @@
         .alert {
             border-radius: 14px;
         }
-        .error{
-            color: #dc3545;
-            font-size: 90%;
+
+        .invalid-feedback {
+            font-size: 0.88rem;
+            font-weight: 600;
         }
-        .personality-row { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
-        .personality-label { font-size: 13px; color: #4a5568; width: 110px; flex-shrink: 0; font-weight: 600; }
-        .personality-extreme { font-size: 11px; color: #a0aec0; width: 65px; flex-shrink: 0; }
-        .personality-extreme.right { text-align: right; }
-        .dots { display: flex; gap: 5px; flex: 1; justify-content: center; }
-        .dot {
-            width: 26px; height: 26px; border-radius: 50%;
-            border: 1.5px solid #cbd5e0; background: #edf2f7;
-            cursor: pointer; transition: background 0.15s, border-color 0.15s, transform 0.1s;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 10px; color: #a0aec0; font-weight: 600;
-        }
-        .dot:hover { background: #c4b5f4; border-color: #7c3aed; transform: scale(1.1); }
-        .dot.selected { background: #534AB7; border-color: #534AB7; color: white; transform: scale(1.15); }
     </style>
 </head>
 <body>
 
-<!-- Navbar común -->
 <div th:replace="~{layout/navbar :: main-nav}"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
@@ -168,7 +154,15 @@
 
         <div th:if="${errorMail}" class="alert alert-danger" th:text="${errorMail}"></div>
 
-        <form th:object="${persona}" method="post" th:action="@{/Persona/registro}">
+        <form th:object="${persona}"
+              method="post"
+              th:action="@{/Persona/registro}"
+              novalidate>
+
+            <div class="alert alert-danger"
+                 th:if="${#fields.hasAnyErrors()}">
+                Revisa los campos marcados antes de completar el registro.
+            </div>
 
             <!-- DATOS PERSONALES -->
             <div class="block-card">
@@ -177,122 +171,241 @@
                 <div class="row g-4">
                     <div class="col-md-6">
                         <label class="data-label" for="nombre">Nombre</label>
-                        <input type="text" id="nombre" class="form-control"
-                               th:field="*{nombre}" placeholder="Introduce el nombre" required>
-                        <div th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}" class="error"></div>
+                        <input type="text"
+                               id="nombre"
+                               class="form-control"
+                               th:field="*{nombre}"
+                               th:errorclass="is-invalid"
+                               placeholder="Introduce el nombre"
+                               required>
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('nombre')}"
+                             th:errors="*{nombre}">
+                        </div>
                     </div>
 
                     <div class="col-md-6">
                         <label class="data-label" for="apellidos">Apellidos</label>
-                        <input type="text" id="apellidos" class="form-control"
-                               th:field="*{apellidos}" placeholder="Introduce los apellidos" required>
-                        <div th:if="${#fields.hasErrors('apellidos')}" th:errors="*{apellidos}" class="error"></div>
+                        <input type="text"
+                               id="apellidos"
+                               class="form-control"
+                               th:field="*{apellidos}"
+                               th:errorclass="is-invalid"
+                               placeholder="Introduce los apellidos"
+                               required>
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('apellidos')}"
+                             th:errors="*{apellidos}">
+                        </div>
                     </div>
 
                     <div class="col-md-6">
                         <label class="data-label" for="mail">Correo electrónico</label>
-                        <input type="email" id="mail" class="form-control"
-                               th:field="*{mail}" placeholder="correo@ejemplo.com" required>
-                        <div th:if="${#fields.hasErrors('mail')}" th:errors="*{mail}" class="error"></div>
+                        <input type="email"
+                               id="mail"
+                               class="form-control"
+                               th:field="*{mail}"
+                               th:errorclass="is-invalid"
+                               placeholder="correo@ejemplo.com"
+                               required>
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('mail')}"
+                             th:errors="*{mail}">
+                        </div>
                     </div>
 
                     <div class="col-md-6">
                         <label class="data-label" for="telefono">Teléfono</label>
-                        <input type="text" id="telefono" class="form-control"
-                               th:field="*{telefono}" placeholder="600123123" required>
-                        <div th:if="${#fields.hasErrors('telefono')}" th:errors="*{telefono}" class="error"></div>
+                        <input type="text"
+                               id="telefono"
+                               class="form-control"
+                               th:field="*{telefono}"
+                               th:errorclass="is-invalid"
+                               placeholder="600123123"
+                               required>
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('telefono')}"
+                             th:errors="*{telefono}">
+                        </div>
                     </div>
 
                     <div class="col-md-4">
                         <label class="data-label" for="dni">DNI</label>
-                        <input type="text" id="dni" class="form-control"
-                               th:field="*{dni}" placeholder="12345678A" required>
-                        <div th:if="${#fields.hasErrors('dni')}" th:errors="*{dni}" class="error"></div>
+                        <input type="text"
+                               id="dni"
+                               class="form-control"
+                               th:field="*{dni}"
+                               th:errorclass="is-invalid"
+                               placeholder="12345678A"
+                               required>
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('dni')}"
+                             th:errors="*{dni}">
+                        </div>
                     </div>
 
                     <div class="col-md-4">
                         <label class="data-label" for="pais">País</label>
-                        <input type="text" id="pais" class="form-control"
-                               th:field="*{pais}" placeholder="España" required>
-                        <div th:if="${#fields.hasErrors('pais')}" th:errors="*{pais}" class="error"></div>
+                        <input type="text"
+                               id="pais"
+                               class="form-control"
+                               th:field="*{pais}"
+                               th:errorclass="is-invalid"
+                               placeholder="España"
+                               required>
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('pais')}"
+                             th:errors="*{pais}">
+                        </div>
                     </div>
 
                     <div class="col-md-4">
                         <label class="data-label" for="genero">Género</label>
-                        <select id="genero" class="form-select" th:field="*{genero}" required>
+                        <select id="genero"
+                                class="form-select"
+                                th:field="*{genero}"
+                                th:errorclass="is-invalid"
+                                required>
                             <option value="">Selecciona una opción</option>
                             <option value="Hombre">Hombre</option>
                             <option value="Mujer">Mujer</option>
                             <option value="Otro">Otro</option>
                         </select>
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('genero')}"
+                             th:errors="*{genero}">
+                        </div>
                     </div>
 
                     <div class="col-md-8">
                         <label class="data-label" for="direccion">Dirección</label>
-                        <input type="text" id="direccion" class="form-control"
-                               th:field="*{direccion}" placeholder="Calle, número, piso..." required>
+                        <input type="text"
+                               id="direccion"
+                               class="form-control"
+                               th:field="*{direccion}"
+                               th:errorclass="is-invalid"
+                               placeholder="Calle, número, piso..."
+                               required>
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('direccion')}"
+                             th:errors="*{direccion}">
+                        </div>
                     </div>
 
                     <div class="col-md-4">
                         <label class="data-label" for="fechaNacimiento">Fecha de nacimiento</label>
-                        <input type="date" id="fechaNacimiento" class="form-control"
-                               th:field="*{fechaNacimiento}" required>
-                        <div th:if="${#fields.hasErrors('fechaNacimiento')}" th:errors="*{fechaNacimiento}" class="error"></div>
+                        <input type="date"
+                               id="fechaNacimiento"
+                               name="fechaNacimiento"
+                               class="form-control"
+                               th:classappend="${#fields.hasErrors('fechaNacimiento')} ? ' is-invalid' : ''"
+                               th:value="${persona.fechaNacimiento != null ? #temporals.format(persona.fechaNacimiento, 'yyyy-MM-dd') : ''}"
+                               required>
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('fechaNacimiento')}"
+                             th:errors="*{fechaNacimiento}">
+                        </div>
                     </div>
                 </div>
             </div>
 
-
-            <!-- TEST DE PERSONALIDAD -->
+            <!-- PERSONALIDAD -->
             <div class="block-card">
-                <div class="block-title">Test de Personalidad</div>
-                <p class="text-muted-small mb-3">Selecciona del 1 al 10 el punto que mejor te describe en cada dimensión.</p>
+                <div class="block-title">Personalidad</div>
+                <p class="text-muted-small mb-3">
+                    Introduce un valor del 1 al 10 en cada dimensión.
+                </p>
 
-                <input type="hidden" id="ritmoInput" th:field="*{personalidad.ritmo}" />
-                <input type="hidden" id="comunicacionInput" th:field="*{personalidad.comunicacion}" />
-                <input type="hidden" id="expresividadInput" th:field="*{personalidad.expresividad}" />
-                <input type="hidden" id="caracterInput" th:field="*{personalidad.caracter}" />
-                <input type="hidden" id="naturalezaInput" th:field="*{personalidad.naturaleza}" />
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <label class="data-label" for="ritmo">Ritmo</label>
+                        <input type="number"
+                               id="ritmo"
+                               class="form-control"
+                               th:field="*{personalidad.ritmo}"
+                               th:errorclass="is-invalid"
+                               min="1"
+                               max="10"
+                               step="1"
+                               placeholder="1-10"
+                               required>
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('personalidad.ritmo')}"
+                             th:errors="*{personalidad.ritmo}">
+                        </div>
+                    </div>
 
-                <div class="personality-row">
-                    <span class="personality-label">Ritmo</span>
-                    <span class="personality-extreme">Tranquilo</span>
-                    <div class="dots" id="d1">
-                        <div class="dot" th:each="i : ${#numbers.sequence(1, 10)}" th:text="${i}" th:onclick="'selectDot(\'d1\',' + ${i} + ')'"></div>
+                    <div class="col-md-4">
+                        <label class="data-label" for="comunicacion">Comunicación</label>
+                        <input type="number"
+                               id="comunicacion"
+                               class="form-control"
+                               th:field="*{personalidad.comunicacion}"
+                               th:errorclass="is-invalid"
+                               min="1"
+                               max="10"
+                               step="1"
+                               placeholder="1-10"
+                               required>
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('personalidad.comunicacion')}"
+                             th:errors="*{personalidad.comunicacion}">
+                        </div>
                     </div>
-                    <span class="personality-extreme right">Activo</span>
-                </div>
-                <div class="personality-row">
-                    <span class="personality-label">Comunicación</span>
-                    <span class="personality-extreme">Reservada</span>
-                    <div class="dots" id="d2">
-                        <div class="dot" th:each="i : ${#numbers.sequence(1, 10)}" th:text="${i}" th:onclick="'selectDot(\'d2\',' + ${i} + ')'"></div>
+
+                    <div class="col-md-4">
+                        <label class="data-label" for="expresividad">Expresividad</label>
+                        <input type="number"
+                               id="expresividad"
+                               class="form-control"
+                               th:field="*{personalidad.expresividad}"
+                               th:errorclass="is-invalid"
+                               min="1"
+                               max="10"
+                               step="1"
+                               placeholder="1-10"
+                               required>
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('personalidad.expresividad')}"
+                             th:errors="*{personalidad.expresividad}">
+                        </div>
                     </div>
-                    <span class="personality-extreme right">Directa</span>
-                </div>
-                <div class="personality-row">
-                    <span class="personality-label">Expresividad</span>
-                    <span class="personality-extreme">Discreta</span>
-                    <div class="dots" id="d3">
-                        <div class="dot" th:each="i : ${#numbers.sequence(1, 10)}" th:text="${i}" th:onclick="'selectDot(\'d3\',' + ${i} + ')'"></div>
+
+                    <div class="col-md-4">
+                        <label class="data-label" for="caracter">Carácter</label>
+                        <input type="number"
+                               id="caracter"
+                               class="form-control"
+                               th:field="*{personalidad.caracter}"
+                               th:errorclass="is-invalid"
+                               min="1"
+                               max="10"
+                               step="1"
+                               placeholder="1-10"
+                               required>
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('personalidad.caracter')}"
+                             th:errors="*{personalidad.caracter}">
+                        </div>
                     </div>
-                    <span class="personality-extreme right">Expresiva</span>
-                </div>
-                <div class="personality-row">
-                    <span class="personality-label">Carácter</span>
-                    <span class="personality-extreme">Serio</span>
-                    <div class="dots" id="d4">
-                        <div class="dot" th:each="i : ${#numbers.sequence(1, 10)}" th:text="${i}" th:onclick="'selectDot(\'d4\',' + ${i} + ')'"></div>
+
+                    <div class="col-md-4">
+                        <label class="data-label" for="naturaleza">Naturaleza</label>
+                        <input type="number"
+                               id="naturaleza"
+                               class="form-control"
+                               th:field="*{personalidad.naturaleza}"
+                               th:errorclass="is-invalid"
+                               min="1"
+                               max="10"
+                               step="1"
+                               placeholder="1-10"
+                               required>
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('personalidad.naturaleza')}"
+                             th:errors="*{personalidad.naturaleza}">
+                        </div>
                     </div>
-                    <span class="personality-extreme right">Alegre</span>
-                </div>
-                <div class="personality-row">
-                    <span class="personality-label">Naturaleza</span>
-                    <span class="personality-extreme">Rutinaria</span>
-                    <div class="dots" id="d5">
-                        <div class="dot" th:each="i : ${#numbers.sequence(1, 10)}" th:text="${i}" th:onclick="'selectDot(\'d5\',' + ${i} + ')'"></div>
-                    </div>
-                    <span class="personality-extreme right">Espontánea</span>
                 </div>
             </div>
 
@@ -303,43 +416,33 @@
                     <span class="role-badge">Cuenta</span>
                 </div>
 
-                <div class="col-md-6">
-                    <label class="data-label" for="contrasena">Contraseña</label>
-                    <input type="password" id="contrasena" class="form-control"
-                           th:field="*{contrasena}" placeholder="Introduce una contraseña" required>
-                    <div th:if="${#fields.hasErrors('contrasena')}" th:errors="*{contrasena}" class="error"></div>
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <label class="data-label" for="contrasena">Contraseña</label>
+                        <input type="password"
+                               id="contrasena"
+                               class="form-control"
+                               th:field="*{contrasena}"
+                               th:errorclass="is-invalid"
+                               placeholder="Introduce una contraseña"
+                               required>
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('contrasena')}"
+                             th:errors="*{contrasena}">
+                        </div>
+                    </div>
                 </div>
 
-            <div class="actions">
-                <button type="submit" class="btn btn-primary">Registrarme</button>
-                <a th:href="@{/}" class="btn btn-secondary">Volver al inicio</a>
-                <a th:href="@{/Persona/listId}" class="btn btn-outline-secondary">Ver personas</a>
-            </div>
+                <div class="actions">
+                    <button type="submit" class="btn btn-primary">Registrarme</button>
+                    <a th:href="@{/}" class="btn btn-secondary">Volver al inicio</a>
+                    <a th:href="@{/Persona/listId}" class="btn btn-outline-secondary">Ver personas</a>
+                </div>
             </div>
 
         </form>
     </div>
 </div>
-<script>
-    const inputs = {
-        d1: document.getElementById('ritmoInput'),
-        d2: document.getElementById('comunicacionInput'),
-        d3: document.getElementById('expresividadInput'),
-        d4: document.getElementById('caracterInput'),
-        d5: document.getElementById('naturalezaInput')
-    };
 
-    function selectDot(groupId, valor) {
-        inputs[groupId].value = valor;
-        const dots = document.getElementById(groupId).querySelectorAll('.dot');
-        dots.forEach((d, i) => d.classList.toggle('selected', i + 1 === valor));
-    }
-
-    function initDots() {
-        ['d1','d2','d3','d4','d5'].forEach(id => selectDot(id, 5));
-    }
-
-    initDots();
-</script>
 </body>
 </html>

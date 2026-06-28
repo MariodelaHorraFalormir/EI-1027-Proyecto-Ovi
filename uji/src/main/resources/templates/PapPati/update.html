@@ -175,6 +175,11 @@
             font-size: 0.88rem;
             font-weight: 600;
         }
+
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
     </style>
 </head>
 
@@ -302,11 +307,13 @@
 
                     <div class="col-md-6">
                         <label for="fechaInicioDisponibilidad">Fecha inicio disponibilidad</label>
+
                         <input type="date"
                                id="fechaInicioDisponibilidad"
+                               name="fechaInicioDisponibilidad"
                                class="form-control"
-                               th:field="*{fechaInicioDisponibilidad}"
-                               th:errorclass="is-invalid">
+                               th:classappend="${#fields.hasErrors('fechaInicioDisponibilidad')} ? ' is-invalid' : ''"
+                               th:value="${papPati.fechaInicioDisponibilidad != null ? #temporals.format(papPati.fechaInicioDisponibilidad, 'yyyy-MM-dd') : ''}">
 
                         <div class="invalid-feedback d-block"
                              th:if="${#fields.hasErrors('fechaInicioDisponibilidad')}"
@@ -316,11 +323,13 @@
 
                     <div class="col-md-6">
                         <label for="fechaFinDisponibilidad">Fecha fin disponibilidad</label>
+
                         <input type="date"
                                id="fechaFinDisponibilidad"
+                               name="fechaFinDisponibilidad"
                                class="form-control"
-                               th:field="*{fechaFinDisponibilidad}"
-                               th:errorclass="is-invalid">
+                               th:classappend="${#fields.hasErrors('fechaFinDisponibilidad')} ? ' is-invalid' : ''"
+                               th:value="${papPati.fechaFinDisponibilidad != null ? #temporals.format(papPati.fechaFinDisponibilidad, 'yyyy-MM-dd') : ''}">
 
                         <div class="invalid-feedback d-block"
                              th:if="${#fields.hasErrors('fechaFinDisponibilidad')}"
