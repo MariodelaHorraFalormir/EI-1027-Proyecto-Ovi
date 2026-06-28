@@ -52,9 +52,8 @@ public class PaRequestController {
         this.solicitudesService = solicitudesService;
     }
 
-    @GetMapping("/create/{id}")
+    @GetMapping("/create")
     public String mostrarFormularioRegistro(Model model,
-                                            @PathVariable int id,
                                             HttpSession session) {
 
         UsuarioSesion usuario = (UsuarioSesion) session.getAttribute("usuario");
@@ -68,6 +67,8 @@ public class PaRequestController {
                 !usuario.getRolesActivos().contains("OVI_USER")) {
             return "redirect:/";
         }
+
+        int id = usuario.getIdPersona();
 
         Solicitud solicitud = new Solicitud();
         solicitud.setPersonaSolicitante(id);
@@ -87,13 +88,21 @@ public class PaRequestController {
         return "PaRequest/create";
     }
 
-    @PostMapping("/create/{id}")
+    @PostMapping("/create")
     public String procesarRegistro(@ModelAttribute("paRequest") PaRequest paRequest,
                                    BindingResult bindingResultPaRequest,
                                    @ModelAttribute("solicitud") Solicitud solicitud,
                                    BindingResult bindingResultSolicitud,
-                                   @PathVariable int id,
+                                   HttpSession session,
                                    Model model) {
+
+        UsuarioSesion usuario = (UsuarioSesion) session.getAttribute("usuario");
+
+        if (usuario == null) {
+            return "redirect:/login";
+        }
+
+        int id = usuario.getIdPersona();
 
         PaRequestValidator validador = new PaRequestValidator();
         validador.validate(paRequest, bindingResultPaRequest);

@@ -1,103 +1,213 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Detalles de mi Solicitud - OVI</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    body { background: linear-gradient(135deg, #f4f7fb, #e9f0f8); min-height: 100vh; }
-    .page-card { background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); padding: 2.5rem; }
-    .info-label { font-weight: 700; color: #1f3b5b; }
-  </style>
+    <meta charset="UTF-8">
+    <title>Detalles de mi Solicitud - OVI</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #f4f7fb, #e9f0f8);
+            min-height: 100vh;
+        }
+
+        .page-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            padding: 2.5rem;
+        }
+
+        .info-label {
+            font-weight: 700;
+            color: #1f3b5b;
+        }
+    </style>
 </head>
+
 <body>
 
-<nav th:replace="~{layout/navbar :: main-nav}"></nav>
+<div th:replace="~{layout/navbar :: main-nav}"></div>
 
 <main class="container mt-5 mb-5">
-  <div class="page-card">
+    <div class="page-card">
 
-    <div class="d-flex justify-content-between align-middle border-bottom pb-3 mb-4">
-      <div>
-        <h2 class="fw-bold text-dark mb-1">📋 Seguimiento de mi Proceso de Asistencia</h2>
-        <p class="text-muted mb-0">Revisa las anotaciones del equipo técnico y gestiona tu documentación.</p>
-      </div>
-      <div>
-        <span class="badge rounded-pill px-3 py-2 text-bg-secondary fs-6" th:text="${paRequest.status}"></span>
-      </div>
+        <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
+            <div>
+                <h2 class="fw-bold text-dark mb-1">
+                    📋 Seguimiento de mi Proceso de Asistencia
+                </h2>
+
+                <p class="text-muted mb-0">
+                    Revisa las anotaciones del equipo técnico y gestiona tu documentación.
+                </p>
+            </div>
+
+            <div>
+        <span class="badge rounded-pill px-3 py-2 text-bg-secondary fs-6"
+              th:text="${paRequest.status}">
+          Estado
+        </span>
+            </div>
+        </div>
+
+        <div class="alert alert-warning d-flex align-items-center rounded-3 p-3 mb-4"
+             role="alert">
+            <div class="fs-3 me-3">⚠️</div>
+
+            <div>
+                <h5 class="alert-heading fw-bold mb-1">
+                    Anotaciones de la Oficina Técnica:
+                </h5>
+
+                <p class="mb-0 text-dark"
+                   th:text="${comentariosTecnico}">
+                    Comentarios del técnico
+                </p>
+            </div>
+        </div>
+
+        <form th:action="@{/PaRequest/detalles/guardar/{id}(id=${paRequest.id})}"
+              th:object="${paRequest}"
+              method="post"
+              enctype="multipart/form-data">
+
+            <!-- Campos ocultos para no perder datos al enviar -->
+            <input type="hidden" th:field="*{id}">
+            <input type="hidden" th:field="*{oviUser}">
+            <input type="hidden" th:field="*{fechaCreacion}">
+            <input type="hidden" th:field="*{status}">
+
+            <div class="row g-4">
+
+                <div class="col-md-4">
+                    <p class="mb-1 text-muted small">
+                        Identificador del Proceso
+                    </p>
+
+                    <p class="fs-5 fw-bold text-dark"
+                       th:text="*{id}">
+                        1
+                    </p>
+                </div>
+
+                <div class="col-md-4">
+                    <p class="mb-1 text-muted small">
+                        Fecha de Creación Inicial
+                    </p>
+
+                    <p class="fs-5 fw-bold text-dark"
+                       th:text="*{fechaCreacion}">
+                        Fecha
+                    </p>
+                </div>
+
+                <div class="col-md-4">
+                    <p class="mb-1 text-muted small">
+                        Código de Usuario OVI
+                    </p>
+
+                    <p class="fs-5 fw-bold text-dark"
+                       th:text="*{oviUser}">
+                        Usuario
+                    </p>
+                </div>
+
+                <hr class="my-4 text-muted opacity-25">
+
+                <div class="col-md-6">
+                    <label class="form-label info-label">
+                        Tipo de Asistencia Requerida
+                    </label>
+
+                    <input type="text"
+                           class="form-control rounded-pill"
+                           th:field="*{tipoAsistencia}"
+                           required>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label info-label">
+                        Zona Geográfica de Cobertura
+                    </label>
+
+                    <input type="text"
+                           class="form-control rounded-pill"
+                           th:field="*{zonaGeografica}"
+                           required>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label info-label">
+                        Disponibilidad Horaria Solicitada
+                    </label>
+
+                    <input type="text"
+                           class="form-control rounded-pill"
+                           th:field="*{disponibilidadHoraria}"
+                           required>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label info-label">
+                        Preferencia de Género del Asistente
+                    </label>
+
+                    <input type="text"
+                           class="form-control rounded-pill"
+                           th:field="*{generoAsistente}">
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label info-label">
+                        Detalles Adicionales y Preferencias Particulares
+                    </label>
+
+                    <textarea class="form-control rounded-3"
+                              rows="4"
+                              th:field="*{preferencias}">
+          </textarea>
+                </div>
+
+                <div class="col-12 mt-4">
+                    <div class="card bg-light border-0 p-3 rounded-3">
+                        <label class="form-label info-label mb-2">
+                            📁 Adjuntar Nueva Documentación / Enmendar Errores
+                        </label>
+
+                        <p class="small text-muted mb-2">
+                            Usa este espacio para subir los certificados corregidos o la documentación que el técnico te ha solicitado arriba.
+                        </p>
+
+                        <input type="file"
+                               name="documentosAdjuntos"
+                               class="form-control bg-white rounded-pill"
+                               multiple>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mt-5 pt-3 border-top">
+
+                <a th:href="@{/PaRequest/mis/{id}(id=${paRequest.oviUser})}"
+                   class="btn btn-outline-secondary rounded-pill px-4">
+                    Volver al listado
+                </a>
+
+                <button type="submit"
+                        class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">
+                    🚀 Enviar Cambios para Re-evaluación
+                </button>
+
+            </div>
+        </form>
+
     </div>
-
-    <div class="alert alert-warning d-flex align-items-center rounded-3 p-3 mb-4" role="alert">
-      <div class="fs-3 me-3">⚠️</div>
-      <div>
-        <h5 class="alert-heading fw-bold mb-1">Anotaciones de la Oficina Técnica:</h5>
-        <p class="mb-0 text-dark" th:text="${comentariosTecnico}"></p>
-      </div>
-    </div>
-
-    <form th:action="@{/PaRequest/detalles/guardar/{id}(id=${paRequest.id})}" th:object="${paRequest}" method="post" enctype="multipart/form-data">
-
-      <div class="row g-4">
-        <div class="col-md-4">
-          <p class="mb-1 text-muted small">Identificador del Proceso</p>
-          <p class="fs-5 fw-bold text-dark" th:text="*{id}"></p>
-        </div>
-        <div class="col-md-4">
-          <p class="mb-1 text-muted small">Fecha de Creación Inicial</p>
-          <p class="fs-5 fw-bold text-dark" th:text="*{fechaCreacion}"></p>
-        </div>
-        <div class="col-md-4">
-          <p class="mb-1 text-muted small">Código de Usuario OVI</p>
-          <p class="fs-5 fw-bold text-dark" th:text="*{oviUser}"></p>
-        </div>
-
-        <hr class="my-4 text-muted opacity-25">
-
-        <div class="col-md-6">
-          <label class="form-label info-label">Tipo de Asistencia Requerida</label>
-          <input type="text" class="form-control rounded-pill" th:field="*{tipoAsistencia}" required>
-        </div>
-
-        <div class="col-md-6">
-          <label class="form-label info-label">Zona Geográfica de Cobertura</label>
-          <input type="text" class="form-control rounded-pill" th:field="*{zonaGeografica}" required>
-        </div>
-
-        <div class="col-md-6">
-          <label class="form-label info-label">Disponibilidad Horaria Solicitada</label>
-          <input type="text" class="form-control rounded-pill" th:field="*{disponibilidadHoraria}" required>
-        </div>
-
-        <div class="col-md-6">
-          <label class="form-label info-label">Preferencia de Género del Asistente</label>
-          <input type="text" class="form-control rounded-pill" th:field="*{generoAsistente}">
-        </div>
-
-        <div class="col-12">
-          <label class="form-label info-label">Detalles Adicionales y Preferencias Particulares</label>
-          <textarea class="form-control rounded-3" rows="4" th:field="*{preferencias}"></textarea>
-        </div>
-
-        <div class="col-12 mt-4">
-          <div class="card bg-light border-0 p-3 rounded-3">
-            <label class="form-label info-label mb-2">📁 Adjuntar Nueva Documentación / Enmendar Errores</label>
-            <p class="small text-muted mb-2">Usa este espacio para subir los certificados corregidos o la documentación que el técnico te ha solicitado arriba.</p>
-            <input type="file" name="documentosAdjuntos" class="form-control bg-white rounded-pill" multiple>
-          </div>
-        </div>
-      </div>
-
-      <div class="d-flex justify-content-end gap-2 mt-5 pt-3 border-top">
-        <a href="javascript:history.back()" class="btn btn-outline-secondary rounded-pill px-4">Volver al listado</a>
-        <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">
-          🚀 Enviar Cambios para Re-evaluación
-        </button>
-      </div>
-    </form>
-
-  </div>
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>
