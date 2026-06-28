@@ -12,6 +12,7 @@ import javax.sql.DataSource;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class PaRequestDao {
@@ -29,9 +30,9 @@ public class PaRequestDao {
 
         String sql = "INSERT INTO pa_request (id, status, fecha_creacion, fecha_resolucion, ovi_user, " +
                 "genero_asistente, disponibilidad_horaria, zona_geografica, " +
-                "tipo_asistencia, fecha_inicio, fecha_fin) " +
+                "tipo_asistencia, fecha_inicio, fecha_fin, preferencias) " +
                 "OVERRIDING SYSTEM VALUE " +
-                "VALUES (?, ?::status_pa_request_enum, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "VALUES (?, ?::status_pa_request_enum, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         jdbcTemplate.update(
                 sql,
@@ -45,7 +46,8 @@ public class PaRequestDao {
                 paRequest.getZonaGeografica(),
                 paRequest.getTipoAsistencia(),
                 paRequest.getFechaInicio() != null ? Date.valueOf(paRequest.getFechaInicio()) : null,
-                paRequest.getFechaFin() != null ? Date.valueOf(paRequest.getFechaFin()) : null
+                paRequest.getFechaFin() != null ? Date.valueOf(paRequest.getFechaFin()) : null,
+                paRequest.getPreferencias()
         );
     }
 
@@ -93,7 +95,10 @@ public class PaRequestDao {
     }
 
     public List<PaRequest> getPaRequests() {
-        return jdbcTemplate.query("SELECT * FROM pa_request", new PaRequestRowMapper());
+        return jdbcTemplate.query(
+                "SELECT * FROM pa_request ORDER BY id DESC",
+                new PaRequestRowMapper()
+        );
     }
 
     public void cambiarEstadoPaRequest(int idPaRequest, StatusPaRequest statusPaRequest) {
@@ -102,29 +107,90 @@ public class PaRequestDao {
     }
 
     public List<PaRequest> getPaRequestsByOviUser(int oviUser) {
-        try {
-            return jdbcTemplate.query(
-                    "SELECT * FROM pa_request WHERE ovi_user = ? ORDER BY id DESC",
-                    new PaRequestRowMapper(),
-                    oviUser
-            );
-        } catch (EmptyResultDataAccessException e) {
-            return new ArrayList<>();
-        }
+        return jdbcTemplate.query(
+                "SELECT * FROM pa_request WHERE ovi_user = ? ORDER BY id DESC",
+                new PaRequestRowMapper(),
+                oviUser
+        );
     }
 
     public List<PaRequest> getPaRequestsByPapPati(int idPapPati) {
-        try {
-            return jdbcTemplate.query(
-                    "SELECT DISTINCT pr.* FROM pa_request pr " +
-                            "JOIN mensaje m ON m.id_solicitud = pr.id " +
-                            "WHERE m.id_emisor = ? OR m.id_receptor = ? " +
-                            "ORDER BY pr.id DESC",
-                    new PaRequestRowMapper(),
-                    idPapPati, idPapPati
-            );
-        } catch (EmptyResultDataAccessException e) {
-            return new ArrayList<>();
+        return jdbcTemplate.query(
+                "SELECT DISTINCT pr.* " +
+                        "FROM pa_request pr " +
+                        "JOIN conversacion c ON c.pa_request = pr.id " +
+                        "WHERE c.pap_pati = ? " +
+                        "ORDER BY pr.id DESC",
+                new PaRequestRowMapper(),
+                idPapPati
+        );
+    }
+
+    public List<Map<String, Object>> getPapPatisAsociadosByPaRequest(int idPaRequest) {
+        String sql =
+                "SELECT DISTINCT " +
+                        "p.id AS id_candidato, " +
+                        "p.nombre AS nombre, " +
+                        "p.apellidos AS apellidos, " +
+                        "pp.experiencia AS experiencia, " +
+                        "pp.disponibilidad AS disponibilidad " +
+                        "FROM conversacion c " +
+                        "JOIN pap_pati pp ON pp.id = c.pap_pati " +
+                        "JOIN persona p ON p.id = pp.id " +
+                        "WHERE c.pa_request = ? " +
+                        "ORDER BY p.apellidos, p.nombre";
+
+        return jdbcTemplate.queryForList(sql, idPaRequest);
+    }
+
+    public List<PaRequest> getPaRequestsFiltrados(StatusPaRequest estado, String busqueda) {
+        StringBuilder sql = new StringBuilder(
+                "SELECT DISTINCT pr.* " +
+                        "FROM pa_request pr " +
+                        "LEFT JOIN ovi_user ou ON ou.id = pr.ovi_user " +
+                        "LEFT JOIN persona p ON p.id = ou.id " +
+                        "WHERE 1 = 1 "
+        );
+
+        List<Object> parametros = new ArrayList<>();
+
+        if (estado != null) {
+            sql.append("AND pr.status = ?::status_pa_request_enum ");
+            parametros.add(estado.getTexto());
         }
+
+        if (busqueda != null && !busqueda.trim().isEmpty()) {
+            String texto = "%" + busqueda.trim().toLowerCase() + "%";
+
+            sql.append("AND (")
+                    .append("CAST(pr.id AS TEXT) LIKE ? ")
+                    .append("OR CAST(pr.ovi_user AS TEXT) LIKE ? ")
+                    .append("OR LOWER(COALESCE(p.nombre, '')) LIKE ? ")
+                    .append("OR LOWER(COALESCE(p.apellidos, '')) LIKE ? ")
+                    .append("OR LOWER(COALESCE(p.mail, '')) LIKE ? ")
+                    .append("OR LOWER(CONCAT(COALESCE(p.nombre, ''), ' ', COALESCE(p.apellidos, ''))) LIKE ? ")
+                    .append("OR LOWER(COALESCE(pr.tipo_asistencia, '')) LIKE ? ")
+                    .append("OR LOWER(COALESCE(pr.zona_geografica, '')) LIKE ? ")
+                    .append("OR LOWER(COALESCE(pr.disponibilidad_horaria, '')) LIKE ? ")
+                    .append(") ");
+
+            parametros.add(texto);
+            parametros.add(texto);
+            parametros.add(texto);
+            parametros.add(texto);
+            parametros.add(texto);
+            parametros.add(texto);
+            parametros.add(texto);
+            parametros.add(texto);
+            parametros.add(texto);
+        }
+
+        sql.append("ORDER BY pr.id DESC");
+
+        return jdbcTemplate.query(
+                sql.toString(),
+                new PaRequestRowMapper(),
+                parametros.toArray()
+        );
     }
 }
