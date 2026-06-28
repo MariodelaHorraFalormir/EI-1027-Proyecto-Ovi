@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Detalle de solicitud</title>
+    <title>Editar solicitud</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link rel="stylesheet"
@@ -40,23 +40,33 @@
             margin-bottom: 0.4rem;
         }
 
-        .form-control, .form-select, .form-control:focus, .form-select:focus {
+        .form-control,
+        .form-select,
+        .form-control:focus,
+        .form-select:focus {
             border-radius: 12px;
-        }
-
-        .badge-estado {
-            font-size: 0.95rem;
-            padding: 0.5rem 0.8rem;
-            border-radius: 999px;
         }
 
         textarea.form-control {
             min-height: 120px;
         }
+
+        .error-box {
+            border-radius: 14px;
+            border: 1px solid #f1aeb5;
+            background-color: #f8d7da;
+            color: #842029;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .invalid-feedback {
+            font-size: 0.9rem;
+        }
     </style>
 </head>
-<body>
 
+<body>
 
 <div th:replace="~{layout/navbar :: main-nav}"></div>
 
@@ -67,7 +77,7 @@
 
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
             <div>
-                <h1 class="section-title">Detalle de solicitud</h1>
+                <h1 class="section-title">Editar solicitud</h1>
                 <p class="section-subtitle mb-0">
                     Revisión y edición de la solicitud seleccionada
                 </p>
@@ -76,51 +86,109 @@
 
         <form th:object="${solicitud}"
               th:action="@{/Solicitudes/update/{id}(id=${solicitud.idSolicitud})}"
-              method="post">
+              method="post"
+              novalidate>
+
+            <div class="error-box"
+                 th:if="${#fields.hasAnyErrors()}">
+                <strong>Revisa los datos antes de guardar:</strong>
+                <ul class="mb-0 mt-2">
+                    <li th:each="error : ${#fields.allErrors()}"
+                        th:text="${error}">
+                        Error de validación
+                    </li>
+                </ul>
+            </div>
 
             <div class="row g-4">
 
                 <div class="col-md-6">
                     <label class="data-label" for="idSolicitud">ID de la solicitud</label>
-                    <input type="number" id="idSolicitud" class="form-control"
-                           th:field="*{idSolicitud}" readonly>
+                    <input type="number"
+                           id="idSolicitud"
+                           class="form-control"
+                           th:field="*{idSolicitud}"
+                           readonly>
                 </div>
 
                 <div class="col-md-6">
                     <label class="data-label" for="personaSolicitante">Persona solicitante</label>
-                    <input type="number" id="personaSolicitante" class="form-control"
-                           th:field="*{personaSolicitante}">
+                    <input type="number"
+                           id="personaSolicitante"
+                           class="form-control"
+                           th:field="*{personaSolicitante}"
+                           th:errorclass="is-invalid">
+
+                    <div class="invalid-feedback d-block"
+                         th:if="${#fields.hasErrors('personaSolicitante')}"
+                         th:errors="*{personaSolicitante}">
+                        Error en persona solicitante
+                    </div>
                 </div>
 
                 <div class="col-md-6">
-                    <label class="data-label" for="categoriaSolicitud">Categoria Solicitud</label>
-                    <select id="categoriaSolicitud" class="form-select" th:field="*{categoriaSolicitud}">
+                    <label class="data-label" for="categoriaSolicitud">Categoría solicitud</label>
+                    <select id="categoriaSolicitud"
+                            class="form-select"
+                            th:field="*{categoriaSolicitud}"
+                            th:errorclass="is-invalid">
                         <option value="">Selecciona una opción</option>
                         <option th:each="op : ${categoriaList}"
                                 th:value="${op}"
                                 th:text="${op}">
                         </option>
                     </select>
+
+                    <div class="invalid-feedback d-block"
+                         th:if="${#fields.hasErrors('categoriaSolicitud')}"
+                         th:errors="*{categoriaSolicitud}">
+                        Error en categoría
+                    </div>
                 </div>
 
                 <div class="col-md-6">
                     <label class="data-label" for="tipoSolicitud">Tipo de solicitud</label>
-                    <select id="tipoSolicitud" class="form-select" th:field="*{tipoSolicitud}">
+                    <select id="tipoSolicitud"
+                            class="form-select"
+                            th:field="*{tipoSolicitud}"
+                            th:errorclass="is-invalid">
+                        <option value="">Selecciona una opción</option>
                         <option th:each="op : ${tipoList}"
                                 th:value="${op}"
                                 th:text="${op}">
                         </option>
                     </select>
+
+                    <div class="invalid-feedback d-block"
+                         th:if="${#fields.hasErrors('tipoSolicitud')}"
+                         th:errors="*{tipoSolicitud}">
+                        Error en tipo de solicitud
+                    </div>
+
+                    <div class="form-text">
+                        Rol solo permite Pap_pati u Ovi_user. Proceso permite Pa_request,
+                        Asistencia_tecnica u Otro.
+                    </div>
                 </div>
 
                 <div class="col-md-6">
                     <label class="data-label" for="estadoSolicitud">Estado</label>
-                    <select id="estadoSolicitud" class="form-select" th:field="*{estadoSolicitud}">
+                    <select id="estadoSolicitud"
+                            class="form-select"
+                            th:field="*{estadoSolicitud}"
+                            th:errorclass="is-invalid">
+                        <option value="">Selecciona una opción</option>
                         <option th:each="op : ${estadoList}"
                                 th:value="${op}"
                                 th:text="${op}">
                         </option>
                     </select>
+
+                    <div class="invalid-feedback d-block"
+                         th:if="${#fields.hasErrors('estadoSolicitud')}"
+                         th:errors="*{estadoSolicitud}">
+                        Error en estado
+                    </div>
                 </div>
 
                 <div class="col-md-6">
@@ -129,7 +197,14 @@
                            id="fechaCreacion"
                            name="fechaCreacion"
                            class="form-control"
+                           th:classappend="${#fields.hasErrors('fechaCreacion')} ? ' is-invalid' : ''"
                            th:value="${solicitud.fechaCreacion != null ? #temporals.format(solicitud.fechaCreacion, 'yyyy-MM-dd') : ''}">
+
+                    <div class="invalid-feedback d-block"
+                         th:if="${#fields.hasErrors('fechaCreacion')}"
+                         th:errors="*{fechaCreacion}">
+                        Error en fecha de creación
+                    </div>
                 </div>
 
                 <div class="col-md-6">
@@ -138,27 +213,68 @@
                            id="fechaResolucion"
                            name="fechaResolucion"
                            class="form-control"
+                           th:classappend="${#fields.hasErrors('fechaResolucion')} ? ' is-invalid' : ''"
                            th:value="${solicitud.fechaResolucion != null ? #temporals.format(solicitud.fechaResolucion, 'yyyy-MM-dd') : ''}">
+
+                    <div class="invalid-feedback d-block"
+                         th:if="${#fields.hasErrors('fechaResolucion')}"
+                         th:errors="*{fechaResolucion}">
+                        Error en fecha de resolución
+                    </div>
+
+                    <div class="form-text">
+                        Si está pendiente, debe quedar vacía. Si está aprobada o rechazada,
+                        debe tener fecha.
+                    </div>
                 </div>
 
                 <div class="col-12">
                     <label class="data-label" for="mensajeSolicitud">Mensaje de la solicitud</label>
-                    <textarea id="mensajeSolicitud" class="form-control"
-                              th:field="*{mensajeSolicitud}"></textarea>
+                    <textarea id="mensajeSolicitud"
+                              class="form-control"
+                              th:field="*{mensajeSolicitud}"
+                              th:errorclass="is-invalid"></textarea>
+
+                    <div class="invalid-feedback d-block"
+                         th:if="${#fields.hasErrors('mensajeSolicitud')}"
+                         th:errors="*{mensajeSolicitud}">
+                        Error en mensaje
+                    </div>
                 </div>
 
                 <div class="col-12">
                     <label class="data-label" for="motivoResolucion">Motivo de resolución</label>
-                    <textarea id="motivoResolucion" class="form-control"
-                              th:field="*{motivoResolucion}"></textarea>
+                    <textarea id="motivoResolucion"
+                              class="form-control"
+                              th:field="*{motivoResolucion}"
+                              th:errorclass="is-invalid"></textarea>
+
+                    <div class="invalid-feedback d-block"
+                         th:if="${#fields.hasErrors('motivoResolucion')}"
+                         th:errors="*{motivoResolucion}">
+                        Error en motivo de resolución
+                    </div>
+
+                    <div class="form-text">
+                        Solo es obligatorio cuando la solicitud está rechazada.
+                    </div>
                 </div>
             </div>
 
-            <div class="mt-4 d-flex gap-2">
-                <button type="submit" class="btn btn-primary">Guardar cambios</button>
-                <a th:href="@{/Solicitudes/todas}" class="btn btn-secondary">Volver al listado</a>
-                <a th:href="@{/}" class="btn btn-outline-dark">Ir al inicio</a>
+            <div class="mt-4 d-flex gap-2 flex-wrap">
+                <button type="submit" class="btn btn-primary">
+                    Guardar cambios
+                </button>
+
+                <a th:href="@{/Solicitudes/list/todas}" class="btn btn-secondary">
+                    Volver al listado
+                </a>
+
+                <a th:href="@{/}" class="btn btn-outline-dark">
+                    Ir al inicio
+                </a>
             </div>
+
         </form>
 
     </div>
