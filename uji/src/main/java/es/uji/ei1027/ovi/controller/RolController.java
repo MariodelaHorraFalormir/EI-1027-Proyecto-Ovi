@@ -175,4 +175,80 @@ public class RolController {
                 tipoSolicitud == TipoSolicitud.Pap_pati ||
                 tipoSolicitud == TipoSolicitud.Pa_request;
     }
+    @GetMapping("/persona/{idPersona}/crear/{rol}/confirmar")
+    public String confirmarCrearRol(@PathVariable int idPersona,
+                                    @PathVariable String rol,
+                                    Model model,
+                                    HttpSession session) {
+
+        UsuarioSesion usuario = sesionService.getUsuario(session);
+
+        if (usuario == null) {
+            return sesionService.redirigirALogin(
+                    session,
+                    "/Rol/persona/" + idPersona + "/crear/" + rol + "/confirmar"
+            );
+        }
+
+        if (!usuario.esAdminOvi()) {
+            return "redirect:/";
+        }
+
+        RolUsuario rolUsuario;
+
+        try {
+            rolUsuario = RolUsuario.fromString(rol);
+        } catch (IllegalArgumentException e) {
+            return "redirect:/Rol/persona/" + idPersona + "/gestionar?error=rolNoValido";
+        }
+
+        PersonaFormulario personaFormulario = personaService.getPersonaFormulario(idPersona);
+
+        model.addAttribute("personaFormulario", personaFormulario);
+        model.addAttribute("rol", rolUsuario);
+        model.addAttribute("usuarioActual", usuario);
+
+        return "Rol/confirmar-crear";
+    }
+
+
+    @GetMapping("/persona/{idPersona}/borrar/{rol}/confirmar")
+    public String confirmarBorrarRol(@PathVariable int idPersona,
+                                     @PathVariable String rol,
+                                     Model model,
+                                     HttpSession session) {
+
+        UsuarioSesion usuario = sesionService.getUsuario(session);
+
+        if (usuario == null) {
+            return sesionService.redirigirALogin(
+                    session,
+                    "/Rol/persona/" + idPersona + "/borrar/" + rol + "/confirmar"
+            );
+        }
+
+        if (!usuario.esAdminOvi()) {
+            return "redirect:/";
+        }
+
+        RolUsuario rolUsuario;
+
+        try {
+            rolUsuario = RolUsuario.fromString(rol);
+        } catch (IllegalArgumentException e) {
+            return "redirect:/Rol/persona/" + idPersona + "/gestionar?error=rolNoValido";
+        }
+
+        if (usuario.getIdPersona() == idPersona && rolUsuario == RolUsuario.Admin_ovi) {
+            return "redirect:/Rol/persona/" + idPersona + "/gestionar?error=noPuedesBorrarteAdmin";
+        }
+
+        PersonaFormulario personaFormulario = personaService.getPersonaFormulario(idPersona);
+
+        model.addAttribute("personaFormulario", personaFormulario);
+        model.addAttribute("rol", rolUsuario);
+        model.addAttribute("usuarioActual", usuario);
+
+        return "Rol/confirmar-borrar";
+    }
 }

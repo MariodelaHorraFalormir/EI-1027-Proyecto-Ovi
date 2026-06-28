@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <title>Confirmar borrado de rol</title>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" />
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #f4f7fb, #e9f0f8);
+            min-height: 100vh;
+        }
+
+        .confirm-card {
+            max-width: 760px;
+            margin: 4rem auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            padding: 2rem;
+        }
+
+        .confirm-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #7f1d1d;
+        }
+
+        .info-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 1.25rem;
+            margin-top: 1.5rem;
+        }
+
+        .label-small {
+            font-size: 0.85rem;
+            color: #64748b;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .value-main {
+            font-size: 1.1rem;
+            color: #1f3b5b;
+            font-weight: 800;
+        }
+
+        .actions {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            border-radius: 12px;
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body>
+
+<div th:replace="~{layout/navbar :: main-nav}"></div>
+
+<main class="container">
+    <section class="confirm-card">
+
+        <h1 class="confirm-title">Confirmar borrado de rol</h1>
+
+        <p class="text-muted mb-0">
+            Vas a eliminar un rol de esta persona. Esta acción puede borrar el perfil asociado.
+        </p>
+
+        <div class="info-box">
+            <div class="mb-3">
+                <div class="label-small">Persona</div>
+                <div class="value-main">
+                    <span th:text="${personaFormulario.persona.nombre}">Nombre</span>
+                    <span th:text="${personaFormulario.persona.apellidos}">Apellidos</span>
+                </div>
+                <div class="text-muted" th:text="${personaFormulario.persona.mail}">
+                    correo@ovi.es
+                </div>
+            </div>
+
+            <div>
+                <div class="label-small">Rol que se va a borrar</div>
+                <div class="value-main" th:text="${rol.getTextoVisible()}">
+                    Rol
+                </div>
+            </div>
+        </div>
+
+        <div class="alert alert-danger mt-4 mb-0">
+            Cuidado: al confirmar se eliminará este rol de la persona seleccionada.
+        </div>
+
+        <div class="actions">
+            <form th:action="@{/Rol/persona/{id}/borrar/{rol}(id=${personaFormulario.persona.idPersona}, rol=${rol.getTexto()})}"
+                  method="post">
+                <button type="submit" class="btn btn-danger">
+                    Confirmar borrado
+                </button>
+            </form>
+
+            <a th:href="@{/Rol/persona/{id}/gestionar(id=${personaFormulario.persona.idPersona})}"
+               class="btn btn-secondary">
+                Cancelar
+            </a>
+        </div>
+
+    </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

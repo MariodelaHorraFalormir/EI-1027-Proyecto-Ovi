@@ -67,7 +67,6 @@
             border-radius: 16px;
             padding: 1rem;
             min-width: 140px;
-            backdrop-filter: blur(6px);
         }
 
         .stat-number {
@@ -137,13 +136,6 @@
             padding: 1.15rem;
             position: relative;
             overflow: hidden;
-            transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
-        }
-
-        .role-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 28px rgba(15, 23, 42, 0.10);
-            border-color: #cbd5e1;
         }
 
         .role-card::before {
@@ -292,7 +284,6 @@
 <main class="container-fluid mt-4 px-4">
     <div class="page-card">
 
-        <!-- CABECERA -->
         <div class="mb-4">
             <h1 class="section-title">Gestionar roles</h1>
             <p class="section-subtitle mb-0">
@@ -300,7 +291,6 @@
             </p>
         </div>
 
-        <!-- MENSAJES -->
         <div th:if="${param.ok}" class="alert alert-success">
             Operación realizada correctamente.
         </div>
@@ -309,7 +299,6 @@
             No se ha podido realizar la operación solicitada.
         </div>
 
-        <!-- PERSONA -->
         <section class="person-card">
             <div class="row g-3 align-items-center">
                 <div class="col-lg-8">
@@ -341,7 +330,6 @@
             </div>
         </section>
 
-        <!-- ROLES ASIGNADOS -->
         <section class="roles-section">
             <div class="roles-header">
                 <div>
@@ -404,15 +392,11 @@
                             Ver perfil
                         </a>
 
-                        <form th:if="${!(rol.name() == 'Admin_ovi' and usuarioActual.idPersona == personaFormulario.persona.idPersona)}"
-                              th:action="@{/Rol/persona/{id}/borrar/{rol}(id=${personaFormulario.persona.idPersona}, rol=${rol.getTexto()})}"
-                              method="post"
-                              onsubmit="return confirm('¿Seguro que quieres borrar este rol? Esta acción eliminará el perfil asociado.');">
-
-                            <button type="submit" class="btn btn-outline-danger btn-sm">
-                                Borrar rol
-                            </button>
-                        </form>
+                        <a th:if="${!(rol.name() == 'Admin_ovi' and usuarioActual.idPersona == personaFormulario.persona.idPersona)}"
+                           th:href="@{/Rol/persona/{id}/borrar/{rol}/confirmar(id=${personaFormulario.persona.idPersona}, rol=${rol.getTexto()})}"
+                           class="btn btn-outline-danger btn-sm">
+                            Borrar rol
+                        </a>
 
                         <span th:if="${rol.name() == 'Admin_ovi' and usuarioActual.idPersona == personaFormulario.persona.idPersona}"
                               class="danger-note">
@@ -425,7 +409,6 @@
             </div>
         </section>
 
-        <!-- ROLES DISPONIBLES -->
         <section class="roles-section">
             <div class="roles-header">
                 <div>
@@ -475,21 +458,16 @@
                     <span class="role-status status-available">Rol disponible</span>
 
                     <div class="role-actions">
-                        <form th:action="@{/Rol/persona/{id}/crear/{rol}(id=${personaFormulario.persona.idPersona}, rol=${rol.getTexto()})}"
-                              method="post"
-                              onsubmit="return confirm('¿Quieres crear este rol para la persona seleccionada?');">
-
-                            <button type="submit" class="btn btn-outline-success btn-sm">
-                                Crear rol rápido
-                            </button>
-                        </form>
+                        <a th:href="@{/Rol/persona/{id}/crear/{rol}/confirmar(id=${personaFormulario.persona.idPersona}, rol=${rol.getTexto()})}"
+                           class="btn btn-outline-success btn-sm">
+                            Crear rol rápido
+                        </a>
                     </div>
                 </article>
 
             </div>
         </section>
 
-        <!-- ACCIONES -->
         <div class="actions-footer">
             <a th:href="@{/Persona/details/{id}(id=${personaFormulario.persona.idPersona})}"
                class="btn btn-primary">
