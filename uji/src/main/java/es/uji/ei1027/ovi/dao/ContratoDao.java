@@ -161,4 +161,13 @@ public class ContratoDao {
 
         jdbcTemplate.update(sql, id);
     }
+    public boolean existeContratoPorSolicitud(int idSolicitud) {
+        Integer total = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM contrato WHERE id_solicitud = ?",
+                Integer.class,
+                idSolicitud
+        );
+
+        return total != null && total > 0;
+    }
 }

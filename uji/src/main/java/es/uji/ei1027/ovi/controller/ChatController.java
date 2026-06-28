@@ -1,8 +1,12 @@
 package es.uji.ei1027.ovi.controller;
 
+import es.uji.ei1027.ovi.dao.ContratoDao;
 import es.uji.ei1027.ovi.dao.MensajeDao;
+import es.uji.ei1027.ovi.dao.PaRequestDao;
 import es.uji.ei1027.ovi.modelo.Chat.Mensaje;
 import es.uji.ei1027.ovi.modelo.Login.UsuarioSesion;
+import es.uji.ei1027.ovi.modelo.PaRequest.PaRequest;
+import es.uji.ei1027.ovi.modelo.PaRequest.StatusPaRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,20 +20,34 @@ import java.util.*;
 public class ChatController {
 
     private MensajeDao mensajeDao;
+    private PaRequestDao paRequestDao;
+    private ContratoDao contratoDao;
 
     @Autowired
     public void setMensajeDao(MensajeDao mensajeDao) {
         this.mensajeDao = mensajeDao;
     }
 
-    // Compatibilidad con enlaces antiguos: /chat/{idSolicitud}/{idReceptor}
+    @Autowired
+    public void setPaRequestDao(PaRequestDao paRequestDao) {
+        this.paRequestDao = paRequestDao;
+    }
+
+    @Autowired
+    public void setContratoDao(ContratoDao contratoDao) {
+        this.contratoDao = contratoDao;
+    }
+
     @GetMapping("/{idSolicitud}/{idReceptor}")
     public String abrirChatAntiguo(@PathVariable int idSolicitud,
                                    @PathVariable int idReceptor,
                                    HttpSession session) {
 
         UsuarioSesion usuario = (UsuarioSesion) session.getAttribute("usuario");
-        if (usuario == null) return "redirect:/login";
+
+        if (usuario == null) {
+            return "redirect:/login";
+        }
 
         int miId = usuario.getIdPersona();
 
@@ -46,14 +64,16 @@ public class ChatController {
         return "redirect:/chat/" + idConversacion;
     }
 
-    // Abrir chat por conversación real
     @GetMapping("/{idConversacion}")
     public String mostrarChat(@PathVariable int idConversacion,
                               Model model,
                               HttpSession session) {
 
         UsuarioSesion usuario = (UsuarioSesion) session.getAttribute("usuario");
-        if (usuario == null) return "redirect:/login";
+
+        if (usuario == null) {
+            return "redirect:/login";
+        }
 
         int miId = usuario.getIdPersona();
 
@@ -64,21 +84,47 @@ public class ChatController {
         }
 
         boolean esAdmin = usuario.esAdminOvi();
+        boolean perteneceAConversacion = mensajeDao.usuarioPerteneceAConversacion(idConversacion, miId);
 
-        boolean puedeVer = esAdmin
-                || mensajeDao.usuarioPerteneceAConversacion(idConversacion, miId);
-
-        if (!puedeVer) {
+        if (!esAdmin && !perteneceAConversacion) {
             return "redirect:/";
         }
 
         List<Mensaje> mensajes = mensajeDao.getMensajesPorConversacion(idConversacion);
 
-        Integer idSolicitud = ((Number) datosConversacion.get("id_solicitud")).intValue();
-        Integer idOviUser = ((Number) datosConversacion.get("ovi_user")).intValue();
-        Integer idPapPati = ((Number) datosConversacion.get("pap_pati")).intValue();
+        Integer idSolicitud = obtenerEntero(datosConversacion.get("id_solicitud"));
+        Integer idOviUser = obtenerEntero(datosConversacion.get("ovi_user"));
+        Integer idPapPati = obtenerEntero(datosConversacion.get("pap_pati"));
+
+        if (idSolicitud == null || idOviUser == null || idPapPati == null) {
+            return "redirect:/chat/mis-conversaciones";
+        }
+
+        PaRequest paRequest = paRequestDao.getPaRequestById(idSolicitud);
+
+        StatusPaRequest estadoPaRequest = null;
+
+        if (paRequest != null) {
+            estadoPaRequest = paRequest.getStatus();
+        }
+
+        boolean procesoActivo = estadoPaRequest == StatusPaRequest.En_activo;
+        boolean existeContrato = existeContratoSeguro(idSolicitud);
+
+        boolean puedeFormalizarContrato =
+                !esAdmin
+                        && miId == idOviUser
+                        && procesoActivo
+                        && !existeContrato;
+
+        boolean puedeEnviarMensajes =
+                !esAdmin
+                        && perteneceAConversacion
+                        && procesoActivo
+                        && !existeContrato;
 
         Integer idReceptor = null;
+
         if (!esAdmin) {
             idReceptor = mensajeDao.getReceptorEnConversacion(idConversacion, miId);
         }
@@ -86,6 +132,12 @@ public class ChatController {
         String tipoAsistencia = datosConversacion.get("tipo_asistencia") != null
                 ? String.valueOf(datosConversacion.get("tipo_asistencia"))
                 : "Asistencia general";
+
+        String estadoPaRequestTexto = "-";
+
+        if (estadoPaRequest != null) {
+            estadoPaRequestTexto = estadoPaRequest.getTexto();
+        }
 
         model.addAttribute("conversacion", mensajes);
         model.addAttribute("datosConversacion", datosConversacion);
@@ -109,17 +161,26 @@ public class ChatController {
         model.addAttribute("nombrePapPati", datosConversacion.get("nombre_pap_pati"));
         model.addAttribute("apellidosPapPati", datosConversacion.get("apellidos_pap_pati"));
 
+        model.addAttribute("estadoPaRequest", estadoPaRequest);
+        model.addAttribute("estadoPaRequestTexto", estadoPaRequestTexto);
+        model.addAttribute("procesoActivo", procesoActivo);
+        model.addAttribute("existeContrato", existeContrato);
+        model.addAttribute("puedeFormalizarContrato", puedeFormalizarContrato);
+        model.addAttribute("puedeEnviarMensajes", puedeEnviarMensajes);
+
         return "chat/conversacion";
     }
 
-    // Enviar mensaje
     @PostMapping("/enviar")
     public String enviarMensaje(@RequestParam int idConversacion,
                                 @RequestParam String contenido,
                                 HttpSession session) {
 
         UsuarioSesion usuario = (UsuarioSesion) session.getAttribute("usuario");
-        if (usuario == null) return "redirect:/login";
+
+        if (usuario == null) {
+            return "redirect:/login";
+        }
 
         int miId = usuario.getIdPersona();
 
@@ -129,16 +190,34 @@ public class ChatController {
             return "redirect:/chat/mis-conversaciones";
         }
 
-        // El admin solo mira. No debe escribir en conversaciones ajenas.
-        boolean puedeEnviar = mensajeDao.usuarioPerteneceAConversacion(idConversacion, miId);
+        boolean perteneceAConversacion = mensajeDao.usuarioPerteneceAConversacion(idConversacion, miId);
 
-        if (!puedeEnviar) {
+        if (!perteneceAConversacion) {
             return "redirect:/";
+        }
+
+        Integer idSolicitud = mensajeDao.getPaRequestDeConversacion(idConversacion);
+
+        if (idSolicitud == null) {
+            return "redirect:/chat/" + idConversacion + "?error=sinSolicitud";
+        }
+
+        PaRequest paRequest = paRequestDao.getPaRequestById(idSolicitud);
+
+        if (paRequest == null) {
+            return "redirect:/chat/" + idConversacion + "?error=procesoNoExiste";
+        }
+
+        if (paRequest.getStatus() != StatusPaRequest.En_activo) {
+            return "redirect:/chat/" + idConversacion + "?error=procesoNoActivo";
+        }
+
+        if (existeContratoSeguro(idSolicitud)) {
+            return "redirect:/chat/" + idConversacion + "?error=contratoExistente";
         }
 
         if (contenido != null && !contenido.trim().isEmpty()) {
             Integer idReceptor = mensajeDao.getReceptorEnConversacion(idConversacion, miId);
-            Integer idSolicitud = mensajeDao.getPaRequestDeConversacion(idConversacion);
 
             Mensaje nuevoMensaje = new Mensaje();
             nuevoMensaje.setConversacion(idConversacion);
@@ -153,25 +232,37 @@ public class ChatController {
         return "redirect:/chat/" + idConversacion;
     }
 
-    // Crear o recuperar conversación desde candidatos
     @PostMapping("/iniciar")
     public String iniciarConversacion(@RequestParam int idSolicitud,
                                       @RequestParam int idPapPati,
                                       HttpSession session) {
 
         UsuarioSesion usuario = (UsuarioSesion) session.getAttribute("usuario");
-        if (usuario == null) return "redirect:/login";
+
+        if (usuario == null) {
+            return "redirect:/login";
+        }
 
         int miId = usuario.getIdPersona();
 
         Integer idOviUserSolicitud = mensajeDao.getOviUserDePaRequest(idSolicitud);
 
         if (idOviUserSolicitud == null) {
-            return "redirect:/PaRequest/list";
+            return "redirect:/PaRequest/mis/" + miId + "?error=solicitudNoExiste";
         }
 
-        if (idOviUserSolicitud != miId) {
+        if (!idOviUserSolicitud.equals(miId)) {
             return "redirect:/";
+        }
+
+        PaRequest paRequest = paRequestDao.getPaRequestById(idSolicitud);
+
+        if (paRequest == null) {
+            return "redirect:/PaRequest/mis/" + miId + "?error=procesoNoExiste";
+        }
+
+        if (paRequest.getStatus() != StatusPaRequest.En_activo) {
+            return "redirect:/PaRequest/mis/" + miId + "?error=procesoNoActivo";
         }
 
         Integer idConversacion = mensajeDao.crearORecuperarConversacion(
@@ -181,13 +272,12 @@ public class ChatController {
         );
 
         if (idConversacion == null) {
-            return "redirect:/PaRequest/candidatos/" + idSolicitud;
+            return "redirect:/PaRequest/candidatos/" + idSolicitud + "?error=noSePudoCrearChat";
         }
 
         return "redirect:/chat/" + idConversacion;
     }
 
-    // Mis conversaciones agrupadas por solicitud
     @GetMapping("/mis-conversaciones")
     public String misConversaciones(Model model,
                                     HttpSession session,
@@ -195,7 +285,10 @@ public class ChatController {
                                     @RequestParam(defaultValue = "0") int page) {
 
         UsuarioSesion usuario = (UsuarioSesion) session.getAttribute("usuario");
-        if (usuario == null) return "redirect:/login";
+
+        if (usuario == null) {
+            return "redirect:/login";
+        }
 
         int miId = usuario.getIdPersona();
 
@@ -220,8 +313,13 @@ public class ChatController {
         int total = grupos.size();
         int totalPages = (int) Math.ceil((double) total / pageSize);
 
-        if (page < 0) page = 0;
-        if (page >= totalPages && totalPages > 0) page = totalPages - 1;
+        if (page < 0) {
+            page = 0;
+        }
+
+        if (page >= totalPages && totalPages > 0) {
+            page = totalPages - 1;
+        }
 
         int from = page * pageSize;
         int to = Math.min(from + pageSize, total);
@@ -237,7 +335,6 @@ public class ChatController {
         return "chat/lista_chats";
     }
 
-    // Vista admin con filtros
     @GetMapping("/list/todas")
     public String todasLasConversaciones(Model model,
                                          HttpSession session,
@@ -247,8 +344,14 @@ public class ChatController {
                                          @RequestParam(required = false) String estado) {
 
         UsuarioSesion usuario = (UsuarioSesion) session.getAttribute("usuario");
-        if (usuario == null) return "redirect:/login";
-        if (!usuario.esAdminOvi()) return "redirect:/";
+
+        if (usuario == null) {
+            return "redirect:/login";
+        }
+
+        if (!usuario.esAdminOvi()) {
+            return "redirect:/";
+        }
 
         List<Map<String, Object>> conversaciones =
                 mensajeDao.getTodasLasConversacionesFiltradas(filtroMail, tipoAsistencia, estado);
@@ -259,8 +362,13 @@ public class ChatController {
         int total = grupos.size();
         int totalPages = (int) Math.ceil((double) total / pageSize);
 
-        if (page < 0) page = 0;
-        if (page >= totalPages && totalPages > 0) page = totalPages - 1;
+        if (page < 0) {
+            page = 0;
+        }
+
+        if (page >= totalPages && totalPages > 0) {
+            page = totalPages - 1;
+        }
 
         int from = page * pageSize;
         int to = Math.min(from + pageSize, total);
@@ -281,6 +389,32 @@ public class ChatController {
         model.addAttribute("estadosPeticion", List.of("En espera", "En activo", "Caducada", "Finalizada"));
 
         return "chat/list_todas";
+    }
+
+    private boolean existeContratoSeguro(int idSolicitud) {
+        try {
+            return contratoDao.existeContratoPorSolicitud(idSolicitud);
+        } catch (Exception e) {
+            System.out.println("No se ha podido comprobar si existe contrato para la solicitud "
+                    + idSolicitud + ": " + e.getMessage());
+            return false;
+        }
+    }
+
+    private Integer obtenerEntero(Object valor) {
+        if (valor == null) {
+            return null;
+        }
+
+        if (valor instanceof Number) {
+            return ((Number) valor).intValue();
+        }
+
+        try {
+            return Integer.parseInt(String.valueOf(valor));
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     @SuppressWarnings("unchecked")
