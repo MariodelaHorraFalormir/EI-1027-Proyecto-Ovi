@@ -5,13 +5,49 @@
     <meta charset="UTF-8" />
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" />
+
     <style>
-        body { background: linear-gradient(135deg, #f4f7fb, #e9f0f8); min-height: 100vh; }
-        .page-card { background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); padding: 2rem; }
-        .section-title { font-size: 2rem; font-weight: 800; color: #1f3b5b; }
-        .no-wrap { white-space: nowrap; }
+        body {
+            background: linear-gradient(135deg, #f4f7fb, #e9f0f8);
+            min-height: 100vh;
+        }
+
+        .page-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            padding: 2rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1f3b5b;
+        }
+
+        .solicitud-card {
+            border-radius: 16px;
+            border: 1px solid #dee2e6;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .solicitud-header {
+            background: #f8f9fa;
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .no-wrap {
+            white-space: nowrap;
+        }
+
+        .mail-small {
+            font-size: 0.82rem;
+        }
     </style>
 </head>
+
 <body>
 
 <div th:replace="~{layout/navbar :: main-nav}"></div>
@@ -22,66 +58,227 @@
         <div class="mb-4">
             <h1 class="section-title">Todas las conversaciones</h1>
             <p class="text-muted mb-0">
-                Listado de todos los chats abiertos entre usuarios. Solo lectura.
+                Listado de todos los chats abiertos entre usuarios, agrupados por solicitud.
             </p>
         </div>
 
-        <div th:if="${#lists.isEmpty(conversaciones)}" class="alert alert-info">
-            No hay conversaciones registradas en la plataforma.
+        <form th:action="@{/chat/list/todas}" method="get" class="card border-0 shadow-sm p-3 mb-4">
+            <div class="row g-3 align-items-end">
+
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">Buscar por email</label>
+                    <input type="text"
+                           name="filtroMail"
+                           th:value="${filtroMailActual}"
+                           class="form-control"
+                           placeholder="Email de OVI User o PAP/PATI">
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Tipo de solicitud</label>
+                    <select name="tipoAsistencia" class="form-select">
+                        <option value="">Todos</option>
+
+                        <option th:each="tipo : ${tiposAsistencia}"
+                                th:value="${tipo}"
+                                th:text="${tipo}"
+                                th:selected="${tipo == tipoAsistenciaActual}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Estado de petición</label>
+                    <select name="estado" class="form-select">
+                        <option value="">Todos</option>
+
+                        <option th:each="estadoItem : ${estadosPeticion}"
+                                th:value="${estadoItem}"
+                                th:text="${estadoItem}"
+                                th:selected="${estadoItem == estadoActual}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary fw-bold w-100">
+                        Filtrar
+                    </button>
+                </div>
+
+                <div class="col-12">
+                    <a th:href="@{/chat/list/todas}" class="btn btn-outline-secondary btn-sm">
+                        Limpiar filtros
+                    </a>
+                </div>
+            </div>
+        </form>
+
+        <div th:if="${#lists.isEmpty(gruposSolicitudes)}" class="alert alert-info">
+            No hay conversaciones registradas con los filtros actuales.
         </div>
 
-        <div th:if="${!#lists.isEmpty(conversaciones)}" class="table-responsive">
-            <table class="table table-striped table-hover align-middle">
-                <thead>
-                <tr>
-                    <th class="no-wrap">PA Request</th>
-                    <th class="no-wrap">Persona A</th>
-                    <th class="no-wrap">Persona B</th>
-                    <th class="no-wrap">Nº mensajes</th>
-                    <th class="no-wrap">Último mensaje</th>
-                    <th class="no-wrap text-center">Acción</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="conv : ${conversaciones}">
-                    <td th:text="${conv.id_solicitud}"></td>
-                    <td th:text="${conv.persona_a}"></td>
-                    <td th:text="${conv.persona_b}"></td>
-                    <td th:text="${conv.num_mensajes}"></td>
-                    <td class="no-wrap" th:text="${conv.ultimo_mensaje}"></td>
-                    <td class="text-center">
-                        <a th:href="@{/chat/{idSol}/{idReceptor}(idSol=${conv.id_solicitud}, idReceptor=${conv.persona_b})}"
-                           class="btn btn-sm btn-info">
-                            👁 Ver chat
-                        </a>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+        <div th:if="${!#lists.isEmpty(gruposSolicitudes)}">
+
+            <div th:each="grupo : ${gruposSolicitudes}" class="solicitud-card">
+
+                <div class="solicitud-header">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                        <div>
+                            <h5 class="fw-bold mb-1">
+                                Solicitud #
+                                <span th:text="${grupo['idSolicitud']}"></span>
+                            </h5>
+
+                            <div class="text-muted">
+                                <span th:if="${grupo['tipoAsistencia'] != null}"
+                                      th:text="${grupo['tipoAsistencia']}">
+                                </span>
+
+                                <span th:if="${grupo['tipoAsistencia'] == null}">
+                                    Asistencia general
+                                </span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <span class="badge bg-primary"
+                                  th:text="${grupo['status']}">
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="mt-2 small text-muted">
+                        <span th:if="${grupo['fechaInicio'] != null}">
+                            Inicio:
+                            <span th:text="${grupo['fechaInicio']}"></span>
+                        </span>
+
+                        <span th:if="${grupo['fechaFin'] != null}" class="ms-3">
+                            Fin:
+                            <span th:text="${grupo['fechaFin']}"></span>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle mb-0">
+                        <thead>
+                        <tr>
+                            <th class="no-wrap">Conversación</th>
+                            <th class="no-wrap">OVI User</th>
+                            <th class="no-wrap">PAP/PATI</th>
+                            <th class="no-wrap">Nº mensajes</th>
+                            <th class="no-wrap">Último mensaje</th>
+                            <th class="no-wrap text-center">Acción</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <tr th:each="conv : ${grupo['conversaciones']}">
+                            <td>
+                                #
+                                <span th:text="${conv['id_conversacion']}"></span>
+                            </td>
+
+                            <td>
+                                <div class="fw-bold">
+                                    ID
+                                    <span th:text="${conv['ovi_user']}"></span>
+                                </div>
+                                <div class="text-muted mail-small"
+                                     th:text="${conv['mail_ovi_user']}">
+                                </div>
+                                <div class="text-muted mail-small">
+                                    <span th:text="${conv['nombre_ovi_user']}"></span>
+                                    <span th:text="${conv['apellidos_ovi_user']}"></span>
+                                </div>
+                            </td>
+
+                            <td>
+                                <div class="fw-bold">
+                                    ID
+                                    <span th:text="${conv['pap_pati']}"></span>
+                                </div>
+                                <div class="text-muted mail-small"
+                                     th:text="${conv['mail_pap_pati']}">
+                                </div>
+                                <div class="text-muted mail-small">
+                                    <span th:text="${conv['nombre_pap_pati']}"></span>
+                                    <span th:text="${conv['apellidos_pap_pati']}"></span>
+                                </div>
+                            </td>
+
+                            <td th:text="${conv['num_mensajes']}"></td>
+
+                            <td class="no-wrap">
+                                <span th:if="${conv['ultimo_mensaje'] != null}"
+                                      th:text="${conv['ultimo_mensaje']}">
+                                </span>
+
+                                <span th:if="${conv['ultimo_mensaje'] == null}"
+                                      class="text-muted">
+                                    Sin mensajes
+                                </span>
+                            </td>
+
+                            <td class="text-center">
+                                <a th:href="@{/chat/{id}(id=${conv['id_conversacion']})}"
+                                   class="btn btn-sm btn-info fw-bold">
+                                    Ver chat
+                                </a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
         </div>
 
         <div th:if="${totalPages > 1}" class="d-flex justify-content-center mt-3">
             <nav>
                 <ul class="pagination">
-                    <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                        <a class="page-link" th:href="@{/chat/list/todas(page=${currentPage - 1})}">Anterior</a>
+
+                    <li class="page-item"
+                        th:classappend="${currentPage == 0} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/chat/list/todas(page=${currentPage - 1}, filtroMail=${filtroMailActual}, tipoAsistencia=${tipoAsistenciaActual}, estado=${estadoActual})}">
+                            Anterior
+                        </a>
                     </li>
-                    <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}" th:classappend="${i == currentPage} ? 'active'">
-                        <a class="page-link" th:href="@{/chat/list/todas(page=${i})}" th:text="${i + 1}"></a>
+
+                    <li class="page-item"
+                        th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                        th:classappend="${i == currentPage} ? 'active'">
+                        <a class="page-link"
+                           th:href="@{/chat/list/todas(page=${i}, filtroMail=${filtroMailActual}, tipoAsistencia=${tipoAsistenciaActual}, estado=${estadoActual})}"
+                           th:text="${i + 1}">
+                        </a>
                     </li>
-                    <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
-                        <a class="page-link" th:href="@{/chat/list/todas(page=${currentPage + 1})}">Siguiente</a>
+
+                    <li class="page-item"
+                        th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/chat/list/todas(page=${currentPage + 1}, filtroMail=${filtroMailActual}, tipoAsistencia=${tipoAsistenciaActual}, estado=${estadoActual})}">
+                            Siguiente
+                        </a>
                     </li>
+
                 </ul>
             </nav>
         </div>
 
         <div class="mt-3">
-            <a th:href="@{/}" class="btn btn-secondary fw-bold px-4">Volver al inicio</a>
+            <a th:href="@{/}" class="btn btn-secondary fw-bold px-4">
+                Volver al inicio
+            </a>
         </div>
 
     </div>
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

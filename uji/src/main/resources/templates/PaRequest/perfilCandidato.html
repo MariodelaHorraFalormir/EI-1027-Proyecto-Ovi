@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Perfil del candidato</title>
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"/>
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #f4f7fb, #e9f0f8);
+            min-height: 100vh;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.08);
+            padding: 2rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1f3b5b;
+            margin-bottom: 0.3rem;
+        }
+
+        .section-subtitle {
+            color: #6c757d;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-box {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 18px;
+            padding: 1.25rem;
+            height: 100%;
+        }
+
+        .info-title {
+            font-weight: 700;
+            color: #1f3b5b;
+            margin-bottom: 1rem;
+            font-size: 1.15rem;
+        }
+
+        .info-row {
+            margin-bottom: 0.7rem;
+        }
+
+        .info-label {
+            font-weight: 700;
+            color: #1f3b5b;
+        }
+
+        .personality-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+        }
+
+        .personality-item {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 0.8rem;
+        }
+
+        .personality-item .label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .personality-item .value {
+            color: #1f4e79;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .badge-speciality {
+            font-size: 0.9rem;
+            padding: 0.6rem 0.8rem;
+            border-radius: 999px;
+            margin: 0.2rem;
+        }
+
+        .btn {
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .actions {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+
+        .descripcion-box {
+            white-space: pre-line;
+            background: white;
+            border-radius: 14px;
+            border: 1px solid #e5e7eb;
+            padding: 1rem;
+            color: #495057;
+        }
+    </style>
+</head>
+
+<body>
+
+<div th:replace="~{layout/navbar :: main-nav}"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+<main class="container mt-5 mb-5">
+
+    <div class="profile-card">
+
+        <h1 class="section-title">Perfil del candidato</h1>
+
+        <p class="section-subtitle">
+            Información relevante del PAP/PATI para valorar si encaja con la solicitud.
+        </p>
+
+        <div class="row g-4">
+
+            <!-- Datos generales -->
+            <div class="col-lg-6">
+                <div class="info-box">
+                    <div class="info-title">
+                        Datos generales
+                    </div>
+
+                    <div class="info-row">
+                        <span class="info-label">Nombre:</span>
+                        <span th:text="${persona.nombre}">Nombre</span>
+                    </div>
+
+                    <div class="info-row">
+                        <span class="info-label">Apellidos:</span>
+                        <span th:text="${persona.apellidos}">Apellidos</span>
+                    </div>
+
+                    <div class="info-row">
+                        <span class="info-label">Experiencia:</span>
+                        <span th:text="${papPati.experiencia != null ? papPati.experiencia : 0}">0</span>
+                        años
+                    </div>
+
+                    <div class="info-row">
+                        <span class="info-label">Disponibilidad:</span>
+                        <span class="badge bg-info text-dark"
+                              th:text="${papPati.disponibilidad}">
+                            Disponibilidad
+                        </span>
+                    </div>
+
+                    <div class="info-row">
+                        <span class="info-label">Fecha inicio disponibilidad:</span>
+                        <span th:text="${papPati.fechaInicioDisponibilidad != null ? #temporals.format(papPati.fechaInicioDisponibilidad, 'dd/MM/yyyy') : '-'}">
+                            -
+                        </span>
+                    </div>
+
+                    <div class="info-row">
+                        <span class="info-label">Fecha fin disponibilidad:</span>
+                        <span th:text="${papPati.fechaFinDisponibilidad != null ? #temporals.format(papPati.fechaFinDisponibilidad, 'dd/MM/yyyy') : '-'}">
+                            -
+                        </span>
+                    </div>
+
+                    <div class="info-row">
+                        <span class="info-label">Centro social de referencia:</span>
+                        <span th:text="${papPati.centroSocial != null and !#strings.isEmpty(papPati.centroSocial) ? papPati.centroSocial : '-'}">
+                            -
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Movilidad y documentación -->
+            <div class="col-lg-6">
+                <div class="info-box">
+                    <div class="info-title">
+                        Movilidad y documentación
+                    </div>
+
+                    <div class="info-row">
+                        <span class="info-label">Carnet de conducir:</span>
+
+                        <span th:if="${papPati.carnetConducir == true}"
+                              class="badge bg-success">
+                            Sí
+                        </span>
+
+                        <span th:unless="${papPati.carnetConducir == true}"
+                              class="badge bg-secondary">
+                            No
+                        </span>
+                    </div>
+
+                    <div class="info-row">
+                        <span class="info-label">Vehículo propio:</span>
+
+                        <span th:if="${papPati.vehiculoPropio == true}"
+                              class="badge bg-success">
+                            Sí
+                        </span>
+
+                        <span th:unless="${papPati.vehiculoPropio == true}"
+                              class="badge bg-secondary">
+                            No
+                        </span>
+                    </div>
+
+                    <div class="info-row mt-3">
+                        <span class="info-label">CV:</span>
+
+                        <a th:if="${papPati.urlCV != null and !#strings.isEmpty(papPati.urlCV)}"
+                           th:href="@{/PapPati/cv/{id}(id=${idPapPati})}"
+                           class="btn btn-outline-primary btn-sm ms-2">
+                            Descargar CV
+                        </a>
+
+                        <span th:unless="${papPati.urlCV != null and !#strings.isEmpty(papPati.urlCV)}"
+                              class="text-muted ms-2">
+                            No disponible
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Descripción -->
+            <div class="col-12">
+                <div class="info-box">
+                    <div class="info-title">
+                        Descripción del perfil
+                    </div>
+
+                    <div th:if="${papPati.descripcionPerfil != null and !#strings.isEmpty(papPati.descripcionPerfil)}"
+                         class="descripcion-box"
+                         th:text="${papPati.descripcionPerfil}">
+                        Descripción del perfil
+                    </div>
+
+                    <div th:unless="${papPati.descripcionPerfil != null and !#strings.isEmpty(papPati.descripcionPerfil)}"
+                         class="text-muted">
+                        Este candidato no tiene descripción de perfil registrada.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Personalidad -->
+            <div class="col-lg-6">
+                <div class="info-box">
+                    <div class="info-title">
+                        Personalidad
+                    </div>
+
+                    <div th:if="${personalidad == null}" class="text-muted">
+                        Este candidato no tiene personalidad registrada.
+                    </div>
+
+                    <div th:unless="${personalidad == null}" class="personality-grid">
+
+                        <div class="personality-item">
+                            <div class="label">Ritmo</div>
+                            <div class="value" th:text="${personalidad.ritmo}">0</div>
+                        </div>
+
+                        <div class="personality-item">
+                            <div class="label">Comunicación</div>
+                            <div class="value" th:text="${personalidad.comunicacion}">0</div>
+                        </div>
+
+                        <div class="personality-item">
+                            <div class="label">Expresividad</div>
+                            <div class="value" th:text="${personalidad.expresividad}">0</div>
+                        </div>
+
+                        <div class="personality-item">
+                            <div class="label">Carácter</div>
+                            <div class="value" th:text="${personalidad.caracter}">0</div>
+                        </div>
+
+                        <div class="personality-item">
+                            <div class="label">Naturaleza</div>
+                            <div class="value" th:text="${personalidad.naturaleza}">0</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Especialidades -->
+            <div class="col-lg-6">
+                <div class="info-box">
+                    <div class="info-title">
+                        Especialidades
+                    </div>
+
+                    <div th:if="${#lists.isEmpty(especialidadesSeleccionadas)}" class="text-muted">
+                        Este candidato no tiene especialidades registradas.
+                    </div>
+
+                    <div th:unless="${#lists.isEmpty(especialidadesSeleccionadas)}">
+                        <span th:each="esp : ${especialidadesSeleccionadas}"
+                              class="badge bg-primary badge-speciality"
+                              th:text="${esp}">
+                            Especialidad
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="actions">
+
+            <a th:href="@{/PaRequest/candidatos/{idSolicitud}(idSolicitud=${idSolicitud})}"
+               class="btn btn-outline-secondary">
+                Volver a candidatos
+            </a>
+
+            <form th:action="@{/chat/iniciar}" method="post">
+                <input type="hidden" name="idSolicitud" th:value="${idSolicitud}">
+                <input type="hidden" name="idPapPati" th:value="${idPapPati}">
+
+                <button type="submit" class="btn btn-success">
+                    Hablar por chat
+                </button>
+            </form>
+
+        </div>
+
+    </div>
+
+</main>
+
+</body>
+</html>

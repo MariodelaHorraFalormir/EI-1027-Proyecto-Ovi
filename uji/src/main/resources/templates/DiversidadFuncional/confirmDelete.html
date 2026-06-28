@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <title>Confirmar borrado</title>
+    <meta charset="UTF-8" />
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" />
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #f4f7fb, #e9f0f8);
+            min-height: 100vh;
+        }
+
+        .confirm-card {
+            background: white;
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.08);
+            max-width: 650px;
+            margin: 4rem auto;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border: 1px solid #ffecb5;
+            color: #664d03;
+            border-radius: 14px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        .info-row {
+            margin-bottom: 0.75rem;
+        }
+
+        .info-label {
+            font-weight: 700;
+            color: #1f3b5b;
+        }
+
+        .actions {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            border-radius: 12px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+
+<div th:replace="~{layout/navbar :: main-nav}"></div>
+
+<main class="container">
+    <div class="confirm-card">
+
+        <h1 class="mb-3 text-danger">
+            Confirmar borrado
+        </h1>
+
+        <div class="warning-box">
+            Vas a borrar esta diversidad funcional del usuario. Esta acción es irreversible.
+        </div>
+
+        <div class="info-row">
+            <span class="info-label">ID diversidad:</span>
+            <span th:text="${diversidad.idDiversidadFuncional}">1</span>
+        </div>
+
+        <div class="info-row">
+            <span class="info-label">Usuario OVI:</span>
+            <span th:text="${diversidad.oviUserId}">1</span>
+        </div>
+
+        <div class="info-row">
+            <span class="info-label">Tipo:</span>
+            <span th:text="${diversidad.tipo}">Tipo</span>
+        </div>
+
+        <div class="actions">
+            <a th:href="@{/DiversidadFuncional/delete/{idDiversidad}/{idUsuario}
+                (idDiversidad=${diversidad.idDiversidadFuncional}, idUsuario=${idUsuario})}"
+               class="btn btn-danger">
+                Sí, borrar diversidad
+            </a>
+
+            <a th:href="@{/DiversidadFuncional/listaID/{id}(id=${idUsuario})}"
+               class="btn btn-secondary">
+                Cancelar
+            </a>
+        </div>
+
+    </div>
+</main>
+
+</body>
+</html>

@@ -3,6 +3,7 @@ package es.uji.ei1027.ovi.dao;
 import es.uji.ei1027.ovi.RowMapper.PersonaRowMapper;
 import es.uji.ei1027.ovi.modelo.Persona.Genero;
 import es.uji.ei1027.ovi.modelo.Persona.Persona;
+import es.uji.ei1027.ovi.modelo.Persona.Personalidad;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -184,6 +185,31 @@ public class PersonaDao {
         String sql = "UPDATE persona SET contrasena = ? WHERE id = ?";
         jdbcTemplate.update(sql , pass , id );
     }
+    public Personalidad getPersonalidad(int idPersona) {
+        String sql = """
+        SELECT id, ritmo, comunicacion, expresividad, caracter, naturaleza
+        FROM persona
+        WHERE id = ?
+    """;
+
+        try {
+            return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
+                Personalidad personalidad = new Personalidad();
+
+                personalidad.setIdPersona(rs.getInt("id"));
+                personalidad.setRitmo(rs.getInt("ritmo"));
+                personalidad.setComunicacion(rs.getInt("comunicacion"));
+                personalidad.setExpresividad(rs.getInt("expresividad"));
+                personalidad.setCaracter(rs.getInt("caracter"));
+                personalidad.setNaturaleza(rs.getInt("naturaleza"));
+
+                return personalidad;
+            }, idPersona);
+
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
 
     public Genero getGeneroById(int id) {
         try {
@@ -199,6 +225,7 @@ public class PersonaDao {
             return null;
         }
     }
+
 
 
 }

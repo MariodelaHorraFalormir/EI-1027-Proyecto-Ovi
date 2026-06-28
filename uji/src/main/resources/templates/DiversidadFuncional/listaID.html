@@ -87,18 +87,9 @@
             background-color: #193f63;
             border-color: #193f63;
         }
-
-        .warning-note {
-            background: #fff3cd;
-            color: #664d03;
-            border: 1px solid #ffecb5;
-            border-radius: 14px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            font-weight: 500;
-        }
     </style>
 </head>
+
 <body>
 
 <div th:replace="~{layout/navbar :: main-nav}"></div>
@@ -109,10 +100,10 @@
     <div class="page-card">
 
         <h1 class="section-title">Diversidades funcionales por usuario</h1>
+
         <p class="section-subtitle">
             Gestiona las diversidades funcionales asociadas a este usuario.
         </p>
-
 
         <div class="tabla-wrapper mt-3">
             <table class="table table-striped table-hover align-middle tabla-personas">
@@ -133,17 +124,17 @@
                     <td th:text="${diversidad.tipo}"></td>
 
                     <td class="no-wrap">
-                        <a th:href="@{/DiversidadFuncional/update/{idDiversidad}(idDiversidad=${diversidad.idDiversidadFuncional})}"
+                        <a th:href="@{/DiversidadFuncional/update/{idDiversidad}
+                            (idDiversidad=${diversidad.idDiversidadFuncional})}"
                            class="btn btn-warning btn-sm">
                             Editar
                         </a>
                     </td>
 
                     <td class="no-wrap">
-                        <a th:href="@{/DiversidadFuncional/delete/{idDiversidad}/{idUsuario}
+                        <a th:href="@{/DiversidadFuncional/confirmDelete/{idDiversidad}/{idUsuario}
                             (idDiversidad=${diversidad.idDiversidadFuncional}, idUsuario=${id})}"
-                           class="btn btn-danger btn-sm"
-                           onclick="return confirm('¿Seguro que quieres borrar esta diversidad funcional? Esta acción es irreversible.');">
+                           class="btn btn-danger btn-sm">
                             Borrar
                         </a>
                     </td>
@@ -161,9 +152,11 @@
         <div th:if="${totalPages > 1}" class="d-flex justify-content-center mt-3">
             <nav>
                 <ul class="pagination">
+
                     <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
                         <a class="page-link"
-                           th:href="@{/DiversidadFuncional/listaID/{id}(id=${id}, page=${currentPage - 1})}">
+                           th:href="@{/DiversidadFuncional/listaID/{id}
+                           (id=${id}, page=${currentPage - 1})}">
                             Anterior
                         </a>
                     </li>
@@ -172,17 +165,20 @@
                         th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
                         th:classappend="${i == currentPage} ? 'active'">
                         <a class="page-link"
-                           th:href="@{/DiversidadFuncional/listaID/{id}(id=${id}, page=${i})}"
+                           th:href="@{/DiversidadFuncional/listaID/{id}
+                           (id=${id}, page=${i})}"
                            th:text="${i + 1}">
                         </a>
                     </li>
 
                     <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
                         <a class="page-link"
-                           th:href="@{/DiversidadFuncional/listaID/{id}(id=${id}, page=${currentPage + 1})}">
+                           th:href="@{/DiversidadFuncional/listaID/{id}
+                           (id=${id}, page=${currentPage + 1})}">
                             Siguiente
                         </a>
                     </li>
+
                 </ul>
             </nav>
         </div>
@@ -193,7 +189,7 @@
                 Añadir nueva diversidad
             </a>
 
-            <a href="/"
+            <a th:href="@{/}"
                class="btn btn-secondary">
                 Finalizar el proceso
             </a>

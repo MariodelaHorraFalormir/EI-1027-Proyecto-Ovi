@@ -267,4 +267,16 @@ public class PersonaController {
             personaEditada.setFechaBaja(personaOriginal.getFechaBaja());
         }
     }
+    @GetMapping("/confirmDelete/{id}")
+    public String confirmarBorradoPersona(@PathVariable int id, Model model) {
+        Persona persona = personaDao.getPersona(id);
+
+        if (persona == null) {
+            return "redirect:/Persona/list/todas";
+        }
+
+        model.addAttribute("persona", persona);
+
+        return "Persona/confirmDelete";
+    }
 }

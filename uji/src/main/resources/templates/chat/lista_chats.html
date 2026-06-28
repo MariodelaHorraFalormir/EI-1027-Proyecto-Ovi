@@ -4,79 +4,242 @@
     <meta charset="UTF-8">
     <title>Mis Conversaciones</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"/>
+
     <style>
-        body { background-color: #f4f7fb; }
+        body {
+            background-color: #f4f7fb;
+        }
+
+        .solicitud-card {
+            border-radius: 18px;
+            overflow: hidden;
+            border: 0;
+            box-shadow: 0 5px 18px rgba(0,0,0,0.08);
+            margin-bottom: 1.5rem;
+            background: white;
+        }
+
+        .solicitud-header {
+            background: linear-gradient(135deg, #0d6efd, #0a58ca);
+            color: white;
+            padding: 1.2rem 1.5rem;
+        }
+
         .chat-list-card {
             transition: transform 0.2s, box-shadow 0.2s;
             border-left: 5px solid #0d6efd;
+            border-radius: 12px;
+            background: white;
         }
+
         .chat-list-card:hover {
             transform: translateX(5px);
             box-shadow: 0 5px 15px rgba(0,0,0,0.1) !important;
         }
+
+        .info-label {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
     </style>
 </head>
+
 <body>
 
 <div th:replace="~{layout/navbar :: main-nav}"></div>
 
-<div class="container mt-5 mb-5" style="max-width: 800px;">
+<div class="container mt-5 mb-5" style="max-width: 950px;">
+
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold text-dark mb-0">💬 Mis Conversaciones Activas</h2>
-        <a th:href="@{/}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">Volver al Inicio</a>
+        <h2 class="fw-bold text-dark mb-0">Mis conversaciones activas</h2>
+        <a th:href="@{/}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+            Volver al inicio
+        </a>
     </div>
 
     <div class="card shadow-sm border-0 mb-4 p-3" style="border-radius: 15px;">
         <form th:action="@{/chat/mis-conversaciones}" method="get" class="d-flex gap-2">
-            <input type="text" name="filtro" th:value="${filtroActual}" class="form-control rounded-pill px-3" placeholder="Buscar por ID de Solicitud o Contacto..." autocomplete="off">
-            <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold">Buscar</button>
-            <a th:href="@{/chat/mis-conversaciones}" class="btn btn-outline-secondary rounded-pill px-4 fw-bold">Limpiar</a>
+            <input type="text"
+                   name="filtro"
+                   th:value="${filtroActual}"
+                   class="form-control rounded-pill px-3"
+                   placeholder="Buscar por solicitud, conversación, contacto o tipo de asistencia..."
+                   autocomplete="off">
+
+            <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold">
+                Buscar
+            </button>
+
+            <a th:href="@{/chat/mis-conversaciones}" class="btn btn-outline-secondary rounded-pill px-4 fw-bold">
+                Limpiar
+            </a>
         </form>
     </div>
 
-    <div class="list-group shadow-sm" style="border-radius: 15px; overflow: hidden;">
+    <div th:if="${#lists.isEmpty(gruposSolicitudes)}"
+         class="p-5 text-center bg-white border-0 shadow-sm"
+         style="border-radius: 15px;">
 
-        <div th:if="${chats.empty}" class="p-5 text-center bg-white border-0">
-            <h1 class="text-muted mb-3">📭</h1>
-            <h5 class="text-secondary fw-bold">No se han encontrado conversaciones</h5>
-            <p class="text-muted" th:text="${filtroActual != null ? 'Prueba a buscar con otro ID.' : 'Cuando inicies un contacto para una asistencia, aparecerá aquí.'}"></p>
-        </div>
+        <h5 class="text-secondary fw-bold">No se han encontrado conversaciones</h5>
 
-        <a th:each="chat : ${chats}"
-           th:href="@{/chat/{idSol}/{idCont}(idSol=${chat.id_solicitud}, idCont=${chat.id_contacto})}"
-           class="list-group-item list-group-item-action p-4 border-bottom chat-list-card bg-white">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h5 class="mb-1 fw-bold text-primary">Chat de la Solicitud #<span th:text="${chat.id_solicitud}"></span></h5>
-                    <small class="text-muted">Hablando con el Contacto ID: <span th:text="${chat.id_contacto}"></span></small>
+        <p class="text-muted"
+           th:text="${filtroActual != null ? 'Prueba a buscar con otro dato.' : 'Cuando inicies un contacto para una asistencia, aparecerá aquí.'}">
+        </p>
+    </div>
+
+    <div th:if="${!#lists.isEmpty(gruposSolicitudes)}">
+
+        <div th:each="grupo : ${gruposSolicitudes}" class="solicitud-card">
+
+            <div class="solicitud-header">
+                <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                    <div>
+                        <h5 class="fw-bold mb-1">
+                            Solicitud #
+                            <span th:text="${grupo['idSolicitud']}"></span>
+                        </h5>
+
+                        <p class="mb-0">
+                            <span th:if="${grupo['tipoAsistencia'] != null}"
+                                  th:text="${grupo['tipoAsistencia']}">
+                            </span>
+
+                            <span th:if="${grupo['tipoAsistencia'] == null}">
+                                Asistencia general
+                            </span>
+                        </p>
+                    </div>
+
+                    <span class="badge bg-light text-primary rounded-pill px-3 py-2"
+                          th:text="${grupo['status']}">
+                    </span>
                 </div>
-                <span class="badge bg-primary rounded-pill px-3 py-2 shadow-sm">Abrir Chat 👉</span>
+
+                <div class="mt-2 small">
+                    <span th:if="${grupo['fechaInicio'] != null}">
+                        Inicio:
+                        <span th:text="${grupo['fechaInicio']}"></span>
+                    </span>
+
+                    <span th:if="${grupo['fechaFin'] != null}" class="ms-3">
+                        Fin:
+                        <span th:text="${grupo['fechaFin']}"></span>
+                    </span>
+                </div>
             </div>
-        </a>
+
+            <div class="p-3">
+
+                <div th:if="${#lists.isEmpty(grupo['conversaciones'])}" class="alert alert-info mb-0">
+                    Esta solicitud todavía no tiene conversaciones.
+                </div>
+
+                <a th:each="chat : ${grupo['conversaciones']}"
+                   th:href="@{/chat/{id}(id=${chat['id_conversacion']})}"
+                   class="text-decoration-none text-dark">
+
+                    <div class="chat-list-card p-4 mb-3 border shadow-sm">
+
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+
+                            <div>
+                                <h5 class="mb-1 fw-bold text-primary">
+                                    Conversación #
+                                    <span th:text="${chat['id_conversacion']}"></span>
+                                </h5>
+
+                                <div class="mt-2">
+                                    <div class="fw-bold text-dark">
+                                        Contacto:
+                                        <span th:text="${chat['nombre_contacto']}"></span>
+                                        <span th:text="${chat['apellidos_contacto']}"></span>
+                                    </div>
+
+                                    <div class="info-label">
+                                        <span th:text="${chat['mail_contacto']}"></span>
+                                    </div>
+                                </div>
+
+                                <div class="info-label mt-2">
+                                    <strong>OVI User:</strong>
+                                    <span th:text="${chat['nombre_ovi_user']}"></span>
+                                    <span th:text="${chat['apellidos_ovi_user']}"></span>
+                                    <span class="text-muted">
+                                    (#<span th:text="${chat['ovi_user']}"></span>)
+                                </span>
+                                </div>
+
+                                <div class="info-label">
+                                    <strong>PAP/PATI:</strong>
+                                    <span th:text="${chat['nombre_pap_pati']}"></span>
+                                    <span th:text="${chat['apellidos_pap_pati']}"></span>
+                                    <span class="text-muted">
+                                        (#<span th:text="${chat['pap_pati']}"></span>)
+                                    </span>
+                                </div>
+
+                                <div class="info-label">
+                                    Mensajes:
+                                    <span th:text="${chat['num_mensajes']}"></span>
+                                </div>
+
+                                <div class="info-label">
+                                    Último mensaje:
+                                    <span th:if="${chat['ultimo_mensaje'] != null}"
+                                          th:text="${chat['ultimo_mensaje']}">
+                                    </span>
+
+                                    <span th:if="${chat['ultimo_mensaje'] == null}">
+                                        Sin mensajes todavía
+                                    </span>
+                                </div>
+                            </div>
+
+                            <span class="badge bg-primary rounded-pill px-3 py-2 shadow-sm">
+                                Abrir chat
+                            </span>
+                        </div>
+                    </div>
+                </a>
+
+            </div>
+        </div>
 
     </div>
 
     <nav th:if="${totalPages > 1}" aria-label="Navegación de páginas" class="mt-4">
         <ul class="pagination justify-content-center shadow-sm" style="border-radius: 50px;">
+
             <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
                 <a class="page-link rounded-start-pill border-0"
-                   th:href="@{/chat/mis-conversaciones(page=${currentPage - 1}, filtro=${filtroActual})}">Anterior</a>
+                   th:href="@{/chat/mis-conversaciones(page=${currentPage - 1}, filtro=${filtroActual})}">
+                    Anterior
+                </a>
             </li>
 
-            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}" th:classappend="${currentPage == i} ? 'active'">
+            <li class="page-item"
+                th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                th:classappend="${currentPage == i} ? 'active'">
+
                 <a class="page-link border-0"
                    th:href="@{/chat/mis-conversaciones(page=${i}, filtro=${filtroActual})}"
-                   th:text="${i + 1}">1</a>
+                   th:text="${i + 1}">
+                    1
+                </a>
             </li>
 
             <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
                 <a class="page-link rounded-end-pill border-0"
-                   th:href="@{/chat/mis-conversaciones(page=${currentPage + 1}, filtro=${filtroActual})}">Siguiente</a>
+                   th:href="@{/chat/mis-conversaciones(page=${currentPage + 1}, filtro=${filtroActual})}">
+                    Siguiente
+                </a>
             </li>
+
         </ul>
     </nav>
 
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

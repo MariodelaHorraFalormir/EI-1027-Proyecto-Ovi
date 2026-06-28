@@ -4,6 +4,7 @@ import es.uji.ei1027.ovi.dao.ContratoDao;
 import es.uji.ei1027.ovi.dao.PaRequestDao;
 import es.uji.ei1027.ovi.modelo.Contrato.Contrato;
 import es.uji.ei1027.ovi.modelo.Login.UsuarioSesion;
+import es.uji.ei1027.ovi.modelo.PaRequest.PaRequest;
 import es.uji.ei1027.ovi.modelo.PaRequest.StatusPaRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +27,22 @@ public class ContratoController {
 
     // 1. Mostrar la pantalla para rellenar el contrato
     @GetMapping("/nuevo/{idSolicitud}/{idCandidato}")
-    public String formularioContrato(@PathVariable int idSolicitud, @PathVariable int idCandidato, Model model, HttpSession session) {
+    public String formularioContrato(@PathVariable int idSolicitud,
+                                     @PathVariable int idCandidato,
+                                     Model model,
+                                     HttpSession session) {
         UsuarioSesion usuario = (UsuarioSesion) session.getAttribute("usuario");
         if (usuario == null) return "redirect:/login";
+
+        PaRequest paRequest = paRequestDao.getPaRequestById(idSolicitud);
+
+        if (paRequest == null) {
+            return "redirect:/PaRequest/list";
+        }
+
+        if (paRequest.getOviUser() != usuario.getIdPersona()) {
+            return "redirect:/";
+        }
 
         model.addAttribute("idSolicitud", idSolicitud);
         model.addAttribute("idCandidato", idCandidato);
@@ -156,4 +170,5 @@ public class ContratoController {
 
         return "redirect:/contrato/mis-contratos";
     }
+
 }

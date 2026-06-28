@@ -3,29 +3,69 @@ package es.uji.ei1027.ovi.modelo.Chat;
 import java.time.LocalDateTime;
 
 public class Mensaje {
+
     private int id;
-    private int idSolicitud;
+    private Integer idSolicitud;
     private int idEmisor;
-    private int idReceptor;
+    private Integer idReceptor;
     private String contenido;
     private LocalDateTime fechaEnvio;
+    private Integer conversacion;
 
-    // Getters y Setters
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public int getId() {
+        return id;
+    }
 
-    public int getIdSolicitud() { return idSolicitud; }
-    public void setIdSolicitud(int idSolicitud) { this.idSolicitud = idSolicitud; }
+    public void setId(int id) {
+        this.id = id;
+    }
 
-    public int getIdEmisor() { return idEmisor; }
-    public void setIdEmisor(int idEmisor) { this.idEmisor = idEmisor; }
 
-    public int getIdReceptor() { return idReceptor; }
-    public void setIdReceptor(int idReceptor) { this.idReceptor = idReceptor; }
+    public Integer getIdSolicitud() {
+        return idSolicitud;
+    }
 
-    public String getContenido() { return contenido; }
-    public void setContenido(String contenido) { this.contenido = contenido; }
+    public void setIdSolicitud(Integer idSolicitud) {
+        this.idSolicitud = idSolicitud;
+    }
 
-    public LocalDateTime getFechaEnvio() { return fechaEnvio; }
-    public void setFechaEnvio(LocalDateTime fechaEnvio) { this.fechaEnvio = fechaEnvio; }
+    public int getIdEmisor() {
+        return idEmisor;
+    }
+
+    public void setIdEmisor(int idEmisor) {
+        this.idEmisor = idEmisor;
+    }
+
+    public Integer getIdReceptor() {
+        return idReceptor;
+    }
+
+    public void setIdReceptor(Integer idReceptor) {
+        this.idReceptor = idReceptor;
+    }
+
+    public String getContenido() {
+        return contenido;
+    }
+
+    public void setContenido(String contenido) {
+        this.contenido = contenido;
+    }
+
+    public LocalDateTime getFechaEnvio() {
+        return fechaEnvio;
+    }
+
+    public void setFechaEnvio(LocalDateTime fechaEnvio) {
+        this.fechaEnvio = fechaEnvio;
+    }
+
+    public Integer getConversacion() {
+        return conversacion;
+    }
+
+    public void setConversacion(Integer conversacion) {
+        this.conversacion = conversacion;
+    }
 }

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <title>Confirmar borrado</title>
+    <meta charset="UTF-8" />
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" />
+
+    <style>
+        body {
+            background: #f4f7fb;
+            min-height: 100vh;
+        }
+
+        .confirm-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 28px rgba(0,0,0,0.08);
+            max-width: 650px;
+            margin: 4rem auto;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border: 1px solid #ffecb5;
+            color: #664d03;
+            border-radius: 14px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .actions {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            border-radius: 12px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+
+<div th:replace="~{layout/navbar :: main-nav}"></div>
+
+<main class="container">
+    <div class="confirm-card">
+
+        <h1 class="mb-3 text-danger">
+            Confirmar borrado
+        </h1>
+
+        <div class="warning-box">
+            Vas a borrar esta persona del sistema. Esta acción es irreversible.
+        </div>
+
+        <p class="mb-2">
+            <strong>Nombre:</strong>
+            <span th:text="${persona.nombre}">Nombre</span>
+        </p>
+
+        <p class="mb-2">
+            <strong>Apellidos:</strong>
+            <span th:text="${persona.apellidos}">Apellidos</span>
+        </p>
+
+        <p class="mb-2">
+            <strong>Mail:</strong>
+            <span th:text="${persona.mail}">mail@email.com</span>
+        </p>
+
+        <div class="actions">
+            <a th:href="@{/Persona/delete/{id}(id=${persona.idPersona})}"
+               class="btn btn-danger">
+                Sí, borrar persona
+            </a>
+
+            <a th:href="@{/Persona/list/todas}"
+               class="btn btn-secondary">
+                Cancelar
+            </a>
+        </div>
+
+    </div>
+</main>
+
+</body>
+</html>

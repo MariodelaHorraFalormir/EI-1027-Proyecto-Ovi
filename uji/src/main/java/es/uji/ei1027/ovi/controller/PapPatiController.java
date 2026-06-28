@@ -6,14 +6,22 @@ import es.uji.ei1027.ovi.Service.SolicitudesService;
 import es.uji.ei1027.ovi.Validadores.PapPatiValidator;
 import es.uji.ei1027.ovi.dao.EspecialidadesDao;
 import es.uji.ei1027.ovi.dao.PapPatiDao;
+import es.uji.ei1027.ovi.dao.PersonaDao;
 import es.uji.ei1027.ovi.dao.SolicitudesDao;
+import es.uji.ei1027.ovi.modelo.Login.UsuarioSesion;
 import es.uji.ei1027.ovi.modelo.OviUser.TipoDiversidadFuncional;
 import es.uji.ei1027.ovi.modelo.PapPati.Especialidad;
 import es.uji.ei1027.ovi.modelo.PapPati.PapPati;
+import es.uji.ei1027.ovi.modelo.Persona.Persona;
+import es.uji.ei1027.ovi.modelo.Persona.Personalidad;
 import es.uji.ei1027.ovi.modelo.Solicitud.Solicitud;
 import es.uji.ei1027.ovi.modelo.Solicitud.TipoSolicitud;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -40,10 +48,15 @@ public class PapPatiController {
     private PapPatiService papPatiService;
     private SesionService sesionService;
 
+
     private static final long MAX_CV_SIZE = 5 * 1024 * 1024; // 5 MB
 
     private static final Path CV_UPLOAD_DIR =
             Paths.get("uploads", "cv").toAbsolutePath().normalize();
+
+    @Autowired
+    private PersonaDao personaDao;
+
 
     @Autowired
     public void setPapPatiService(PapPatiService papPatiService) {
@@ -437,6 +450,79 @@ public class PapPatiController {
             Files.deleteIfExists(rutaArchivo);
         } catch (IOException e) {
             System.err.println("No se pudo borrar el CV: " + rutaArchivo);
+        }
+    }
+
+    @GetMapping("/candidatos/{idSolicitud}/perfil/{idPapPati}")
+    public String verPerfilCandidato(@PathVariable int idSolicitud,
+                                     @PathVariable int idPapPati,
+                                     Model model,
+                                     HttpSession session) {
+
+        UsuarioSesion usuario = (UsuarioSesion) session.getAttribute("usuario");
+
+        if (usuario == null) {
+            return "redirect:/login";
+        }
+
+        PapPati papPati = papPatiDao.getPapPati(idPapPati);
+
+        if (papPati == null) {
+            return "redirect:/PaRequest/candidatos/" + idSolicitud;
+        }
+
+        Persona persona = personaDao.getPersona(idPapPati);
+
+        if (persona == null) {
+            return "redirect:/PaRequest/candidatos/" + idSolicitud;
+        }
+
+        Personalidad personalidad = personaDao.getPersonalidad(idPapPati);
+
+        List<String> especialidadesSeleccionadas = List.of();
+
+        if (papPati.getEspecialidades() != null) {
+            especialidadesSeleccionadas = papPati.getEspecialidadesNombre();
+        }
+
+        model.addAttribute("idSolicitud", idSolicitud);
+        model.addAttribute("idPapPati", idPapPati);
+        model.addAttribute("papPati", papPati);
+        model.addAttribute("persona", persona);
+        model.addAttribute("personalidad", personalidad);
+        model.addAttribute("especialidadesSeleccionadas", especialidadesSeleccionadas);
+
+        return "PaRequest/perfilCandidato";
+    }
+    @GetMapping("/cv/{id}")
+    public ResponseEntity<Resource> descargarCv(@PathVariable int id) {
+        PapPati papPati = papPatiDao.getPapPati(id);
+
+        if (papPati == null || papPati.getUrlCV() == null || papPati.getUrlCV().trim().isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        if (!papPati.getUrlCV().startsWith("/uploads/cv/")) {
+            return ResponseEntity.notFound().build();
+        }
+
+        try {
+            String nombreArchivo = papPati.getUrlCV().substring("/uploads/cv/".length());
+            Path rutaArchivo = CV_UPLOAD_DIR.resolve(nombreArchivo).normalize();
+
+            if (!rutaArchivo.startsWith(CV_UPLOAD_DIR) || !Files.exists(rutaArchivo)) {
+                return ResponseEntity.notFound().build();
+            }
+
+            Resource recurso = new UrlResource(rutaArchivo.toUri());
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=\"" + nombreArchivo + "\"")
+                    .body(recurso);
+
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
         }
     }
 }

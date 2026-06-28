@@ -112,6 +112,23 @@ public class DiversidadFuncionalController {
 
         return "redirect:/DiversidadFuncional/listaID/" + diversidadFuncional.getOviUserId();
     }
+    @GetMapping("/confirmDelete/{idDiversidad}/{idUsuario}")
+    public String confirmarBorradoDiversidad(@PathVariable int idDiversidad,
+                                             @PathVariable int idUsuario,
+                                             Model model) {
+
+        DiversidadFuncional diversidad =
+                diversidadFuncionalDao.obtenerDiversidadFuncionalPorId(idDiversidad);
+
+        if (diversidad == null) {
+            return "redirect:/DiversidadFuncional/listaID/" + idUsuario;
+        }
+
+        model.addAttribute("diversidad", diversidad);
+        model.addAttribute("idUsuario", idUsuario);
+
+        return "DiversidadFuncional/confirmDelete";
+    }
 }
 
 
