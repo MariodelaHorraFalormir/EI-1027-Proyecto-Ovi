@@ -127,7 +127,7 @@
             </p>
         </div>
 
-        <form th:action="@{/PaRequest/create/{id}(id=${paRequest.oviUser})}"
+        <form th:action="@{/PaRequest/create}"
               th:object="${paRequest}"
               method="post"
               novalidate>

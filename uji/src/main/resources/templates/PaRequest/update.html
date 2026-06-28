@@ -1,22 +1,104 @@
-
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
     <meta charset="UTF-8">
     <title>Editar Proceso PA Request</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"/>
+
     <style>
-        body { background: linear-gradient(135deg, #f4f7fb, #e9f0f8); min-height: 100vh; }
-        .edit-card { max-width: 950px; margin: 40px auto; background: white; border-radius: 24px; box-shadow: 0 12px 35px rgba(0,0,0,0.08); padding: 2.5rem; }
-        .section-title { font-size: 2rem; font-weight: 700; color: #1f3b5b; }
-        .block-card { background: #f8fafc; border: 1px solid #e9eef5; border-radius: 18px; padding: 1.5rem; margin-bottom: 1.5rem; }
-        .block-title { font-size: 1.1rem; font-weight: 600; color: #4a5568; margin-bottom: 1rem; border-bottom: 2px solid #edf2f7; padding-bottom: 0.5rem; }
-        .data-label { font-weight: 600; color: #1f3b5b; margin-bottom: 0.45rem; }
-        .form-control, .form-select { border-radius: 12px; }
+        body {
+            background: linear-gradient(135deg, #f4f7fb, #e9f0f8);
+            min-height: 100vh;
+        }
+
+        .edit-card {
+            max-width: 950px;
+            margin: 40px auto;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.08);
+            padding: 2.5rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1f3b5b;
+        }
+
+        .block-card {
+            background: #f8fafc;
+            border: 1px solid #e9eef5;
+            border-radius: 18px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .block-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1f3b5b;
+            margin-bottom: 1.2rem;
+            border-bottom: 2px solid #edf2f7;
+            padding-bottom: 0.5rem;
+        }
+
+        .data-label,
+        .form-label {
+            font-weight: 600;
+            color: #1f3b5b;
+            margin-bottom: 0.45rem;
+        }
+
+        .form-control,
+        .form-select {
+            border-radius: 12px;
+            padding: 0.75rem 0.95rem;
+            border: 1px solid #d8e0ea;
+            background-color: #fff;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #7aa7d9;
+            box-shadow: 0 0 0 0.2rem rgba(58, 123, 213, 0.12);
+        }
+
+        .btn {
+            border-radius: 12px;
+            padding: 0.7rem 1.15rem;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background-color: #1f4e79;
+            border-color: #1f4e79;
+        }
+
+        .btn-primary:hover {
+            background-color: #193f63;
+            border-color: #193f63;
+        }
+
+        .btn-outline-secondary:hover {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .alert {
+            border-radius: 14px;
+        }
+
+        .invalid-feedback {
+            font-size: 0.88rem;
+            font-weight: 600;
+        }
     </style>
 </head>
+
 <body>
 
 <div th:replace="~{layout/navbar :: main-nav}"></div>
@@ -27,109 +109,218 @@
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
             <div>
                 <h1 class="section-title">Editar Proceso PA Request</h1>
-                <p class="text-muted mb-0">Modifica los datos del proceso de asistencia personal</p>
+                <p class="text-muted mb-0">
+                    Modifica los datos del proceso de asistencia personal
+                </p>
             </div>
-            <span class="badge text-bg-secondary fs-6" th:text="'ID ' + ${paRequest.id}"></span>
+
+            <span class="badge text-bg-secondary fs-6"
+                  th:text="'ID ' + ${paRequest.id}">
+                ID
+            </span>
         </div>
 
-        <form th:object="${paRequest}" th:action="@{/PaRequest/update/{id}(id=${paRequest.id})}" method="post">
+        <form th:object="${paRequest}"
+              th:action="@{/PaRequest/update/{id}(id=${paRequest.id})}"
+              method="post"
+              novalidate>
 
-            <input type="hidden" th:field="*{id}" />
-            <input type="hidden" th:field="*{oviUser}" />
-            <input type="hidden" th:field="*{fechaCreacion}" />
+            <input type="hidden" th:field="*{id}">
+            <input type="hidden" th:field="*{oviUser}">
+            <input type="hidden" th:field="*{fechaCreacion}">
 
-            <!-- Estado -->
+            <div class="alert alert-danger"
+                 th:if="${#fields.hasAnyErrors()}">
+                Revisa los campos marcados antes de guardar los cambios.
+            </div>
+
+            <!-- ESTADO -->
             <div class="block-card">
                 <div class="block-title">Estado del Proceso</div>
+
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label class="data-label">Estado</label>
-                        <select th:field="*{status}" class="form-select">
+                        <label for="status" class="form-label">Estado</label>
+
+                        <select id="status"
+                                th:field="*{status}"
+                                class="form-select"
+                                th:classappend="${#fields.hasErrors('status')} ? ' is-invalid' : ''">
                             <option value="En_espera">En espera</option>
                             <option value="En_activo">En activo</option>
                             <option value="Caducada">Caducada</option>
                             <option value="Finalizada">Finalizada</option>
                         </select>
+
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('status')}"
+                             th:errors="*{status}">
+                        </div>
                     </div>
+
                     <div class="col-md-6">
-                        <label class="data-label">Fecha de resolución</label>
-                        <input type="date" class="form-control"
-                               name="fechaResolucion"
-                               th:value="${paRequest.fechaResolucion != null ? #temporals.format(paRequest.fechaResolucion, 'yyyy-MM-dd') : ''}"/>
+                        <label for="fechaResolucion" class="form-label">Fecha de resolución</label>
+
+                        <input type="date"
+                               id="fechaResolucion"
+                               th:field="*{fechaResolucion}"
+                               class="form-control"
+                               th:classappend="${#fields.hasErrors('fechaResolucion')} ? ' is-invalid' : ''">
+
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('fechaResolucion')}"
+                             th:errors="*{fechaResolucion}">
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Detalles del servicio -->
+            <!-- DETALLES DEL SERVICIO -->
             <div class="block-card">
                 <div class="block-title">Detalles del Servicio</div>
+
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label class="data-label">Fecha inicio</label>
-                        <input type="date" class="form-control"
-                               name="fechaInicio"
-                               th:value="${paRequest.fechaInicio != null ? #temporals.format(paRequest.fechaInicio, 'yyyy-MM-dd') : ''}"/>
+                        <label for="fechaInicio" class="form-label">Fecha inicio</label>
+
+                        <input type="date"
+                               id="fechaInicio"
+                               th:field="*{fechaInicio}"
+                               class="form-control"
+                               th:classappend="${#fields.hasErrors('fechaInicio')} ? ' is-invalid' : ''">
+
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('fechaInicio')}"
+                             th:errors="*{fechaInicio}">
+                        </div>
                     </div>
+
                     <div class="col-md-6">
-                        <label class="data-label">Fecha fin</label>
-                        <input type="date" class="form-control"
-                               name="fechaFin"
-                               th:value="${paRequest.fechaFin != null ? #temporals.format(paRequest.fechaFin, 'yyyy-MM-dd') : ''}"/>
+                        <label for="fechaFin" class="form-label">Fecha fin</label>
+
+                        <input type="date"
+                               id="fechaFin"
+                               th:field="*{fechaFin}"
+                               class="form-control"
+                               th:classappend="${#fields.hasErrors('fechaFin')} ? ' is-invalid' : ''">
+
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('fechaFin')}"
+                             th:errors="*{fechaFin}">
+                        </div>
                     </div>
+
                     <div class="col-md-12">
-                        <label class="data-label">Tipo de asistencia</label>
-                        <select th:field="*{tipoAsistencia}" class="form-select">
+                        <label for="tipoAsistencia" class="form-label">Tipo de asistencia</label>
+
+                        <select id="tipoAsistencia"
+                                th:field="*{tipoAsistencia}"
+                                class="form-select"
+                                th:classappend="${#fields.hasErrors('tipoAsistencia')} ? ' is-invalid' : ''">
                             <option value="">Selecciona una opción...</option>
                             <option value="Movilidad">Apoyo a la movilidad</option>
                             <option value="Higiene">Higiene personal</option>
                             <option value="Acompañamiento">Acompañamiento académico</option>
                         </select>
+
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('tipoAsistencia')}"
+                             th:errors="*{tipoAsistencia}">
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Preferencias -->
+            <!-- PREFERENCIAS -->
             <div class="block-card">
                 <div class="block-title">Preferencias</div>
+
                 <div class="row g-3">
                     <div class="col-md-4">
-                        <label class="data-label">Género del asistente</label>
-                        <select th:field="*{generoAsistente}" class="form-select">
+                        <label for="generoAsistente" class="form-label">Género del asistente</label>
+
+                        <select id="generoAsistente"
+                                th:field="*{generoAsistente}"
+                                class="form-select"
+                                th:classappend="${#fields.hasErrors('generoAsistente')} ? ' is-invalid' : ''">
                             <option value="Sin preferencia">Sin preferencia</option>
                             <option value="Hombre">Hombre</option>
                             <option value="Mujer">Mujer</option>
                         </select>
+
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('generoAsistente')}"
+                             th:errors="*{generoAsistente}">
+                        </div>
                     </div>
+
                     <div class="col-md-4">
-                        <label class="data-label">Disponibilidad horaria</label>
-                        <select th:field="*{disponibilidadHoraria}" class="form-select">
+                        <label for="disponibilidadHoraria" class="form-label">Disponibilidad horaria</label>
+
+                        <select id="disponibilidadHoraria"
+                                th:field="*{disponibilidadHoraria}"
+                                class="form-select"
+                                th:classappend="${#fields.hasErrors('disponibilidadHoraria')} ? ' is-invalid' : ''">
                             <option value="Flexible">Flexible</option>
                             <option value="Mañanas">Mañanas</option>
                             <option value="Tardes">Tardes</option>
                             <option value="Noches">Noches</option>
                         </select>
+
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('disponibilidadHoraria')}"
+                             th:errors="*{disponibilidadHoraria}">
+                        </div>
                     </div>
+
                     <div class="col-md-4">
-                        <label class="data-label">Zona geográfica</label>
-                        <select th:field="*{zonaGeografica}" class="form-select">
+                        <label for="zonaGeografica" class="form-label">Zona geográfica</label>
+
+                        <select id="zonaGeografica"
+                                th:field="*{zonaGeografica}"
+                                class="form-select"
+                                th:classappend="${#fields.hasErrors('zonaGeografica')} ? ' is-invalid' : ''">
                             <option value="Sin preferencia">Sin preferencia</option>
                             <option value="Campus UJI">Campus UJI</option>
                             <option value="Centro ciudad">Centro ciudad</option>
                             <option value="Norte">Norte</option>
                             <option value="Sur">Sur</option>
                         </select>
+
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('zonaGeografica')}"
+                             th:errors="*{zonaGeografica}">
+                        </div>
                     </div>
+
                     <div class="col-12">
-                        <label class="data-label">Preferencias adicionales</label>
-                        <textarea th:field="*{preferencias}" class="form-control" rows="3"
-                                  placeholder="Notas adicionales..."></textarea>
+                        <label for="preferencias" class="form-label">Preferencias adicionales</label>
+
+                        <textarea id="preferencias"
+                                  th:field="*{preferencias}"
+                                  class="form-control"
+                                  rows="3"
+                                  placeholder="Notas adicionales..."
+                                  th:classappend="${#fields.hasErrors('preferencias')} ? ' is-invalid' : ''"></textarea>
+
+                        <div class="invalid-feedback d-block"
+                             th:if="${#fields.hasErrors('preferencias')}"
+                             th:errors="*{preferencias}">
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="d-flex gap-3 justify-content-end mt-4">
-                <a th:href="@{/PaRequest/detail/{id}(id=${paRequest.id})}" class="btn btn-outline-secondary px-4">Cancelar</a>
-                <button type="submit" class="btn btn-primary px-5">Guardar cambios</button>
+            <!-- BOTONES -->
+            <div class="d-flex gap-3 justify-content-end mt-4 flex-wrap">
+                <a th:href="@{/PaRequest/detail/{id}(id=${paRequest.id})}"
+                   class="btn btn-outline-secondary px-4">
+                    Cancelar
+                </a>
+
+                <button type="submit" class="btn btn-primary px-5">
+                    Guardar cambios
+                </button>
             </div>
 
         </form>
@@ -137,5 +328,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

@@ -286,9 +286,11 @@ public class PaRequestController {
     }
 
     @PostMapping("/update/{id}")
-    public String procesarUpdate(@ModelAttribute("paRequest") PaRequest paRequest,
-                                 @PathVariable int id,
-                                 HttpSession session) {
+    public String procesarUpdate(@PathVariable int id,
+                                 @ModelAttribute("paRequest") PaRequest paRequest,
+                                 BindingResult bindingResult,
+                                 HttpSession session,
+                                 Model model) {
 
         if (session.getAttribute("usuario") == null) {
             return "redirect:/login";
@@ -300,6 +302,7 @@ public class PaRequestController {
             return "redirect:/PaRequest/list";
         }
 
+        // Conservamos los datos importantes que no deben perderse
         paRequest.setId(id);
 
         if (paRequest.getFechaCreacion() == null) {
@@ -308,6 +311,15 @@ public class PaRequestController {
 
         if (paRequest.getOviUser() == 0) {
             paRequest.setOviUser(original.getOviUser());
+        }
+
+        // Aquí sí llamamos al validador
+        PaRequestValidator validador = new PaRequestValidator();
+        validador.validate(paRequest, bindingResult);
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("paRequest", paRequest);
+            return "PaRequest/update";
         }
 
         paRequestDao.updatePaRequest(paRequest);

@@ -204,7 +204,7 @@
             <a th:if="${session.usuario != null
                and session.usuario.rolesActivos != null
                and session.usuario.rolesActivos.contains(T(es.uji.ei1027.ovi.modelo.Roles.RolUsuario).Ovi_user)}"
-               th:href="@{/PaRequest/create/{id}(id=${idUsuario})}"
+               th:href="@{/PaRequest/create}"
                class="btn btn-primary fw-bold px-4">
                 Nueva solicitud de asistencia
             </a>
