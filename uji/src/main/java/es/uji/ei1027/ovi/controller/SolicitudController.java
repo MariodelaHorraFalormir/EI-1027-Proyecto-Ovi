@@ -440,4 +440,4 @@ public class SolicitudController {
 
         return "redirect:/Solicitudes/detail/" + id + "?ok=revisionSolicitada";
     }
-}   
+}

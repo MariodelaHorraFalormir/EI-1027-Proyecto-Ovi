@@ -130,5 +130,14 @@ public class PapPatiDao {
                 "ORDER BY p.apellidos, p.nombre";
         return jdbcTemplate.queryForList(sql, idPaRequest);
     }
+    public boolean existePorIdPersona(int idPersona) {
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM pap_pati WHERE id = ?",
+                Integer.class,
+                idPersona
+        );
+
+        return count != null && count > 0;
+    }
 
 }

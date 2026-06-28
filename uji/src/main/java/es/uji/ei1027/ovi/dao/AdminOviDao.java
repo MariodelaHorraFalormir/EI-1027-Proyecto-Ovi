@@ -68,4 +68,13 @@ public class AdminOviDao {
                 idPersona
         );
     }
+    public boolean existePorIdPersona(int idPersona) {
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM admin_ovi WHERE id = ?",
+                Integer.class,
+                idPersona
+        );
+
+        return count != null && count > 0;
+    }
 }

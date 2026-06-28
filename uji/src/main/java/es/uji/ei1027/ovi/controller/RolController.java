@@ -67,7 +67,7 @@ public class RolController {
                                         Model model,
                                         HttpSession session) {
 
-        UsuarioSesion usuario = sesionService.getUsuario(session);
+        UsuarioSesion usuario = obtenerUsuarioActualizado(session);
 
         if (usuario == null) {
             return sesionService.redirigirALogin(
@@ -95,7 +95,7 @@ public class RolController {
                                  @PathVariable String rol,
                                  HttpSession session) {
 
-        UsuarioSesion usuario = sesionService.getUsuario(session);
+        UsuarioSesion usuario = obtenerUsuarioActualizado(session);
 
         if (usuario == null) {
             return sesionService.redirigirALogin(
@@ -124,6 +124,8 @@ public class RolController {
             return "redirect:/Rol/persona/" + idPersona + "/gestionar?error=rolNoCreado";
         }
 
+        actualizarSesionDespuesDeCrearRol(session, idPersona, rolUsuario);
+
         return "redirect:/Rol/persona/" + idPersona + "/gestionar?ok=rolCreado";
     }
 
@@ -132,7 +134,7 @@ public class RolController {
                             @PathVariable String rol,
                             HttpSession session) {
 
-        UsuarioSesion usuario = sesionService.getUsuario(session);
+        UsuarioSesion usuario = obtenerUsuarioActualizado(session);
 
         if (usuario == null) {
             return sesionService.redirigirALogin(
@@ -167,21 +169,18 @@ public class RolController {
             return "redirect:/Rol/persona/" + idPersona + "/gestionar?error=rolNoBorrado";
         }
 
+        actualizarSesionDespuesDeBorrarRol(session, idPersona, rolUsuario);
+
         return "redirect:/Rol/persona/" + idPersona + "/gestionar?ok=rolBorrado";
     }
 
-    private boolean esRolValido(TipoSolicitud tipoSolicitud) {
-        return tipoSolicitud == TipoSolicitud.Ovi_user ||
-                tipoSolicitud == TipoSolicitud.Pap_pati ||
-                tipoSolicitud == TipoSolicitud.Pa_request;
-    }
     @GetMapping("/persona/{idPersona}/crear/{rol}/confirmar")
     public String confirmarCrearRol(@PathVariable int idPersona,
                                     @PathVariable String rol,
                                     Model model,
                                     HttpSession session) {
 
-        UsuarioSesion usuario = sesionService.getUsuario(session);
+        UsuarioSesion usuario = obtenerUsuarioActualizado(session);
 
         if (usuario == null) {
             return sesionService.redirigirALogin(
@@ -211,14 +210,13 @@ public class RolController {
         return "Rol/confirmar-crear";
     }
 
-
     @GetMapping("/persona/{idPersona}/borrar/{rol}/confirmar")
     public String confirmarBorrarRol(@PathVariable int idPersona,
                                      @PathVariable String rol,
                                      Model model,
                                      HttpSession session) {
 
-        UsuarioSesion usuario = sesionService.getUsuario(session);
+        UsuarioSesion usuario = obtenerUsuarioActualizado(session);
 
         if (usuario == null) {
             return sesionService.redirigirALogin(
@@ -250,5 +248,71 @@ public class RolController {
         model.addAttribute("usuarioActual", usuario);
 
         return "Rol/confirmar-borrar";
+    }
+
+    private boolean esRolValido(TipoSolicitud tipoSolicitud) {
+        return tipoSolicitud == TipoSolicitud.Ovi_user ||
+                tipoSolicitud == TipoSolicitud.Pap_pati ||
+                tipoSolicitud == TipoSolicitud.Pa_request;
+    }
+
+    private UsuarioSesion obtenerUsuarioActualizado(HttpSession session) {
+        UsuarioSesion usuario = sesionService.getUsuario(session);
+
+        if (usuario == null) {
+            return null;
+        }
+
+        try {
+            sesionService.refrescarRolesUsuarioSesion(session);
+            usuario = sesionService.getUsuario(session);
+        } catch (Exception e) {
+            // Si por cualquier motivo falla el refresco, no rompemos la navegación.
+            usuario = sesionService.getUsuario(session);
+        }
+
+        return usuario;
+    }
+
+    private void actualizarSesionDespuesDeCrearRol(HttpSession session,
+                                                   int idPersona,
+                                                   RolUsuario rolUsuario) {
+
+        UsuarioSesion usuario = sesionService.getUsuario(session);
+
+        if (usuario == null) {
+            return;
+        }
+
+        if (usuario.getIdPersona() == idPersona) {
+            usuario.activarRol(rolUsuario);
+            sesionService.guardarUsuario(session, usuario);
+        }
+
+        try {
+            sesionService.refrescarRolesUsuarioSesion(session);
+        } catch (Exception ignored) {
+        }
+    }
+
+    private void actualizarSesionDespuesDeBorrarRol(HttpSession session,
+                                                    int idPersona,
+                                                    RolUsuario rolUsuario) {
+
+        UsuarioSesion usuario = sesionService.getUsuario(session);
+
+        if (usuario == null) {
+            return;
+        }
+
+        if (usuario.getIdPersona() == idPersona) {
+            usuario.quitarRol(rolUsuario);
+            sesionService.guardarUsuario(session, usuario);
+        }
+
+        try {
+            sesionService.refrescarRolesUsuarioSesion(session);
+        } catch (Exception ignored) {
+        }
     }
 }

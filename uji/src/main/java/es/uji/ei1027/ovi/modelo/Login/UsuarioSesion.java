@@ -12,10 +12,7 @@ public class UsuarioSesion {
     private String mail;
     private String nombre;
 
-    // Roles activos = permisos reales
     private List<RolUsuario> rolesActivos = new ArrayList<>();
-
-    // Roles existentes = existen en tabla, aunque estén Pendiente/Rechazado
     private List<RolUsuario> rolesExistentes = new ArrayList<>();
 
     private EstadoRol estadoOviUser;
@@ -50,7 +47,11 @@ public class UsuarioSesion {
     }
 
     public void setRolesActivos(List<RolUsuario> rolesActivos) {
-        this.rolesActivos = rolesActivos;
+        if (rolesActivos == null) {
+            this.rolesActivos = new ArrayList<>();
+        } else {
+            this.rolesActivos = new ArrayList<>(rolesActivos);
+        }
     }
 
     public List<RolUsuario> getRolesExistentes() {
@@ -58,7 +59,11 @@ public class UsuarioSesion {
     }
 
     public void setRolesExistentes(List<RolUsuario> rolesExistentes) {
-        this.rolesExistentes = rolesExistentes;
+        if (rolesExistentes == null) {
+            this.rolesExistentes = new ArrayList<>();
+        } else {
+            this.rolesExistentes = new ArrayList<>(rolesExistentes);
+        }
     }
 
     public EstadoRol getEstadoOviUser() {
@@ -76,10 +81,6 @@ public class UsuarioSesion {
     public void setEstadoPapPati(EstadoRol estadoPapPati) {
         this.estadoPapPati = estadoPapPati;
     }
-
-    // =========================
-    // ROLES ACTIVOS / PERMISOS
-    // =========================
 
     public boolean tieneRol(RolUsuario rol) {
         return rolesActivos != null && rolesActivos.contains(rol);
@@ -101,10 +102,6 @@ public class UsuarioSesion {
         return tieneRolActivo(RolUsuario.Pap_pati);
     }
 
-    // =========================
-    // ROLES EXISTENTES
-    // =========================
-
     public boolean tieneRolExistente(RolUsuario rol) {
         return rolesExistentes != null && rolesExistentes.contains(rol);
     }
@@ -121,12 +118,8 @@ public class UsuarioSesion {
         return tieneRolExistente(RolUsuario.Admin_ovi);
     }
 
-    // =========================
-    // ESTADOS OVI USER
-    // =========================
-
     public boolean tieneOviUserActivo() {
-        return estadoOviUser == EstadoRol.Activo;
+        return estadoOviUser == EstadoRol.Activo || esOviUser();
     }
 
     public boolean tieneOviUserPendiente() {
@@ -137,19 +130,78 @@ public class UsuarioSesion {
         return estadoOviUser == EstadoRol.Rechazado;
     }
 
-    // =========================
-    // ESTADOS PAP PATI
-    // =========================
-
     public boolean tienePapPatiActivo() {
-        return estadoPapPati == EstadoRol.Activo;
+        return estadoPapPati == EstadoRol.Activo || esPapPati();
     }
 
     public boolean tienePapPatiPendiente() {
-            return estadoPapPati == EstadoRol.Pendiente;
+        return estadoPapPati == EstadoRol.Pendiente;
     }
 
     public boolean tienePapPatiRechazado() {
         return estadoPapPati == EstadoRol.Rechazado;
+    }
+
+    public void activarRol(RolUsuario rol) {
+        if (rol == null) {
+            return;
+        }
+
+        if (!rolesExistentes.contains(rol)) {
+            rolesExistentes.add(rol);
+        }
+
+        if (!rolesActivos.contains(rol)) {
+            rolesActivos.add(rol);
+        }
+
+        if (rol == RolUsuario.Ovi_user) {
+            estadoOviUser = EstadoRol.Activo;
+        }
+
+        if (rol == RolUsuario.Pap_pati) {
+            estadoPapPati = EstadoRol.Activo;
+        }
+    }
+
+    public void quitarRol(RolUsuario rol) {
+        if (rol == null) {
+            return;
+        }
+
+        rolesActivos.remove(rol);
+        rolesExistentes.remove(rol);
+
+        if (rol == RolUsuario.Ovi_user) {
+            estadoOviUser = null;
+        }
+
+        if (rol == RolUsuario.Pap_pati) {
+            estadoPapPati = null;
+        }
+    }
+
+    public void setAdminOvi(boolean adminOvi) {
+        if (adminOvi) {
+            activarRol(RolUsuario.Admin_ovi);
+        } else {
+            quitarRol(RolUsuario.Admin_ovi);
+        }
+    }
+
+    public void setOviUser(boolean oviUser) {
+        if (oviUser) {
+            activarRol(RolUsuario.Ovi_user);
+        } else {
+            quitarRol(RolUsuario.Ovi_user);
+        }
+    }
+
+    public void setPapPati(boolean papPati) {
+        if (papPati) {
+            activarRol(RolUsuario.Pap_pati);
+        } else {
+            quitarRol(RolUsuario.Pap_pati);
+        }
     }
 }

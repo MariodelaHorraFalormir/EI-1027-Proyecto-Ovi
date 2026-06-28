@@ -86,5 +86,14 @@ public class OviUserDao {
 
         jdbcTemplate.update(sql, idPersona);
     }
+    public boolean existePorIdPersona(int idPersona) {
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM ovi_user WHERE id = ?",
+                Integer.class,
+                idPersona
+        );
+
+        return count != null && count > 0;
+    }
 }
 
